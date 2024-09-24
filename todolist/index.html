@@ -1,0 +1,56 @@
+
+<!DOCTYPE html> 
+<html dir="ltr" lang="en-US">
+<head> 
+
+<!-- meta tags starts -->
+	<title>To Do List</title>
+	<meta charset="utf-8" /> 
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1, viewport-fit=cover" /> 
+	<meta property="og:site_name" content="To Do List" /> 
+	<meta name="apple-mobile-web-app-title" content="To Do List" /> 
+	<meta name="apple-mobile-web-app-status-bar-style" content="To Do List" /> 
+	<meta name="theme-color" content="#000000" />
+	<meta name="description" content="To Do List"/>
+  	<meta name="keywords" content="To Do List">
+	<link rel="icon" type="image/x-icon" href="../images/antartica.png">
+<!-- meta tags ends -->
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel="stylesheet" href="./style.css">
+
+</head>
+<body onload="startabFunction();">
+<div class="app-container" id="taskList">
+<h1 class="app-header" title="TO DO LIST" contentEditable="true" spellcheck="false">TO DO LIST</h1>
+<p title="Additional Information: " contentEditable="true" spellcheck="false">Additional Information: </p>
+<p id="timea" title="Date" style="cursor: default;"></p>
+<div class="add-task">
+<input type="text" autocomplete="off" placeholder="Add New Task" v-model="tasks.name" @keyup.enter="newItem" class="task-input" title="Add New Task">
+<input type="submit" value="" class="submit-task" @click="newItem" title="Add Task">
+</div>
+<ul class="task-list">
+<li class="task-list-item" v-for="task in tasks">
+<label class="task-list-item-label">
+<input type="checkbox">
+<span>{{task.name}}</span>
+</label>
+<span @click="delItem(task)" class="delete-btn" title="Delete Task">{{task.del}}</span>
+</li>
+</ul>
+<br><br>
+<a href="javascript:void(0);" title="Terms">Terms</a> / <a href="javascript:void(0);" title="Privacy">Privacy</a> / <a href="javascript:void(0);" title="About">About</a>
+<p id="copyrighta" title="Copyright © Antartica.Org" style="cursor: default;"></p>
+</div>
+
+ <script src='scripta1.js'></script>
+<script  src="./script.js"></script>
+<script>
+function startabFunction() {
+timeaeFunction()
+timeanddateaFunction();
+}
+</script>
+</body>
+</html>
