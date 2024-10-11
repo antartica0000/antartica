@@ -1,3 +1,4 @@
+'''splitting nos'''
 num = int(input("Enter:  "))
 x = num
 reversed_num = 0
