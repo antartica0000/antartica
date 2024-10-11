@@ -1,3 +1,5 @@
+''' prime no checker '''
+
 s = 0
 x = int(input("Enter no: "))
 if x < 0:
