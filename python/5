@@ -1,3 +1,4 @@
+'''simple intrest calculator'''
 def calculate_interest():
     print("Intrest Calculator")
     p = float(input("Enter the principal amount: "))
