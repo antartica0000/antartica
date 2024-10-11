@@ -1,5 +1,6 @@
 '''
 pip install opencv-python-headless pillow
+aim: vidieo player
 '''
 
 import cv2
