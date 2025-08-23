@@ -8,11 +8,4 @@ Rules:
 
 Created in 2024
 
-
-Time line of the android app
------------------------------
-- Created in 2025 January
-
-
-
 -------------------------------------------------------------
