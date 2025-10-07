@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cookies on Antartica.Org</title>
+  <title>Cookies</title>
   <link rel="icon" href="https://antartica0000.github.io/antartica/images/antartica.png" />
 
   <style>
@@ -33,20 +33,35 @@
     }
 
     h1 {
-      font-size: 2.2em;
+      font-size: 2.4em;
       color: cyan;
       margin: 10px 0 5px;
     }
 
-    h1 a {
-      text-decoration: none;
-      color: cyan;
+    h2.subheading {
+      font-size: 1.6em;
+      color: #ccc;
+      margin-bottom: 20px;
     }
 
-    h2.subheading {
-      font-size: 1.3em;
-      color: #ccc;
-      margin-bottom: 30px;
+    .org-button {
+      background-color: cyan;
+      color: black;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: bold;
+      margin-top: 10px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .org-button:hover {
+      background-color: #00ffff;
+      transform: scale(1.05);
     }
 
     main {
@@ -102,7 +117,11 @@
 
     @media (max-width: 600px) {
       h1 {
-        font-size: 1.8em;
+        font-size: 2em;
+      }
+
+      h2.subheading {
+        font-size: 1.4em;
       }
 
       main {
@@ -116,7 +135,8 @@
 
   <header>
     <div class="profile"></div>
-    <h1><a href="https://antartica0000.github.io/antartica/" target="_blank" rel="noopener">Antartica.Org</a></h1>
+    <h1>Cookies</h1>
+    <a href="https://antartica0000.github.io/antartica/" class="org-button" target="_blank" rel="noopener">Antartica.Org</a>
     <h2 class="subheading">Cookies Used</h2>
   </header>
 
@@ -144,43 +164,4 @@
         </li>
         <li><strong>[testcookie]</strong><br>
             Type: Permanent Cookie<br>
-            Use: To check if cookies are enabled.
-        </li>
-        <li><strong>[location.city] [location.countrycode] [location.region] [location.timezone]</strong><br>
-            Type: Permanent Cookie<br>
-            Use: Helps in the functioning of the page.
-        </li>
-      </ul>
-    </div>
-
-    <div class="cookie-section">
-      <h3>Optional cookies we use:</h3>
-      <ul>
-        <li><strong>[statcookie1]</strong><br>
-            Type: Permanent Cookie<br>
-            Use: Helps count the total number of visits to the page.
-        </li>
-      </ul>
-    </div>
-
-    <p class="note">
-      It is to be noted that this cookie notice only applies to this specific app.
-      Also, the strictly necessary cookies are always turned on to ensure the proper functioning of the page.
-    </p>
-
-    <div class="links">
-      <a href="terms.html">Terms</a>
-      <a href="#">Privacy</a>
-    </div>
-  </main>
-
-  <footer>
-    &copy; <span id="year"></span> Antartica.Org. All rights reserved.
-  </footer>
-
-  <script>
-    // Dynamically set current year
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-</body>
-</html>
+            Use: To check if
