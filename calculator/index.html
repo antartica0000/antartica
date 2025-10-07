@@ -456,9 +456,10 @@ Creative Commons may be contacted at creativecommons.org.
             font-family: 'DM Mono', monospace;
         }
 
+        /* Smaller topnav header */
         .topnav {
             background-color: #111;
-            padding: 10px 20px;
+            padding: 6px 15px; /* Reduced padding */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -472,7 +473,7 @@ Creative Commons may be contacted at creativecommons.org.
 
         .topnav a#title {
             font-weight: bold;
-            font-size: 22px;
+            font-size: 18px; /* Reduced font size */
         }
 
         /* Calculator grid container */
@@ -714,52 +715,54 @@ Creative Commons may be contacted at creativecommons.org.
     <!-- topnav starts -->
     <div class="topnav" id="myTopnav">
         <a href="../index.html" id="title" title="Antartica.Org" translate="no">Antartica.Org</a>
-        <a href="settings.html" id="topnav-right2" title="Languages"><i class="fa fa-gear"></i></a>
+        <!-- Removed gear icon here -->
     </div>
     <!-- topnav ends -->
 
     <div class="grid-container">
         <div class="calculator-grid">
-            <textarea id="inputtext" placeholder="0" readonly></textarea>
+            <textarea id="inputtext" placeholder="0"></textarea>
 
-            <!-- Clear, Delete, Equals -->
+            <!-- Special buttons -->
             <button class="btn-clear">C</button>
             <button class="btn-clear">DEL</button>
             <button class="btn-clear">=</button>
-            <button class="btn-operator">(</button>
-            <button class="btn-operator">)</button>
+            <button class="btn-clear">Ans</button>
+            <button class="btn-clear">±</button>
 
-            <!-- Numbers -->
+            <!-- Numbers grouped -->
             <button class="btn-number">7</button>
             <button class="btn-number">8</button>
             <button class="btn-number">9</button>
-            <button class="btn-operator">/</button>
-            <button class="btn-func">sin</button>
-
             <button class="btn-number">4</button>
             <button class="btn-number">5</button>
             <button class="btn-number">6</button>
-            <button class="btn-operator">*</button>
-            <button class="btn-func">cos</button>
-
             <button class="btn-number">1</button>
             <button class="btn-number">2</button>
             <button class="btn-number">3</button>
-            <button class="btn-operator">-</button>
-            <button class="btn-func">tan</button>
-
             <button class="btn-number">0</button>
             <button class="btn-number">.</button>
-            <button class="btn-operator">+</button>
-            <button class="btn-func">log</button>
-            <button class="btn-func">√</button>
 
-            <!-- Extra scientific -->
+            <!-- Signs grouped -->
+            <button class="btn-operator">(</button>
+            <button class="btn-operator">)</button>
+            <button class="btn-operator">+</button>
+            <button class="btn-operator">-</button>
+            <button class="btn-operator">*</button>
+            <button class="btn-operator">/</button>
+
+            <!-- Functions grouped -->
+            <button class="btn-func">log</button>
             <button class="btn-func">^</button>
-            <button class="btn-func">π</button>
+            <button class="btn-func">sin</button>
+            <button class="btn-func">cos</button>
+            <button class="btn-func">tan</button>
+            <button class="btn-func">cot</button>
+            <button class="btn-func">cosec</button>
+            <button class="btn-func">sec</button>
+            <button class="btn-func">√</button>
             <button class="btn-func">e</button>
-            <button class="btn-clear">Ans</button>
-            <button class="btn-clear">±</button>
+            <button class="btn-func">π</button>
         </div>
     </div>
 
@@ -802,9 +805,21 @@ Creative Commons may be contacted at creativecommons.org.
             popup.style.display = 'none';
         });
 
+        // Enable typing on desktop, disable on mobile
+        function updateInputReadonly() {
+            if (window.innerWidth <= 600) {
+                input.setAttribute('readonly', 'true');
+            } else {
+                input.removeAttribute('readonly');
+            }
+        }
+
+        updateInputReadonly();
+        window.addEventListener('resize', updateInputReadonly);
+
         // Calculation function
         function calculate(expression) {
-            // Sanitize input to allow only valid chars
+            // Replace some math functions and constants:
             expression = expression
                 .replace(/π/g, 'Math.PI')
                 .replace(/e/g, 'Math.E')
@@ -813,14 +828,24 @@ Creative Commons may be contacted at creativecommons.org.
                 .replace(/sin/g, 'Math.sin')
                 .replace(/cos/g, 'Math.cos')
                 .replace(/tan/g, 'Math.tan')
+                .replace(/cot/g, '(1/Math.tan')
+                .replace(/sec/g, '(1/Math.cos')
+                .replace(/cosec/g, '(1/Math.sin')
                 .replace(/log/g, 'Math.log10')
                 .replace(/Ans/g, lastAnswer || '0')
                 .replace(/±/g, '-')
-                .replace(/[^0-9+\-*/().^MathPIEsqrtsintanlogAns]/g, '');
+                .replace(/[^0-9+\-*/().^MathPIEsqrtinsctalogosecetcotTanAns]/gi, '');
 
             try {
+                // Fix cot, sec, cosec with closing parentheses
+                // e.g. cot(45) => (1/Math.tan(45))
+                expression = expression.replace(/cot\(/gi, '(1/Math.tan(');
+                expression = expression.replace(/sec\(/gi, '(1/Math.cos(');
+                expression = expression.replace(/cosec\(/gi, '(1/Math.sin(');
+
                 // eslint-disable-next-line no-new-func
                 let result = Function('"use strict";return (' + expression + ')')();
+
                 if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
                     lastAnswer = result;
                     return result;
@@ -875,6 +900,8 @@ Creative Commons may be contacted at creativecommons.org.
     </script>
 </body>
 </html>
+
+
 
 
 
