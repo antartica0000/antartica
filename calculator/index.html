@@ -537,11 +537,99 @@ button:focus {
     }
 }
 
+/* Welcome Popup */
+.welcome-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #444;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    width: 80%;
+    max-width: 500px;
+    height: 50%;
+    max-height: 300px;
+    z-index: 1000;
+    display: none;
+}
+
+.welcome-popup h2 {
+    margin-top: 0;
+}
+
+.welcome-popup .profile-circle {
+    background-image: url('https://antartica0000.github.io/antartica/images/antartica.png');
+    background-size: cover;
+    background-position: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+}
+
+.welcome-popup .popup-header {
+    font-size: 24px;
+    margin: 0;
+}
+
+.welcome-popup .popup-subheader {
+    font-size: 18px;
+    color: cyan;
+}
+
+.welcome-popup button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+.welcome-popup button:hover {
+    background-color: #218838;
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .welcome-popup {
+        width: 90%;
+        height: 40%;
+    }
+
+    .welcome-popup .profile-circle {
+        width: 50px;
+        height: 50px;
+    }
+
+    .welcome-popup .popup-header {
+        font-size: 20px;
+    }
+
+    .welcome-popup .popup-subheader {
+        font-size: 16px;
+    }
+}
+
 </style>
 </head>
 
 <body>
-    <!-- topnav starts -->
+
+<!-- Welcome Popup -->
+<div id="welcomePopup" class="welcome-popup">
+    <div class="profile-circle"></div>
+    <h2 class="popup-header">Welcome</h2>
+    <p class="popup-subheader">Antartica Calculator</p>
+    <button id="continueBtn">Continue</button>
+</div>
+
+<!-- topnav starts -->
 <div class="topnav" id="myTopnav">
     <a href="../index.html" id="title" title="Antartica.Org" translate="no">Antartica.Org</a>
     <a href="settings.html" id="topnav-right2" title="Languages"><i class="fa fa-gear"></i></a>
@@ -580,56 +668,98 @@ button:focus {
 
         <button>0</button>
         <button>.</button>
-        <button>sqrt</button>
-        <button>+</button>
 
+        <button>sqrt</button>
         <button>^</button>
         <button>pi</button>
         <button>e</button>
+
         <button>=</button>
+        <button>+</button>
     </div>
 </div>
 
 <script>
-    const input = document.getElementById('inputtext');
-    const buttons = document.querySelectorAll('button');
+// Cookie management functions
+function setCookie(name, value, days) {
+    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+}
 
-    function calculate(expression) {
-        try {
-            // Replace scientific functions
-            expression = expression.replace(/sin/g, 'Math.sin')
-                                   .replace(/cos/g, 'Math.cos')
-                                   .replace(/tan/g, 'Math.tan')
-                                   .replace(/log/g, 'Math.log10')
-                                   .replace(/sqrt/g, 'Math.sqrt')
-                                   .replace(/\^/g, '**')
-                                   .replace(/pi/g, 'Math.PI')
-                                   .replace(/e/g, 'Math.E');
-            return new Function('return ' + expression)();
-        } catch (error) {
-            return 'Error';
-        }
+function getCookie(name) {
+    const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
+        const [key, value] = cookie.split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+    return cookies[name];
+}
+
+// Welcome popup logic
+function showWelcomePopup() {
+    const popup = document.getElementById('welcomePopup');
+    popup.style.display = 'block';
+}
+
+function hideWelcomePopup() {
+    const popup = document.getElementById('welcomePopup');
+    popup.style.display = 'none';
+}
+
+// Check if the cookie exists
+if (!getCookie('welcomed')) {
+    showWelcomePopup();
+}
+
+document.getElementById('continueBtn').addEventListener('click', function () {
+    // Set the cookie to expire in 2 years
+    setCookie('welcomed', 'true', 730);
+    hideWelcomePopup();
+});
+
+// Calculator logic
+const input = document.getElementById('inputtext');
+const buttons = document.querySelectorAll('button');
+
+function calculate(expression) {
+    try {
+        // Replace scientific functions
+        expression = expression.replace(/sin/g, 'Math.sin')
+                               .replace(/cos/g, 'Math.cos')
+                               .replace(/tan/g, 'Math.tan')
+                               .replace(/log/g, 'Math.log10')
+                               .replace(/sqrt/g, 'Math.sqrt')
+                               .replace(/\^/g, '**')
+                               .replace(/pi/g, 'Math.PI')
+                               .replace(/e/g, 'Math.E');
+        return new Function('return ' + expression)();
+    } catch (error) {
+        return 'Error';
     }
+}
 
-    function operation(buttonValue) {
-        if (buttonValue === 'C') {
-            input.value = '';
-        } else if (buttonValue === 'DEL') {
-            input.value = input.value.slice(0, -1);
-        } else if (buttonValue === '=') {
-            input.value = calculate(input.value);
-        } else {
-            input.value += buttonValue;
-        }
+function operation(buttonValue) {
+    if (buttonValue === 'C') {
+        input.value = '';
+    } else if (buttonValue === 'DEL') {
+        input.value = input.value.slice(0, -1);
+    } else if (buttonValue === '=') {
+        input.value = calculate(input.value);
+    } else {
+        input.value += buttonValue;
     }
+}
 
-    buttons.forEach(button => {
-        let buttonValue = button.innerText;
-        button.addEventListener('click', function () {
-            operation(buttonValue);
-        });
+buttons.forEach(button => {
+    let buttonValue = button.innerText;
+    button.addEventListener('click', function () {
+        operation(buttonValue);
     });
+});
 </script>
+
 </body> 
 </html>
+
+
 
