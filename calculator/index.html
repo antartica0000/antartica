@@ -1,5 +1,3 @@
-<!DOCTYPE html> 
-<html> 
 <!--
 Attribution-NonCommercial-ShareAlike 4.0 International
 
@@ -439,327 +437,446 @@ public licenses.
 
 Creative Commons may be contacted at creativecommons.org.
 -->
-<head> 
-<title>Scientific Calculator - Antartica.Org</title> 
-<link rel="icon" type="image/x-icon" href="../images/antartica.png">
-    <link rel="stylesheet" href="../css/index.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">  
-<style>
-body {  
-    background-color: black;
-    color:white;
-    padding: 0px;
-    margin: 0px;
-    font-family: 'Arial', sans-serif;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculator - Antartica.Org</title>
+    <link rel="icon" type="image/x-icon" href="../images/antartica.png" />
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            padding: 0;
+            margin: 0;
+            font-family: 'DM Mono', monospace;
+        }
 
-.grid-container {
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    margin: 0px;
-    height: 100vh;
-}
+        .topnav {
+            background-color: #111;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.calculator-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(6, 1fr);
-    grid-gap: 10px;
-    background-color: black;
-    width: 90%;
-    max-width: 600px;
-    height: 70vh;
-}
+        .topnav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
 
-textarea {
-    grid-column: span 5;
-    font-family: 'DM Mono', monospace;
-    font-size: 32px;
-    text-align: end;
-    background-color: #222;
-    color:white;
-    padding: 15px;
-    border: none;
-    margin-bottom: 20px;
-}
+        .topnav a#title {
+            font-weight: bold;
+            font-size: 22px;
+        }
 
-button {
-    background-color: #333;
-    color: white;
-    border: 1px solid #444;
-    font-size: 20px;
-    padding: 20px 0;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: 'DM Mono', monospace;
-}
+        /* Calculator grid container */
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            height: calc(100vh - 60px);
+            box-sizing: border-box;
+        }
 
-button:hover {
-    background-color: #444;
-    transform: scale(1.05);
-}
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 12px;
+            background-color: black;
+            width: 100%;
+            max-width: 480px;
+            user-select: none;
+        }
 
-button:active {
-    transform: scale(0.95);
-}
+        /* Textarea display */
+        #inputtext {
+            grid-column: span 5;
+            font-size: 28px;
+            text-align: right;
+            background-color: black;
+            color: white;
+            padding: 20px;
+            border: none;
+            resize: none;
+            height: 60px;
+            overflow-x: auto;
+            outline: none;
+            box-sizing: border-box;
+            border: 1px solid #1e2329;
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+        }
 
-button.special {
-    background-color: #2d2d2d;
-}
+        /* Calculator buttons */
+        .calculator-grid button {
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+            font-size: 20px;
+            padding: 18px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'DM Mono', monospace;
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2);
+            user-select: none;
+        }
 
-button:focus {
-    outline: none;
-}
+        .calculator-grid button:hover {
+            background-color: #333;
+            color: cyan;
+            border-color: cyan;
+            box-shadow: 0 0 6px cyan;
+        }
 
-@media (max-width: 600px) {
-    .calculator-grid {
-        grid-template-columns: repeat(4, 1fr);
-        width: 100%;
-    }
+        /* Grouping styling */
+        /* Numbers and decimal */
+        .btn-number {
+            background-color: #1a1a1a;
+            border-color: #333;
+        }
 
-    button {
-        font-size: 18px;
-    }
-}
+        .btn-number:hover {
+            background-color: #333;
+            color: cyan;
+            border-color: cyan;
+            box-shadow: 0 0 6px cyan;
+        }
 
-@media (max-width: 400px) {
-    .calculator-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
+        /* Operators */
+        .btn-operator {
+            background-color: #005f73;
+            border-color: #008891;
+            color: #ade8f4;
+            font-weight: bold;
+        }
 
-    button {
-        font-size: 16px;
-    }
+        .btn-operator:hover {
+            background-color: #008891;
+            color: white;
+            box-shadow: 0 0 8px #00b4d8;
+        }
 
-    textarea {
-        font-size: 28px;
-    }
-}
+        /* Functions */
+        .btn-func {
+            background-color: #0a9396;
+            border-color: #94d2bd;
+            color: white;
+            font-weight: bold;
+        }
 
-/* Welcome Popup */
-.welcome-popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #444;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-    width: 80%;
-    max-width: 500px;
-    height: 50%;
-    max-height: 300px;
-    z-index: 1000;
-    display: none;
-}
+        .btn-func:hover {
+            background-color: #94d2bd;
+            color: black;
+            box-shadow: 0 0 8px #0a9396;
+        }
 
-.welcome-popup h2 {
-    margin-top: 0;
-}
+        /* Special buttons: Clear, Del, Equals */
+        .btn-clear {
+            background-color: #ae2012;
+            border-color: #fb5607;
+            font-weight: bold;
+            color: white;
+        }
 
-.welcome-popup .profile-circle {
-    background-image: url('https://antartica0000.github.io/antartica/images/antartica.png');
-    background-size: cover;
-    background-position: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin: 0 auto 10px;
-}
+        .btn-clear:hover {
+            background-color: #fb5607;
+            color: black;
+            box-shadow: 0 0 8px #ae2012;
+        }
 
-.welcome-popup .popup-header {
-    font-size: 24px;
-    margin: 0;
-}
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            #inputtext {
+                font-size: 22px;
+                padding: 15px;
+                height: 50px;
+            }
+            .calculator-grid button {
+                font-size: 18px;
+                padding: 14px 0;
+            }
+            .grid-container {
+                padding: 15px;
+                height: auto;
+            }
+        }
 
-.welcome-popup .popup-subheader {
-    font-size: 18px;
-    color: cyan;
-}
+        @media (max-width: 350px) {
+            .calculator-grid {
+                max-width: 100%;
+                grid-template-columns: repeat(4, 1fr);
+            }
+            #inputtext {
+                grid-column: span 4;
+            }
+        }
 
-.welcome-popup button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    border-radius: 5px;
-    font-size: 18px;
-}
+        /* Welcome popup styles */
+        .welcome-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid cyan;
+            padding: 30px 30px 25px 30px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            width: 60vw;
+            height: 60vh;
+            max-width: 450px;
+            max-height: 400px;
+            z-index: 10000;
+            display: none;
+            box-sizing: border-box;
+            user-select: none;
+        }
 
-.welcome-popup button:hover {
-    background-color: #218838;
-}
+        .welcome-popup .profile-circle {
+            background-image: url('https://antartica0000.github.io/antartica/images/antartica.png');
+            background-size: cover;
+            background-position: center;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            border: 2px solid cyan;
+        }
 
-/* Mobile adjustments */
-@media (max-width: 600px) {
-    .welcome-popup {
-        width: 90%;
-        height: 40%;
-    }
+        .welcome-popup .popup-header {
+            font-size: 32px;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
 
-    .welcome-popup .profile-circle {
-        width: 50px;
-        height: 50px;
-    }
+        .welcome-popup .popup-subheader {
+            font-size: 20px;
+            color: cyan;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
 
-    .welcome-popup .popup-header {
-        font-size: 20px;
-    }
+        .welcome-popup button {
+            background-color: cyan;
+            color: black;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
 
-    .welcome-popup .popup-subheader {
-        font-size: 16px;
-    }
-}
+        .welcome-popup button:hover {
+            background-color: #00ffff;
+            transform: scale(1.05);
+        }
 
-</style>
+        @media (max-width: 600px) {
+            .welcome-popup {
+                width: 90vw;
+                height: auto;
+                padding: 20px;
+            }
+
+            .welcome-popup .profile-circle {
+                width: 60px;
+                height: 60px;
+            }
+
+            .welcome-popup .popup-header {
+                font-size: 26px;
+            }
+
+            .welcome-popup .popup-subheader {
+                font-size: 16px;
+            }
+
+            .welcome-popup button {
+                font-size: 18px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<!-- Welcome Popup -->
-<div id="welcomePopup" class="welcome-popup">
-    <div class="profile-circle"></div>
-    <h2 class="popup-header">Welcome</h2>
-    <p class="popup-subheader">Antartica Calculator</p>
-    <button id="continueBtn">Continue</button>
-</div>
-
-<!-- topnav starts -->
-<div class="topnav" id="myTopnav">
-    <a href="../index.html" id="title" title="Antartica.Org" translate="no">Antartica.Org</a>
-    <a href="settings.html" id="topnav-right2" title="Languages"><i class="fa fa-gear"></i></a>
-</div>
-<!-- topnav ends -->
-
-<div class="grid-container">
-    <div class="calculator-grid">
-        <textarea type="text" id="inputtext" placeholder="0" readonly></textarea>
-        
-        <!-- Buttons -->
-        <button>C</button>
-        <button>DEL</button>
-        <button>(</button>
-        <button>)</button>
-
-        <button>sin</button>
-        <button>cos</button>
-        <button>tan</button>
-        <button>log</button>
-
-        <button>7</button>
-        <button>8</button>
-        <button>9</button>
-        <button>/</button>
-
-        <button>4</button>
-        <button>5</button>
-        <button>6</button>
-        <button>*</button>
-
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>-</button>
-
-        <button>0</button>
-        <button>.</button>
-
-        <button>sqrt</button>
-        <button>^</button>
-        <button>pi</button>
-        <button>e</button>
-
-        <button>=</button>
-        <button>+</button>
+    <!-- topnav starts -->
+    <div class="topnav" id="myTopnav">
+        <a href="../index.html" id="title" title="Antartica.Org" translate="no">Antartica.Org</a>
+        <a href="settings.html" id="topnav-right2" title="Languages"><i class="fa fa-gear"></i></a>
     </div>
-</div>
+    <!-- topnav ends -->
 
-<script>
-// Cookie management functions
-function setCookie(name, value, days) {
-    const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
-    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-}
+    <div class="grid-container">
+        <div class="calculator-grid">
+            <textarea id="inputtext" placeholder="0" readonly></textarea>
 
-function getCookie(name) {
-    const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
-        const [key, value] = cookie.split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
-    return cookies[name];
-}
+            <!-- Clear, Delete, Equals -->
+            <button class="btn-clear">C</button>
+            <button class="btn-clear">DEL</button>
+            <button class="btn-clear">=</button>
+            <button class="btn-operator">(</button>
+            <button class="btn-operator">)</button>
 
-// Welcome popup logic
-function showWelcomePopup() {
-    const popup = document.getElementById('welcomePopup');
-    popup.style.display = 'block';
-}
+            <!-- Numbers -->
+            <button class="btn-number">7</button>
+            <button class="btn-number">8</button>
+            <button class="btn-number">9</button>
+            <button class="btn-operator">/</button>
+            <button class="btn-func">sin</button>
 
-function hideWelcomePopup() {
-    const popup = document.getElementById('welcomePopup');
-    popup.style.display = 'none';
-}
+            <button class="btn-number">4</button>
+            <button class="btn-number">5</button>
+            <button class="btn-number">6</button>
+            <button class="btn-operator">*</button>
+            <button class="btn-func">cos</button>
 
-// Check if the cookie exists
-if (!getCookie('welcomed')) {
-    showWelcomePopup();
-}
+            <button class="btn-number">1</button>
+            <button class="btn-number">2</button>
+            <button class="btn-number">3</button>
+            <button class="btn-operator">-</button>
+            <button class="btn-func">tan</button>
 
-document.getElementById('continueBtn').addEventListener('click', function () {
-    // Set the cookie to expire in 2 years
-    setCookie('welcomed', 'true', 730);
-    hideWelcomePopup();
-});
+            <button class="btn-number">0</button>
+            <button class="btn-number">.</button>
+            <button class="btn-operator">+</button>
+            <button class="btn-func">log</button>
+            <button class="btn-func">√</button>
 
-// Calculator logic
-const input = document.getElementById('inputtext');
-const buttons = document.querySelectorAll('button');
+            <!-- Extra scientific -->
+            <button class="btn-func">^</button>
+            <button class="btn-func">π</button>
+            <button class="btn-func">e</button>
+            <button class="btn-clear">Ans</button>
+            <button class="btn-clear">±</button>
+        </div>
+    </div>
 
-function calculate(expression) {
-    try {
-        // Replace scientific functions
-        expression = expression.replace(/sin/g, 'Math.sin')
-                               .replace(/cos/g, 'Math.cos')
-                               .replace(/tan/g, 'Math.tan')
-                               .replace(/log/g, 'Math.log10')
-                               .replace(/sqrt/g, 'Math.sqrt')
-                               .replace(/\^/g, '**')
-                               .replace(/pi/g, 'Math.PI')
-                               .replace(/e/g, 'Math.E');
-        return new Function('return ' + expression)();
-    } catch (error) {
-        return 'Error';
-    }
-}
+    <!-- Welcome Popup -->
+    <div id="welcomePopup" class="welcome-popup">
+        <div class="profile-circle"></div>
+        <h2 class="popup-header">WELCOME !!</h2>
+        <p class="popup-subheader">Antartica Calculator</p>
+        <button id="continueBtn">Continue</button>
+    </div>
 
-function operation(buttonValue) {
-    if (buttonValue === 'C') {
-        input.value = '';
-    } else if (buttonValue === 'DEL') {
-        input.value = input.value.slice(0, -1);
-    } else if (buttonValue === '=') {
-        input.value = calculate(input.value);
-    } else {
-        input.value += buttonValue;
-    }
-}
+    <script>
+        const input = document.getElementById('inputtext');
+        const buttons = document.querySelectorAll('.calculator-grid button');
+        const popup = document.getElementById('welcomePopup');
+        const continueBtn = document.getElementById('continueBtn');
 
-buttons.forEach(button => {
-    let buttonValue = button.innerText;
-    button.addEventListener('click', function () {
-        operation(buttonValue);
-    });
-});
-</script>
+        // Helper: Check for cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
 
-</body> 
+        // Helper: Set cookie (expires in 2 years)
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+        }
+
+        // Show popup if cookie not set
+        if (!getCookie('antartica_calculator_welcome')) {
+            popup.style.display = 'block';
+        }
+
+        continueBtn.addEventListener('click', () => {
+            setCookie('antartica_calculator_welcome', 'true', 730); // 2 years
+            popup.style.display = 'none';
+        });
+
+        // Calculation function
+        function calculate(expression) {
+            // Sanitize input to allow only valid chars
+            expression = expression
+                .replace(/π/g, 'Math.PI')
+                .replace(/e/g, 'Math.E')
+                .replace(/√/g, 'Math.sqrt')
+                .replace(/\^/g, '**')
+                .replace(/sin/g, 'Math.sin')
+                .replace(/cos/g, 'Math.cos')
+                .replace(/tan/g, 'Math.tan')
+                .replace(/log/g, 'Math.log10')
+                .replace(/Ans/g, lastAnswer || '0')
+                .replace(/±/g, '-')
+                .replace(/[^0-9+\-*/().^MathPIEsqrtsintanlogAns]/g, '');
+
+            try {
+                // eslint-disable-next-line no-new-func
+                let result = Function('"use strict";return (' + expression + ')')();
+                if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+                    lastAnswer = result;
+                    return result;
+                } else {
+                    return 'Error';
+                }
+            } catch (e) {
+                return 'Malformed Operation';
+            }
+        }
+
+        let lastAnswer = null;
+
+        // Button operation handler
+        function operation(buttonValue) {
+            if (buttonValue === 'C') {
+                input.value = '';
+            } else if (buttonValue === 'DEL') {
+                input.value = input.value.slice(0, -1);
+            } else if (buttonValue === '=') {
+                if (input.value.trim() === '') return;
+                const result = calculate(input.value);
+                input.value = result;
+            } else if (buttonValue === 'Ans') {
+                if (lastAnswer !== null) {
+                    input.value += lastAnswer;
+                }
+            } else if (buttonValue === '±') {
+                // Toggle negative sign at start
+                if (input.value.startsWith('-')) {
+                    input.value = input.value.slice(1);
+                } else {
+                    input.value = '-' + input.value;
+                }
+            } else {
+                input.value += buttonValue;
+            }
+        }
+
+        buttons.forEach(button => {
+            const val = button.textContent;
+            button.addEventListener('click', () => {
+                operation(val);
+            });
+        });
+
+        // Make textarea scroll horizontally instead of wrapping
+        input.addEventListener('input', () => {
+            input.style.height = 'auto';
+            input.style.height = input.scrollHeight + 'px';
+        });
+    </script>
+</body>
 </html>
+
+
 
 
 
