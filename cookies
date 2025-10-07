@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cookies on Antartica.Org</title>
+  <link rel="icon" href="https://antartica0000.github.io/antartica/images/antartica.png" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    .profile {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background-image: url('https://antartica0000.github.io/antartica/images/antartica.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      border: 2px solid cyan;
+    }
+
+    h1 {
+      font-size: 2.2em;
+      color: cyan;
+      margin-bottom: 10px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background-color: #111;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.15);
+    }
+
+    h2 {
+      color: cyan;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    .cookie-section {
+      margin-bottom: 25px;
+    }
+
+    .note {
+      font-size: 0.95em;
+      color: #aaa;
+      margin-top: 20px;
+    }
+
+    .links a {
+      color: cyan;
+      text-decoration: none;
+      margin-right: 15px;
+      font-weight: bold;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #777;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      main {
+        margin: 10px;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="profile"></div>
+    <h1>Cookies on Antartica.Org</h1>
+  </header>
+
+  <main>
+    <p><strong>Current cookie consent status:</strong></p>
+    <p style="color: cyan;">Optional cookies refused (2)</p>
+
+    <div class="cookie-section">
+      <h2>This website uses cookies.</h2>
+      <p>
+        Essential and functional cookies are necessary for the proper functioning of the website and cannot be refused.
+      </p>
+    </div>
+
+    <div class="cookie-section">
+      <h2>Cookie settings</h2>
+
+      <h3 style="color: cyan;">Strictly necessary cookies</h3>
+      <p>These essential cookies do things like remember your progress through the website. They always need to be on.</p>
+      <p><strong>Strictly necessary cookies we use:</strong></p>
+      <ul>
+        <li><strong>[ae] [cookieconsent]</strong><br>
+            Type: Permanent Cookie<br>
+            Use: To know your cookie consent status.
+        </li>
+        <li><strong>[testcookie]</strong><br>
+            Type: Permanent Cookie<br>
+            Use: To check if cookies are enabled.
+        </li>
+        <li><strong>[location.city] [location.countrycode] [location.region] [location.timezone]</strong><br>
+            Type: Permanent Cookie<br>
+            Use: Helps in the functioning of the page.
+        </li>
+      </ul>
+    </div>
+
+    <div class="cookie-section">
+      <h3 style="color: cyan;">Optional cookies we use:</h3>
+      <ul>
+        <li><strong>[statcookie1]</strong><br>
+            Type: Permanent Cookie<br>
+            Use: Helps count the total number of visits to the page.
+        </li>
+      </ul>
+    </div>
+
+    <p class="note">
+      It is to be noted that this cookie notice only applies to this specific app.
+      Also, the strictly necessary cookies are always turned on to ensure the proper functioning of the page.
+    </p>
+
+    <div class="links">
+      <a href="terms">Terms</a>
+      <a href="#">Privacy</a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; <span id="year"></span> Antartica.Org. All rights reserved.
+  </footer>
+
+  <script>
+    // Dynamically set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
