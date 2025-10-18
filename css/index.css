@@ -1,0 +1,385 @@
+.grey1-container {  background-color: black;  color: white; padding-left:3%; padding-right:3%;font-size: 14px; border-top: none; }
+
+.fa-google { background: black; color: white; text-decoration:none; padding:2px;}
+.fa-wikipedia-w { background: black; color: white; text-decoration:none; padding:2px;}
+.fa-reddit { background: black; color: white; text-decoration:none; padding:2px;}
+.fa-youtube { background: black; color: white; text-decoration:none; padding:2px;}
+.fa-share-alt { background: black; color: white; text-decoration:none; padding:2px; }
+#xyx-x:link { background: black; color: white; text-decoration:none; padding:2px; }
+.fa-instagram { background: black; color: white; text-decoration:none; padding:2px; }
+.fa-facebook { background: black; color: white; text-decoration:none; padding:2px; }
+.fa-twitch { background: black; color: white; text-decoration:none; padding:2px; }
+.fa-print { background: black; color: white; text-decoration:none; padding:2px; }
+
+.fa-google:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px;}
+.fa-wikipedia-w:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px;}
+.fa-reddit:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px;}
+.fa-youtube:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px;}
+.fa-share-alt:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+#xyx-x:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+.fa-instagram:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+.fa-facebook:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+.fa-twitch:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+.fa-print:hover { background: black; color:  #4cd7b3; text-decoration:none; padding:2px; }
+
+.flex-container {
+  display: flex; flex-wrap: wrap; text-align: left;
+ font-size: 16px; line-height: 160%;
+}
+
+.flex-item-left {  padding-top: 35px; padding-bottom: 35px; padding-left:30px; padding-right:30px; background-color: #000000; flex: 25%; border-top:  2px solid #1e2329; }
+.flex-item-center{ padding-top: 35px; padding-bottom: 35px; padding-left:30px; padding-right:30px; background-color: #000000;   flex: 25%; border-top:  2px solid #1e2329; }
+.flex-item-center-right{ padding-top: 35px; padding-bottom: 35px; padding-left:30px; padding-right:30px; background-color: #000000;   flex: 25%; border-top:  2px solid #1e2329; }
+.flex-item-right { padding-top: 35px;  padding-bottom: 35px; padding-left:30px; padding-right:30px;  background-color: #000000; flex: 25%; border-top:  2px solid #1e2329; }
+
+.flex-container a:link {  color: #6d757f; background-color: transparent;  text-decoration: none; }  
+.flex-container a:hover { color: #4cd7b3; background-color: transparent; text-decoration: #4cd7b3 underline; }
+.flex-container a:visited { color:#6d757f; background-color: transparent;  text-decoration: none; }
+.flex-container a:active { color: #6d757f; background-color: transparent;  text-decoration: none; }
+
+@media (max-width: 1000px) { .flex-container {  font-size: 15px; } }
+@media (max-width: 700px) {
+ .flex-container { text-align: left; }
+  .flex-item-right, .flex-item-center, .flex-item-center-right, .flex-item-left {
+    flex: 50%;
+  }
+.flex-item-left { padding-top: 30px; padding-bottom: 10px; padding-left:25px; padding-right:25px;}
+.flex-item-center { padding-top: 30px; padding-bottom: 10px; padding-left:25px; padding-right:25px;}
+.flex-item-center-right{ border-top:  none; padding-top: 10px; padding-bottom: 30px; padding-left:25px; padding-right:25px;}
+.flex-item-right { border-top:  none; padding-top: 10px; padding-bottom: 30px; padding-left:25px; padding-right:25px;}
+}
+@media (max-width: 600px) { .flex-container {  font-size: 13px; } }
+@media (max-width: 450px) {
+  .flex-item-right, .flex-item-center, .flex-item-center-right, .flex-item-left {
+    flex: 100%;
+  }
+.flex-item-left { padding-top:25px; padding-bottom: 20px; padding-left:20px; padding-right:20px;}
+.flex-item-center{ border-top:  none; padding-top: 0px; padding-bottom: 20px; padding-left:20px; padding-right:20px;}
+.flex-item-center-right{ border-top:  none; padding-top: 0px; padding-bottom: 20px; padding-left:20px; padding-right:20px;}
+.flex-item-right { border-top:  none; padding-top: 0px; padding-bottom:25px; padding-left:20px; padding-right:20px;}
+}
+@media (max-width: 340px) {
+ .flex-container {  font-size: 13px; } 
+#rightab {display:none;}
+.rightbb {display:none;}
+}
+@media (max-width: 300px) { 
+.flex-container {  font-size: 12px; } 
+.flex-item-left { padding-top:25px; padding-bottom: 15px; padding-left:20px; padding-right:20px;}
+.flex-item-center{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:20px; padding-right:20px;}
+.flex-item-center-right{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:20px; padding-right:20px;}
+.flex-item-right { border-top:  none; padding-top: 0px; padding-bottom:25px; padding-left:20px; padding-right:20px;}
+}
+@media (max-width: 200px) { 
+.flex-item-left { padding-top:20px; padding-bottom: 15px; padding-left:15px; padding-right:15px;}
+.flex-item-center{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:15px; padding-right:15px;}
+.flex-item-center-right{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:15px; padding-right:15px;}
+.flex-item-right { border-top:  none; padding-top: 0px; padding-bottom:20px; padding-left:15px; padding-right:15px;}
+}
+@media (max-width: 180px) { .flex-container {  font-size: 11px; } }
+@media (max-width: 150px) { .flex-container {  font-size: 10px; } }
+@media (max-width: 130px) { 
+.flex-container {  font-size: 9px;} 
+.flex-item-left { padding-top:20px; padding-bottom: 15px; padding-left:10px; padding-right:10px;}
+.flex-item-center{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:10px; padding-right:10px;}
+.flex-item-center-right{ border-top:  none; padding-top: 0px; padding-bottom: 15px; padding-left:10px; padding-right:10px;}
+.flex-item-right { border-top:  none; padding-top: 0px; padding-bottom:20px; padding-left:10px; padding-right:10px;}
+}
+@media (max-width: 100px) { .flex-container {  font-size: 8px; } }
+@media (max-width: 90px) { .flex-container {  font-size: 6px; } }
+
+
+.navbar {  overflow: hidden;  background-color: #000000;    bottom: 0;  position:fixed;  width: 100%; display:none;}
+.highlight-navbar {  border-top: 3px solid  #4cd7b3; }
+.highlightnormal-navbar {  border-top:  3px solid #1e2329; }
+.navbar a {  float: left;  display: block;  color: #f2f2f2;  text-align: center;  width:33.333333333333333%; padding: 14px;  font-size: 18px;  text-decoration: none; }
+.navbar a:hover { background-color: #21262c;  color: white; }
+.navbar .icon {  display: none; }
+@media screen and (max-width: 600px) { .navbar a { padding: 14px;  font-size: 16px; } }
+@media screen and (max-width: 400px) { .navbar a { padding: 13px;  font-size: 16px; } }
+@media screen and (max-width: 300px) { .navbar a { padding: 12px;  font-size: 14px; } }
+@media screen and (max-width: 250px) { .navbar a { padding: 10px;  font-size: 14px; } }
+@media screen and (max-width: 220px) { .navbar a { padding: 9px;  font-size: 14px; } }
+@media screen and (max-width: 200px) { .navbar a { padding: 8px;  font-size: 12px; } }
+@media screen and (max-width: 160px) { .navbar a { padding: 6px;  font-size: 8px; } }
+
+#topaaee { background-color: white; color:black; }
+body {  margin: 0; font-family: Arial, sans-serif; background-color: black; color:white;}
+#content {  background-color: black;  color:white;}
+
+.button {  transition-duration: 0s; padding: 10px 15px; font-size: 14px; cursor: pointer;}
+.cookieconsentbutton {  background-color: #1967d2; color: white;  border: none; border-radius: 4px; }
+.cookieconsentbutton:hover {  background-color: white;  color: black; }
+.greenbutton {  background-color: black; color: white;  border: none; border-radius: 4px; border:2px solid #31e509;}
+.greenbutton:hover {  background-color: black;  color: white; border:2px solid #f4fc19;}
+.redbutton {  background-color: black; color: white;  border: none; border-radius: 4px; border:2px solid red;}
+.redbutton:hover {  background-color: black;  color: white; border:2px solid #f4fc19;}
+.hidden {display:none;}
+
+.greenbuttontypeb {  background-color: black; color: white;  border: none; border-radius: 4px; border:2px solid #31e509;}
+.greenbuttontypeb:hover {  background-color: black;  color: white; border:2px solid white;}
+
+
+.topnav { overflow: hidden;  background-color: black;  padding-left: 2%;  padding-right: 2%;   position: -webkit-sticky;  position: sticky; top:0; width: 100%; border-bottom: 3px solid #1e2329;}
+.topnav a {  float: left;  display: #424243;  color: white;  text-align: center;  padding: 16px;  text-decoration: none;  font-size: 16px; }
+.topnav a:hover {  background-color: #21262c;  color: white;}
+
+.modifiedatopnav {   background-color: black;  top:0; width: 100%;   overflow: auto; padding:10px;}
+.modifiedatopnav a {   float: left;  background-color: black;  color: white;  text-align: center;  padding: 10px;  text-decoration: none;  font-size: 14px; width:auto;   border-radius: 10px; margin-left:5px; margin-right:5px; margin-top:10px;  }
+.modifiedatopnav a:hover { background-color: #21262c;  color: white;}
+.modifiedatopnavhighlight {  background-color: black;  color: white; border: 2px solid #4cd7b3;}
+.modifiedatopnavnormal {  background-color: black;  color: white; border: 2px solid #1e2329;}
+
+
+
+.content {  padding: 50px;  text-align: left; font-size: 16px;}
+.content a:link {  color: #2f81f7; background-color: transparent;  text-decoration: none; }  
+.content a:hover { color: #2f81f7; background-color: transparent; text-decoration: underline; }
+.content a:visited { color: #2f81f7; background-color: transparent;  text-decoration: none; }
+.content a:active { color: #2f81f7; background-color: transparent;  text-decoration: none; }
+.modal-content a:link {  color: #2f81f7; background-color: transparent;  text-decoration: none; }  
+.modal-content a:hover { color: #2f81f7; background-color: transparent; text-decoration: underline; }
+.modal-content a:visited { color: #2f81f7; background-color: transparent;  text-decoration: none; }
+.modal-content a:active { color: #2f81f7; background-color: transparent;  text-decoration: none; }
+#myInput {  width: 100%;  padding: 10px;  margin-bottom: 20px;  border-radius: 15px; background-color:black; color:white;  border: 2px solid white;  font-size: 13px; }
+* {  box-sizing: border-box; }
+.myInput {  width: 100%;  padding: 10px;  margin-bottom: 20px;  border-radius: 15px; background-color:black; color:white;  border: 2px solid white;  font-size: 13px; }
+* {  box-sizing: border-box; }
+#myUL {  list-style-type: none;  padding: 0;  margin: 0; }
+#myUL li a {  margin-top: -1px; /* Prevent double borders */  background-color: black;  padding: 10px;  text-decoration: none;  color: white;  display: block;  border-radius: 25px;  font-size: 13px; }
+#myUL li a:hover:not(.header) {  background-color: #21262c; }
+#myInputab {  width: 100%;  padding: 10px;  margin-bottom: 20px;  border-radius: 15px; background-color:black; color:white;  border: 2px solid white;  font-size: 13px; }
+* {  box-sizing: border-box; }
+#myULab {  list-style-type: none;  padding: 0;  margin: 0; }
+#myULab li a {  margin-top: -1px; /* Prevent double borders */  background-color: black;  padding: 10px;  text-decoration: none;  color: white;  display: block;  border-radius: 25px;  font-size: 13px; }
+#myULab li a:hover:not(.header) {  background-color: #21262c; }
+
+
+#cookieconsenta {display:none; border-bottom: 3px solid #1e2329;} 
+#cookieconsentb {display:none; border-bottom: 3px solid #1e2329;} 
+* {  box-sizing: border-box; }
+#top-nav-small-side {display:none;}
+#sidebar { display:none; }
+#topnav-right {  float: right;}
+#topnav-right2 {  float: right; }
+#topnav-right3 {  float: right; }
+#rightab {  float: right;}
+#copyright {  float: left;}
+.rightbb { float:right; }
+.rightab {color:white;}
+.rightab:link {  color: white; background-color: transparent;  text-decoration: none;  }  
+.rightab:hover { color: #4cd7b3; background-color: transparent; text-decoration: underline; }
+.rightab:visited { color: white; background-color: transparent;  text-decoration: none; }
+.rightab:active { color:white; background-color: transparent;  text-decoration: none; }
+.text-center {  text-align: center; }  .text-left {  text-align: left; }  .text-right {  text-align: right; }    #text-center {  text-align: center; }  #text-left {  text-align: left; }  #text-right {  text-align: right; }
+
+.modal {
+ display: none;   position: fixed; z-index: 1;  padding-top: 0%; padding-bottom: 0%;left: 0; top: 0; width: 100%;  height: 100%; overflow: auto;  background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); cursor:default; 
+}
+.modal-content {  background-color: black;  font-size: 16px;  margin: auto;  padding-left: 5%; padding-right: 5%; padding-top: 3%; padding-bottom: 3%;color:white;  border: none;  width: 100%;   border-radius: 0px; cursor:default;}
+.close {  color: #2f81f7;  float: left; cursor: pointer;}
+.close:hover, .close:focus {  color: #2f81f7;  text-decoration: underline;  cursor: pointer; }
+
+.settings-container {  border:  3px solid #21262c;  color:white; padding:18px;  border-radius: 10px; background-color:black;}
+
+
+@media screen and (max-width: 3000px) {
+.topnav {  overflow: hidden;  padding-left: 2%;  padding-right: 2%;}
+.modifiedatopnav {  overflow: auto; }
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+
+@media screen and (max-width: 2000px) {
+.topnav {  overflow: hidden;  padding-left: 2%;  padding-right: 2%;}
+.modifiedatopnav {  overflow: auto; }
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+
+@media screen and (max-width: 1400px) {
+.topnav {  overflow: hidden;  padding-left: 2%;  padding-right: 2%;}
+.modifiedatopnav {  overflow: auto; }
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+
+@media screen and (max-width: 1200px) {
+.topnav {  overflow: hidden; padding-left: 2%;  padding-right: 2%;}
+.topnav a {  float: left;  padding: 16px;  font-size: 15px; }
+.modifiedatopnav {  overflow: auto;}
+.modifiedatopnav a {  float: left;  padding: 10px;  font-size: 14px; }
+.content {  padding: 45px; font-size: 15px; }
+.grey1-container {   font-size: 14px; }
+.social a:link { font-size:29px;}
+#myInput {  padding: 10px;  margin-bottom: 20px;  font-size: 12px; }
+.myInput {  padding: 10px;  margin-bottom: 20px;  font-size: 12px; }
+#myUL li a {  font-size: 12px;  padding: 10px; }
+#myInputab {  padding: 10px;  margin-bottom: 20px;  font-size: 12px; }
+#myULab li a {  font-size: 12px;  padding: 10px; }
+.modal-content { font-size: 15px;  width: 100%; border: none; border-radius: 0px; }
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+
+@media screen and (max-width: 1000px) {
+#topnav-right { display: none; }
+.topnav {  overflow: hidden; padding-left: 2%;  padding-right: 2%;}
+.modifiedatopnav {  overflow: auto;}
+#top-nav-large { display: none; }
+.topnav a {  float: left;  padding: 16px;  font-size: 14px; }
+.modifiedatopnav a {  float: left;  padding: 10px;  font-size: 14px; }
+.content { padding: 35px; font-size: 14px; }
+.grey1-container {  font-size: 14px; }
+.social a:link { font-size:28px;}
+.modal-content { font-size: 14px;  width: 100%; border: none; border-radius: 0px;}
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+@media screen and (max-width: 900px) {
+.topnav {  overflow: hidden;  padding-left: 2%;  padding-right: 2%;}
+.modifiedatopnav {  overflow: auto; }
+}
+
+@media screen and (max-width: 600px) {
+.topnav {  overflow: hidden; padding-left: 1%;  padding-right: 1%;}
+.modifiedatopnav {  overflow: auto;}
+#top-nav-medium { display: none; }
+.button {font-size: 13px;}
+.topnav a {  float: left;  padding: 15px;  font-size: 14px; }
+.modifiedatopnav a {  float: left;  padding: 10px;  font-size: 13px;}
+.content {  padding: 25px; font-size: 13px; }
+.grey1-container {  font-size: 13px; }
+.social a:link { font-size:26px;}
+.modal-content { font-size: 13px;  width: 100%; border: none; border-radius: 0px;}
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+}
+
+
+@media screen and (max-width: 400px) {
+.settings-container {  padding:15px; border:  2px solid #21262c;}
+.topnav {padding-left: 0%;  padding-right: 0%; }
+.modifiedatopnav { padding: 8px;}
+.modifiedatopnav a { margin-left:4px; margin-right:4px; font-size: 13px;}
+.content {  padding: 20px; font-size: 13px; }
+.grey1-container {   font-size: 13px; }
+.button { padding: 10px 15px;}
+.social a:link { font-size:25px;}
+.modal-content { font-size: 13px;  width: 100%; border: none; border-radius: 0px;}
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto; }
+
+@media screen and (max-width: 300px) {
+.settings-container {  padding:10px;}
+#topnav-right3 { display: none; }
+.topnav { padding-top:0px; padding-bottom:0px; padding-left: 0px;  padding-right: 0px; }
+.topnav a {  float: left;  padding: 12px;  font-size: 13px; }
+.modifiedatopnav {  padding: 8px; }
+.modifiedatopnav a {  float: left;  padding: 6px;  font-size: 12px; border-radius: 6px;}
+.content {  padding: 15px; font-size: 12px; }
+.grey1-container {  font-size: 12px; }
+.social a:link { font-size:22px;}
+.button {  font-size: 11px;}
+#myInput {  padding: 10px;  margin-bottom: 20px;  margin-top: 10px;  font-size: 10px; }
+.myInput {  padding: 10px;  margin-bottom: 20px;  margin-top: 10px;  font-size: 10px; }
+#myUL li a {  font-size: 10px;  padding: 10px; }
+#myInputab {  padding: 10px;  margin-bottom: 20px;  margin-top: 10px;  font-size: 10px; }
+#myULab li a {  font-size: 10px;  padding: 10px; }
+.modal-content { font-size: 12px;  width: 100%; border: none; border-radius: 0px;}
+.modal { padding-top: 0%; padding-bottom: 0%; left: 0; top: 0; width: 100%;  height: 100%; overflow: auto;  background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); 
+}
+
+@media screen and (max-width: 260px) {
+.topnav { padding-top:0px; padding-bottom:0px; padding-left: 0px;  padding-right: 0px;}
+.modifiedatopnav { padding:6px;}
+.modifiedatopnav a {  padding: 5px;}
+.social a:link { font-size:20px;}
+.button { padding: 7px 7px; }
+.modal-content { font-size: 12px;  width: 100%; }
+.settings-container {  padding:6px;}
+}
+
+@media screen and (max-width: 230px) {
+.social a:link { font-size:19px;}
+.modal-content { font-size: 10px;  width: 100%; }
+.modifiedatopnav a {   font-size: 11px; }
+
+}
+
+@media screen and (max-width: 200px) {
+#topnav-right2 { display:none; }
+.topnav a {  float: left;  padding: 10px;  font-size: 13px; }
+.modifiedatopnav a {  float: left;  padding: 5px;  font-size: 11px; }
+.content {  padding: 12px; font-size: 12px; }
+.grey1-container {  font-size: 12px; }
+.social a:link { font-size:18px;}
+.button { padding: 5px 5px; }
+#myInput {  padding: 9px;  margin-bottom: 20px; margin-top: 15px;  font-size: 9px; }
+.myInput {  padding: 9px;  margin-bottom: 20px; margin-top: 15px;  font-size: 9px; }
+#myUL li a {  font-size: 9px;  padding: 9px; }
+#myInputab {  padding: 9px;  margin-bottom: 20px; margin-top: 15px;  font-size: 9px; }
+#myULab li a {  font-size: 9px;  padding: 9px; }
+.modal-content { font-size: 9px;  width: 100%; }
+}
+
+@media screen and (max-width: 180px) {
+.topnav a {  float: left;  padding: 9px;  font-size: 12px; }
+.modifiedatopnav a {  float: left;  padding: 5px;  font-size: 10px; }
+.content {  padding: 11px; font-size: 11px; }
+.grey1-container {  font-size: 11px; }
+.button { padding: 4px 4px; }
+}
+
+@media screen and (max-width: 150px) {
+.topnav a {  float: left; padding: 8px;  font-size: 10px; }
+.modifiedatopnav a {  float: left; padding: 5px;  font-size: 9px; }
+.content {  padding: 10px; font-size: 10px; }
+.grey1-container {  padding: 10px;  font-size: 10px; }
+.button {  font-size: 8px; }
+#myInput {  padding: 8px;  margin-bottom: 20px;  font-size: 8px; }
+.myInput {  padding: 8px;  margin-bottom: 20px;  font-size: 8px; }
+#myUL li a {  font-size: 8px; padding: 8px; }
+#myInputab {  padding: 8px;  margin-bottom: 20px;  font-size: 8px; }
+#myULab li a {  font-size: 8px; padding: 8px; }
+.modal-content { font-size: 8px;  width: 100%; }
+}
+
+@media screen and (max-width: 120px) {
+#title { display: none; }
+.topnav a {  float: left;  padding: 8px;  font-size: 9px; }
+.modifiedatopnav a {  float: left;  padding: 4px;  font-size: 9px; }
+.content {  padding: 8px; font-size: 8px; }
+.grey1-container {  padding: 10px;  font-size: 10px; }
+.button {  font-size: 7px; }
+#myInput {  padding: 7px;  margin-bottom: 20px;  font-size: 7px; }
+.myInput {  padding: 7px;  margin-bottom: 20px;  font-size: 7px; }
+#myUL li a {  font-size: 7px;  padding: 7px; }
+#myInputab {  padding: 7px;  margin-bottom: 20px;  font-size: 7px; }
+#myULab li a {  font-size: 7px;  padding: 7px; }
+.modal-content { font-size: 7px;  width: 100%; border: none;}
+}
+
+@media screen and (max-width: 100px) {
+.topnav a {  float: left;  padding: 8px;  font-size: 8px; }
+.modifiedatopnav a {  float: left;  padding: 4px;  font-size: 8px; }
+.content {  padding: 8px; font-size: 8px; }
+.grey1-container {  padding: 8px;  font-size: 8px; }
+.button { padding: 2px 2px;  font-size: 6px; }
+#myInput {  padding: 6px;  margin-bottom: 20px;  font-size: 6px; }
+.myInput {  padding: 6px;  margin-bottom: 20px;  font-size: 6px; }
+#myUL li a {  font-size: 6px;  padding: 6px; }
+#myInputab {  padding: 6px;  margin-bottom: 20px;  font-size: 6px; }
+#myULab li a {  font-size: 6px;  padding: 6px; }
+.modal-content { font-size: 6px;  width: 100%; }
+}
+
+@media screen and (max-width: 90px) {
+.modifiedatopnav a {  font-size: 7px; }
+.content {  padding: 4px; font-size: 6px; }
+.grey1-container {  padding: 4px;  font-size: 6px; }
+#myInput { padding: 4px; margin-bottom: 20px; font-size: 5px; }
+.myInput { padding: 4px; margin-bottom: 20px; font-size: 5px; }
+#myUL li a {  font-size: 5px; padding: 4px; }
+#myInputab { padding: 4px; margin-bottom: 20px; font-size: 5px; }
+#myULab li a {  font-size: 5px; padding: 4px; }
+.modal-content { font-size: 5px;  width: 100%; }
+}

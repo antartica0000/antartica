@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/x-icon" href="images/antartica.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Antartica.Org App Store</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation */
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      background-color: #111;
+      border-bottom: 2px solid cyan;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: cyan;
+      flex: 1;
+    }
+
+    .search-bar {
+      flex: 2;
+      max-width: 400px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 8px 12px;
+      background-color: #000;
+      border: 2px solid cyan;
+      color: white;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    /* App Grid */
+    .app-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+    }
+
+    .app-card {
+      background-color: #111;
+      border: 1px solid cyan;
+      border-radius: 10px;
+      width: 160px;
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .app-card:hover {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border: 2px solid cyan;
+    }
+
+    .app-name {
+      font-size: 16px;
+      color: cyan;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+
+    .download-button {
+      background-color: cyan;
+      color: black;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Fullscreen Description View */
+    .app-detail-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 1000;
+      display: none;
+      overflow-y: auto;
+    }
+
+    .app-detail-content {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 30px 20px;
+      background-color: #111;
+      border: 2px solid cyan;
+      border-radius: 12px;
+      color: #fff;
+      position: relative;
+    }
+
+    .close-detail {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 30px;
+      color: cyan;
+      cursor: pointer;
+    }
+
+    .app-detail-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .app-detail-header img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid cyan;
+    }
+
+    .app-detail-header h2 {
+      font-size: 26px;
+      margin: 0;
+      color: cyan;
+    }
+
+    .app-detail-description {
+      margin-top: 20px;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .app-detail-download {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .app-detail-download button {
+      background-color: cyan;
+      color: black;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .app-card {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .app-detail-content {
+        margin: 20px 10px;
+        padding: 20px;
+      }
+
+      .app-detail-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .search-bar {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .topnav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topnav">
+    <div class="logo">Antartica.Org</div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search apps..." onkeyup="filterApps()" />
+    </div>
+  </div>
+
+  <div class="app-grid" id="appGrid">
+    <!-- Populated by JavaScript -->
+  </div>
+
+  <!-- Fullscreen Detail View -->
+  <div class="app-detail-overlay" id="appDetailOverlay">
+    <div class="app-detail-content">
+      <span class="close-detail" onclick="closeDetailOverlay()">&times;</span>
+      <div class="app-detail-header">
+        <img id="detailIcon" src="" alt="App Icon">
+        <h2 id="detailName">App Name</h2>
+      </div>
+      <div class="app-detail-description" id="detailDescription"></div>
+      <div class="app-detail-download">
+        <button id="detailDownloadBtn">Download</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apps = [
+      {
+        name: "Antartica.Org",
+        icon: "https://antartica0000.github.io/antartica/images/antartica.png",
+        description: "Antartica.Org",
+        downloadLink: "https://antartica0000.github.io/antartica/"
+      },
+      {
+        name: "Python",
+        icon: "https://antartica0000.github.io/antartica/server/python.png",
+        description: "It is a programing language",
+        downloadLink: "https://www.python.org/downloads/"
+      },
+      {
+        name: "Youtube",
+        icon: "https://antartica0000.github.io/antartica/server/youtube.jpg",
+        description: "It is a video sharing platform",
+        downloadLink: "https://youtube.com"
+      },
+      {
+        name: "Google",
+        icon: "https://antartica0000.github.io/antartica/server/google.png",
+        description: "It is an search engine",
+        downloadLink: "https://google.com"
+      },
+      {
+        name: "Bing",
+        icon: "https://antartica0000.github.io/antartica/server/bing.jpeg",
+        description: "It is an search engine",
+        downloadLink: "https://bing.com"
+      },
+    ];
+
+    const appGrid = document.getElementById("appGrid");
+    const overlay = document.getElementById("appDetailOverlay");
+    const detailIcon = document.getElementById("detailIcon");
+    const detailName = document.getElementById("detailName");
+    const detailDescription = document.getElementById("detailDescription");
+    const detailDownloadBtn = document.getElementById("detailDownloadBtn");
+
+    function displayApps(list) {
+      appGrid.innerHTML = "";
+      list.forEach((app, index) => {
+        const card = document.createElement("div");
+        card.className = "app-card";
+        card.innerHTML = `
+          <img src="${app.icon}" alt="${app.name}" class="app-icon" />
+          <div class="app-name">${app.name}</div>
+          <button class="download-button">Download</button>
+        `;
+        // Show details
+        card.addEventListener("click", () => showAppDetails(index));
+        // Download button
+        card.querySelector(".download-button").addEventListener("click", (e) => {
+          e.stopPropagation();
+          window.open(app.downloadLink, "_blank");
+        });
+        appGrid.appendChild(card);
+      });
+    }
+
+    function showAppDetails(index) {
+      const app = apps[index];
+      detailIcon.src = app.icon;
+      detailName.textContent = app.name;
+      detailDescription.textContent = app.description;
+      detailDownloadBtn.onclick = () => {
+        window.open(app.downloadLink, "_blank");
+      };
+      overlay.style.display = "block";
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeDetailOverlay() {
+      overlay.style.display = "none";
+      document.body.style.overflow = "auto";
+    }
+
+    function filterApps() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = apps.filter(app => app.name.toLowerCase().includes(searchTerm));
+      displayApps(filtered);
+    }
+
+    // Initial render
+    displayApps(apps);
+  </script>
+
+</body>
+</html>
