@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Number Generator - Antartica.Org</title>
+        <link rel="stylesheet" href="../css/index.css"> 
+        <link rel="icon" type="image/x-icon" href="../images/antartica.png">
+        <style>
+            body {
+                color:white;
+                background-color: black;
+                font-size: 17px;
+                text-align: center;
+            }
+            
+            @media (max-width: 300px) {
+                body {
+                    font-size: 14px;
+                }
+            }
+
+            @media (max-width: 150px) {
+                body {
+                    font-size: 12px;
+                }
+            }
+
+            @media (max-width: 110px) {
+                body {
+                    font-size: 10px;
+                }
+            }
+        </style>
+        	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+            <link rel="stylesheet" href="../css/index.css"> 
+
+    </head>
+<body onload="startFunction();">
+    <!-- topnav starts -->
+    <div class="topnav" id="myTopnav">
+        <a href="../index.html" id="top-nav-small" title="Open Menu" onclick="showmodal10()"><i class="fa fa-bars"></i></a>
+        <a href="../index.html" id="title" title="Antartica.Org" translate="no">Antartica.Org</a>
+        <a href="../settings.html" id="topnav-right2" title="Languages"><i class="fa fa-gear"></i></a>
+    </div>
+    <!-- topnav ends -->
+    <br><br>
+    <button onclick="startFunction();" class="button greenbuttontypeb" title="Refresh">Refresh</button>
+    <button onclick="index.html" class="button greenbuttontypeb" title="Info">Info</button>
+<br><br>
+<p id="demo1"></p>
+<p id="demo2"></p>
+<p id="demo3"></p>
+<p id="demo4"></p>
+<br><br>
+<p id="demo9"></p>
+<p id="demo10"></p>
+<p id="demo11"></p>
+<br><br>
+<p id="demo5"></p>
+<p id="demo6"></p>
+<p id="demo7"></p>
+<p id="demo8"></p>
+<br><br>
+
+<script>
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+</script>
+<script>
+    function startFunction() {
+        var random1 = getRndInteger(1,999);
+        var random2 = getRndInteger(1,999);
+        var random3 = getRndInteger(1,999);
+        var random4 = getRndInteger(1,999);
+    document.getElementById('demo1').innerHTML = random1 + "." + random2 + "." + random3 + "." +random4;
+        
+        var random1 = getRndInteger(1,999);
+        var random2 = getRndInteger(1,999);
+        var random3 = getRndInteger(1,999);
+        var random4 = getRndInteger(1,999);
+    document.getElementById('demo2').innerHTML = random1 + "." + random2 + "." + random3 + "." +random4;
+
+        var random1 = getRndInteger(1,999);
+        var random2 = getRndInteger(1,999);
+        var random3 = getRndInteger(1,999);
+        var random4 = getRndInteger(1,999);
+    document.getElementById('demo3').innerHTML = random1 + "." + random2 + "." + random3 + "." +random4;
+
+        var random1 = getRndInteger(1,999);
+        var random2 = getRndInteger(1,999);
+        var random3 = getRndInteger(1,999);
+        var random4 = getRndInteger(1,999);
+    document.getElementById('demo4').innerHTML = random1 + "." + random2 + "." + random3 + "." +random4;
+
+        var random1 = getRndInteger(1,99999);
+        var random2 = getRndInteger(1,99999);
+        var random3 = getRndInteger(1,99999);
+        var random4 = getRndInteger(1,99999);
+        var random5 = getRndInteger(1,10);
+        var random6 = getRndInteger(1,100);
+    document.getElementById('demo5').innerHTML = random1 * random2 * random3 - random4 / random5 + random6;
+
+    var random1 = getRndInteger(1,99999);
+        var random2 = getRndInteger(1,99999);
+        var random3 = getRndInteger(1,99999);
+        var random4 = getRndInteger(1,99999);
+        var random5 = getRndInteger(1,10);
+        var random6 = getRndInteger(1,100);
+    document.getElementById('demo6').innerHTML = random1 * random2 * random3 - random4 / random5 + random6;
+
+    var random1 = getRndInteger(1,99999);
+        var random2 = getRndInteger(1,99999);
+        var random3 = getRndInteger(1,99999);
+        var random4 = getRndInteger(1,99999);
+        var random5 = getRndInteger(1,10);
+        var random6 = getRndInteger(1,100);
+    document.getElementById('demo7').innerHTML = random1 * random2 * random3 - random4 / random5 + random6;
+
+    var random1 = getRndInteger(1,99999);
+        var random2 = getRndInteger(1,99999);
+        var random3 = getRndInteger(1,99999);
+        var random4 = getRndInteger(1,99999);
+        var random5 = getRndInteger(1,10);
+        var random6 = getRndInteger(1,100);
+    document.getElementById('demo8').innerHTML = random1 * random2 * random3 - random4 / random5 + random6;
+
+        var random1 = getRndInteger(0,1);
+        var random2 = getRndInteger(0,1);
+        var random3 = getRndInteger(0,1);
+        var random4 = getRndInteger(0,1);
+        var random5 = getRndInteger(0,1);
+        var random6 = getRndInteger(0,1);
+    document.getElementById('demo9').innerHTML = random1 + " " + random2 + " " + random3 + " " + random4 + " " + random5 + " " + random6;
+
+    var random1 = getRndInteger(0,1);
+        var random2 = getRndInteger(0,1);
+        var random3 = getRndInteger(0,1);
+        var random4 = getRndInteger(0,1);
+        var random5 = getRndInteger(0,1);
+        var random6 = getRndInteger(0,1);
+    document.getElementById('demo10').innerHTML = random1 + " " + random2 + " " + random3 + " " + random4 + " " + random5 + " " + random6;
+    var random1 = getRndInteger(0,1);
+        var random2 = getRndInteger(0,1);
+        var random3 = getRndInteger(0,1);
+        var random4 = getRndInteger(0,1);
+        var random5 = getRndInteger(0,1);
+        var random6 = getRndInteger(0,1);
+    document.getElementById('demo11').innerHTML = random1 + " " + random2 + " " + random3 + " " + random4 + " " + random5 + " " + random6;
+    }
+    </script>
+</body>
+</html>
