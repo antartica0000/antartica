@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAPTCHA</title>
+  <title>Shape Counting CAPTCHA</title>
   <style>
     /* Global Styles */
     body {
@@ -249,8 +249,8 @@
       const correctShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
       const shapeCount = allShapes.filter(s => s.shape === correctShape).length;
 
-      // Set multiplier and display question
-      const multiplier = [2, 3, 4, 5, 10][Math.floor(Math.random() * 5)];
+      // Set multiplier (random number between 2 and 10) and display question
+      const multiplier = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
       document.getElementById('shape-name').textContent = correctShape;
       document.getElementById('multiply-value').textContent = multiplier;
       document.getElementById('verify-button').onclick = function() {
