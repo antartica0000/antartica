@@ -199,6 +199,15 @@
     function incrementCaptchaAttempt() {
       let attempts = parseInt(getCookie("captchacount")) || 0;
       attempts++;
+      
+      if (attempts >= 8) {
+        setCookie("captchacount", attempts, 30); // Update the count in cookie
+        setCookie("captcha", "2", 30); // Lock out if attempts reach 8
+        document.getElementById("access-denied").style.display = "block"; // Show access denied
+        document.getElementById("captcha-container").style.display = "none"; // Hide the CAPTCHA form
+        return; // Prevent further code execution
+      }
+      
       setCookie("captchacount", attempts, 30);
     }
 
