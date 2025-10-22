@@ -126,10 +126,6 @@
 </head>
 <body>
 
-  <!-- Top Text for CAPTCHA -->
-  <div class="top-heading">
-    CAPTCHA
-  </div>
 
   <!-- Access Denied Page (hidden if captcha is valid) -->
   <div id="access-denied" class="access-denied" style="display:none;">
@@ -138,7 +134,8 @@
 
   <!-- CAPTCHA Container (hidden if captcha is invalid or if access denied) -->
   <div id="captcha-container" class="captcha-container">
-    <h1>Shape Counting CAPTCHA</h1>
+    <br>
+    <h1>CAPTCHA</h1>
     <p>How many <span id="shape-name"></span> shapes are there? Multiply the answer by <span id="multiply-value"></span> and enter it below.</p>
     <canvas id="captcha-canvas" class="captcha-image" width="500" height="400"></canvas>
     <input type="text" id="captcha-input" class="captcha-input" placeholder="Enter the number of shapes * multiplier" />
