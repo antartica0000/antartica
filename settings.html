@@ -269,34 +269,12 @@ else {
 }
 </script>
 
-<script>
-  // Function to get the value of a cookie by name
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-  }
-
-  // Check the value of the 'captcha' cookie
-  window.onload = function() {
-    const captchaValue = getCookie('captcha');
-
-    if (captchaValue === '1') {
-      // Continue on the current page
-      console.log("Captcha value is 1. Continuing on this page.");
-    } else if (captchaValue === '0' || captchaValue === '2' || captchaValue === null) {
-      // Redirect to the CAPTCHA page
-      window.location.href = "https://antartica0000.github.io/antartica/captcha";
-    }
-  };
-</script>
-
 <!-- script ends -->
 </body></html>
 
 <!-- Page Ends -->
 <!-- Copyright © Antartica Org. All rights reserved. - United States -->
+
 
 
 
