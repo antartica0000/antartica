@@ -178,7 +178,7 @@
         document.getElementById("access-denied").style.display = "block";
         document.getElementById("captcha-container").style.display = "none";
       } else if (captchaCookie === "1") {
-        window.location.href = "https://antartica0000.github.io/antartica";
+        window.location.href = "../";
       } else if (!captchaCookie) {
         setCookie("captcha", "0", 30); // Set captcha cookie to 0 if not found
       }
@@ -273,7 +273,7 @@
       if (parseInt(inputText) === correctAnswer) {
         resetCaptchaAttempt();
         setCookie("captcha", "1", 30); // Set captcha to 1 (verified)
-        window.location.href = "https://antartica0000.github.io/antartica";
+        window.location.href = "../";
       } else {
         incrementCaptchaAttempt();
         errorMessage.style.display = "block";
