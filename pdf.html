@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="https://antartica0000.github.io/antartica/images/antartica.png" />
+  <title>PDF Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: sans-serif;
+    }
+
+    #toolbar {
+      background-color: #1e1e1e;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #2e2e2e;
+    }
+
+    #toolbar button,
+    #toolbar input {
+      background-color: #1e1e1e;
+      color: cyan;
+      border: 1px solid cyan;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    #viewerContainer {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+
+    canvas {
+      border: 1px solid #444;
+      background-color: white;
+      cursor: text;
+    }
+
+    .highlight {
+      position: absolute;
+      background-color: rgba(0, 255, 255, 0.3);
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <input type="file" id="fileInput"/>
+    <button id="prev">⟨ Prev</button>
+    <span id="pageInfo">Page <span id="pageNum">1</span> / <span id="pageCount">1</span></span>
+    <button id="next">Next ⟩</button>
+  </div>
+  <div id="viewerContainer">
+    <canvas id="pdfCanvas"></canvas>
+  </div>
+
+  <!-- PDF.js via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const canvas = document.getElementById('pdfCanvas');
+    const ctx = canvas.getContext('2d');
+    const pageNumSpan = document.getElementById('pageNum');
+    const pageCountSpan = document.getElementById('pageCount');
+    let pdfDoc = null;
+    let currentPage = 1;
+    let scale = 1.5;
+
+    // Setup PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file && file.type === 'application/pdf') {
+        const fileReader = new FileReader();
+        fileReader.onload = function () {
+          const typedArray = new Uint8Array(this.result);
+          loadPDF(typedArray);
+        };
+        fileReader.readAsArrayBuffer(file);
+      }
+    });
+
+    function loadPDF(data) {
+      pdfjsLib.getDocument(data).promise.then(pdf => {
+        pdfDoc = pdf;
+        pageCountSpan.textContent = pdf.numPages;
+        currentPage = 1;
+        renderPage(currentPage);
+      });
+    }
+
+    function renderPage(num) {
+      pdfDoc.getPage(num).then(page => {
+        const viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+
+        page.render(renderContext);
+        pageNumSpan.textContent = num;
+      });
+    }
+
+    document.getElementById('prev').addEventListener('click', () => {
+      if (currentPage <= 1) return;
+      currentPage--;
+      renderPage(currentPage);
+    });
+
+    document.getElementById('next').addEventListener('click', () => {
+      if (currentPage >= pdfDoc.numPages) return;
+      currentPage++;
+      renderPage(currentPage);
+    });
+
+    // Highlight (Marker) Feature
+    canvas.addEventListener('mouseup', () => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) return;
+
+      const range = selection.getRangeAt(0);
+      const rects = range.getClientRects();
+
+      Array.from(rects).forEach(rect => {
+        const highlight = document.createElement('div');
+        highlight.className = 'highlight';
+        const container = document.getElementById('viewerContainer');
+
+        const containerRect = container.getBoundingClientRect();
+        highlight.style.left = `${rect.left - containerRect.left}px`;
+        highlight.style.top = `${rect.top - containerRect.top}px`;
+        highlight.style.width = `${rect.width}px`;
+        highlight.style.height = `${rect.height}px`;
+
+        container.appendChild(highlight);
+      });
+
+      selection.removeAllRanges(); // Clear text selection
+    });
+  </script>
+</body>
+</html>

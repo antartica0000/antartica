@@ -1,0 +1,273 @@
+div#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+div#app .search-wrapper {
+width:100%;
+}
+div#app .search-wrapper input {
+width: 100%;  padding: 10px;  margin-bottom: 20px;  border-radius: 15px; background-color:black; color:white;  border: 2px solid white;  font-size: 13px;
+}
+div#app .search-wrapper input::-webkit-input-placeholder {
+  font-size: 13px;
+  color: #7e7e7e;
+  font-weight: 100;
+}
+div#app .wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 12px;
+}
+div#app .card {
+  border: 2px solid #1e2329;
+border-radius:12px;
+  max-width: 150px;
+  min-width: 80px;
+  margin: 8px;
+}
+
+div#app .sub-card {
+padding-top:5px;
+}
+div#app .card:hover {
+  border: 2px solid #4cd7b3;
+}
+div#app .card a {
+  text-decoration: none;
+  padding: 8px;
+  color: white;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+div#app .card a img {
+  height: 100px;
+}
+div#app .card a small {
+  font-size: 10px;
+  padding: 4px;
+}
+div#app .hotpink {
+  background: black;
+}
+div#app .green {
+  background: black;
+}
+div#app .box {
+  width: 100px;
+  height: 100px;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+@media screen and (max-width: 3000px) {
+}
+
+
+@media screen and (max-width: 2000px) {
+}
+
+
+@media screen and (max-width: 1400px) {
+}
+
+
+@media screen and (max-width: 1200px) {
+div#app .search-wrapper input {
+padding: 10px;  margin-bottom: 20px;  font-size: 12px;
+}
+}
+
+
+@media screen and (max-width: 1000px) {
+}
+
+@media screen and (max-width: 900px) {
+div#app .card {
+border-radius:12px;
+  max-width: 124px;
+  min-width: 70px;
+  margin: 8px;
+  transition: 0.15s all ease-in-out;
+}
+}
+
+
+@media screen and (max-width: 620px) {
+div#app .card a {
+  text-decoration: none;
+  padding: 6px;
+  color: white;
+  font-size: 13px;
+}
+div#app .card {
+border-radius:10px;
+  max-width: 110px;
+  min-width: 60px;
+  margin: 7px;
+  transition: 0.15s all ease-in-out;
+}
+}
+
+@media screen and (max-width: 600px) {
+}
+
+@media screen and (max-width: 540px) {
+}
+
+@media screen and (max-width: 500px) {
+}
+
+@media screen and (max-width: 470px) {
+}
+
+@media screen and (max-width: 450px) {
+}
+
+@media screen and (max-width: 440px) {
+}
+
+@media screen and (max-width: 420px) {
+}
+
+@media screen and (max-width: 400px) {
+}
+
+@media screen and (max-width: 370px) {
+}
+
+@media screen and (max-width: 360px) {
+}
+
+@media screen and (max-width: 350px) {
+div#app .card a {
+  text-decoration: none;
+  padding: 5px;
+  color: white;
+  font-size: 12px;
+}
+div#app .card {
+border-radius:8px;
+  max-width: 110px;
+  min-width: 50px;
+  margin: 6px;
+  transition: 0.15s all ease-in-out;
+}
+div#app .card a img {
+  height: 50px;
+}
+}
+
+@media screen and (max-width: 340px) {
+}
+
+@media screen and (max-width: 320px) {
+}
+
+@media screen and (max-width: 300px) {
+div#app .search-wrapper input {
+padding: 10px;  margin-bottom: 20px;  margin-top: 10px;  font-size: 10px;
+}
+div#app .card a {
+  text-decoration: none;
+  padding: 5px;
+  color: white;
+  font-size: 12px;
+}
+div#app .card {
+border-radius:8px;
+  max-width: 110px;
+  min-width: 40px;
+  margin: 4px;
+  transition: 0.15s all ease-in-out;
+}
+}
+
+@media screen and (max-width: 270px) {
+}
+
+@media screen and (max-width: 250px) {
+}
+
+@media screen and (max-width: 230px) {
+}
+
+@media screen and (max-width: 210px) {
+div#app .card a {
+  text-decoration: none;
+  padding: 4px;
+  color: white;
+  font-size: 10px;
+}
+div#app .card {
+border-radius:7px;
+  max-width: 110px;
+  min-width: 40px;
+  margin: 4px;
+  transition: 0.15s all ease-in-out;
+}
+}
+
+@media screen and (max-width: 200px) {
+div#app .search-wrapper input {
+padding: 9px;  margin-bottom: 20px; margin-top: 15px;  font-size: 9px; 
+}
+}
+
+@media screen and (max-width: 180px) {
+div#app .card a {
+  text-decoration: none;
+  padding: 4px;
+  color: white;
+  font-size: 9px;
+}
+div#app .card {
+border-radius:6px;
+  max-width: 110px;
+  min-width: 40px;
+  margin: 4px;
+  transition: 0.15s all ease-in-out;
+}
+}
+
+@media screen and (max-width: 150px) {
+div#app .search-wrapper input {
+padding: 8px;  margin-bottom: 20px;  font-size: 8px; 
+}
+}
+
+@media screen and (max-width: 120px) {
+div#app .search-wrapper input {
+padding: 7px;  margin-bottom: 20px;  font-size: 7px;
+}
+}
+
+@media screen and (max-width: 100px) {
+div#app .search-wrapper input {
+padding: 6px;  margin-bottom: 20px;  font-size: 6px;
+}
+}
+
+@media screen and (max-width: 90px) {
+div#app .card a {
+  text-decoration: none;
+  padding: 4px;
+  color: white;
+  font-size: 6px;
+}
+div#app .card {
+border-radius:4px;
+  min-width: 10px;
+  margin: 4px;
+margin-left:15px;
+  transition: 0.15s all ease-in-out;
+}
+div#app .search-wrapper input {
+padding: 4px; margin-bottom: 20px; font-size: 5px;
+}
+}
+
+@media screen and (max-width: 80px) {
+}

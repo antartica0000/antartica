@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPTCHA</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000000; /* Black background */
+      color: #ffffff; /* White text */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    /* Top Heading */
+    .top-heading {
+      font-size: 35px;
+      color: #00ffff; /* Cyan color */
+      margin-bottom: 20px;
+      margin-top: 50px; /* Increased top margin */
+    }
+
+    .captcha-container {
+      background-color: #222222;
+      border-radius: 10px;
+      padding: 40px; /* Increased padding for larger margin */
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+      margin: 50px; /* Larger margin around the CAPTCHA */
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #00ffff; /* Cyan text */
+      margin-bottom: 20px;
+    }
+
+    p {
+      color: #888888;
+      margin-bottom: 30px;
+    }
+
+    .captcha-image {
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .captcha-input {
+      margin-bottom: 20px;
+      padding: 10px;
+      width: 100%;
+      font-size: 20px;
+      border: 1px solid #888888;
+      border-radius: 5px;
+      background-color: #333333;
+      color: #ffffff;
+    }
+
+    .captcha-button {
+      padding: 10px 20px;
+      background-color: #00ffff; /* Cyan button */
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      color: #000000;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+    }
+
+    .captcha-button:hover {
+      background-color: #00b3b3; /* Darker cyan on hover */
+    }
+
+    .error-message {
+      color: #ff0000;
+      margin-top: 10px;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* Access Denied page styling */
+    .access-denied {
+      font-size: 24px;
+      color: #ff0000;
+      text-align: center;
+      padding: 50px;
+    }
+
+    /* For users with JavaScript disabled */
+    .no-js {
+      display: none;
+    }
+
+    .no-js-message {
+      font-size: 18px;
+      color: #ffffff;
+      background-color: #333333;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+    }
+
+    .no-js p {
+      color: #00ffff;
+      font-size: 18px;
+    }
+
+    .privacy-notice {
+      font-size: 14px;
+      color: #888888;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+  </style>
+</head>
+<body>
+
+
+  <!-- Access Denied Page (hidden if captcha is valid) -->
+  <div id="access-denied" class="access-denied" style="display:none;">
+    <p>Access Denied. You have exceeded the allowed CAPTCHA attempts.</p>
+  </div>
+
+  <!-- CAPTCHA Container (hidden if captcha is invalid or if access denied) -->
+  <div id="captcha-container" class="captcha-container">
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <h1>CAPTCHA</h1>
+    <p>How many <span id="shape-name"></span> shapes are there? Multiply the answer by <span id="multiply-value"></span> and enter it below.</p>
+    <canvas id="captcha-canvas" class="captcha-image" width="500" height="400"></canvas>
+    <input type="text" id="captcha-input" class="captcha-input" placeholder="Enter the number of shapes * multiplier" />
+    <button class="captcha-button" id="verify-button" onclick="verifyCaptcha()">Verify</button>
+    
+    <!-- Privacy notice -->
+    <p class="privacy-notice">
+      * By default only strictly necessary cookies are used in this page
+    </p>
+    
+    <div class="error-message" id="error-message">Incorrect CAPTCHA. Please try again!</div>
+  </div>
+
+  <script>
+    // Helper function to get cookies
+    function getCookie(name) {
+      const cookieArr = document.cookie.split(';');
+      for (let i = 0; i < cookieArr.length; i++) {
+        const cookie = cookieArr[i].trim();
+        if (cookie.startsWith(name + "=")) {
+          return cookie.substring(name.length + 1);
+        }
+      }
+      return "";
+    }
+
+    // Helper function to set cookies
+    function setCookie(name, value, days) {
+      const expires = new Date();
+      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = name + "=" + value + "; expires=" + expires.toUTCString() + "; path=/";
+    }
+
+    // Check if captcha cookies exist and manage logic accordingly
+    function checkCookies() {
+      const captchaCount = parseInt(getCookie("captchacount")) || 0;
+      const captchaCookie = getCookie("captcha");
+
+      if (captchaCookie === "2") {
+        document.getElementById("access-denied").style.display = "block";
+        document.getElementById("captcha-container").style.display = "none";
+      } else if (captchaCookie === "1") {
+        window.location.href = "../";
+      } else if (!captchaCookie) {
+        setCookie("captcha", "0", 30); // Set captcha cookie to 0 if not found
+      }
+
+      // If captcha count exceeds 8, set the cookie to 2 and show access denied
+      if (captchaCount >= 8) {
+        setCookie("captcha", "2", 30);
+        setCookie("captchacount", "0", 30); // Reset captcha count
+        document.getElementById("access-denied").style.display = "block";
+        document.getElementById("captcha-container").style.display = "none";
+      }
+    }
+
+    // Increment captcha attempts
+    function incrementCaptchaAttempt() {
+      let attempts = parseInt(getCookie("captchacount")) || 0;
+      attempts++;
+      
+      if (attempts >= 8) {
+        setCookie("captchacount", attempts, 30); // Update the count in cookie
+        setCookie("captcha", "2", 30); // Lock out if attempts reach 8
+        document.getElementById("access-denied").style.display = "block"; // Show access denied
+        document.getElementById("captcha-container").style.display = "none"; // Hide the CAPTCHA form
+        return; // Prevent further code execution
+      }
+      
+      setCookie("captchacount", attempts, 30);
+    }
+
+    // Reset captcha attempt count
+    function resetCaptchaAttempt() {
+      setCookie("captchacount", "0", 30);
+    }
+
+    // Function to generate random shapes and populate the canvas
+    function generateShapes() {
+      const canvas = document.getElementById('captcha-canvas');
+      const ctx = canvas.getContext('2d');
+      const shapeTypes = ['circle', 'square', 'triangle'];
+      const numShapes = Math.floor(Math.random() * 6) + 6;
+      const allShapes = [];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < numShapes; i++) {
+        const shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const size = Math.random() * 40 + 20;
+        allShapes.push({ shape, x, y, size });
+        ctx.fillStyle = getRandomColor();
+        ctx.strokeStyle = 'pink';
+        ctx.lineWidth = 2;
+        
+        if (shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else if (shape === 'square') {
+          ctx.fillRect(x - size / 2, y - size / 2, size, size);
+          ctx.strokeRect(x - size / 2, y - size / 2, size, size);
+        } else if (shape === 'triangle') {
+          ctx.beginPath();
+          ctx.moveTo(x, y - size / 2);
+          ctx.lineTo(x + size / 2, y + size / 2);
+          ctx.lineTo(x - size / 2, y + size / 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+      
+      // Random shape to count
+      const correctShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+      const shapeCount = allShapes.filter(s => s.shape === correctShape).length;
+
+      // Set multiplier (random number between 2 and 10) and display question
+      const multiplier = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
+      document.getElementById('shape-name').textContent = correctShape;
+      document.getElementById('multiply-value').textContent = multiplier;
+      document.getElementById('verify-button').onclick = function() {
+        verifyCaptcha(correctShape, shapeCount, multiplier);
+      };
+    }
+
+    // Function to handle CAPTCHA verification
+    function verifyCaptcha(correctShape, shapeCount, multiplier) {
+      const inputText = document.getElementById('captcha-input').value.trim();
+      const errorMessage = document.getElementById('error-message');
+      const correctAnswer = shapeCount * multiplier;
+      
+      if (parseInt(inputText) === correctAnswer) {
+        resetCaptchaAttempt();
+        setCookie("captcha", "1", 30); // Set captcha to 1 (verified)
+        window.location.href = "../";
+      } else {
+        incrementCaptchaAttempt();
+        errorMessage.style.display = "block";
+        setTimeout(() => {
+          errorMessage.style.display = "none";
+          generateShapes(); // Regenerate shapes on incorrect answer
+        }, 3000);
+      }
+    }
+
+    // Generate random color for shapes
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Load page and check cookies
+    window.onload = function() {
+      checkCookies(); // Check the cookie logic
+      if (getCookie("captcha") === "0") {
+        generateShapes(); // Start CAPTCHA if it's set to 0
+      }
+    };
+  </script>
+
+</body>
+</html>

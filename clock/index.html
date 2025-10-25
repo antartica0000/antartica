@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .time-display {
+            font-size: 6rem;
+            font-weight: 500;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        .analog-clock {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border: 5px solid cyan;
+            border-radius: 50%;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .hand {
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            background-color: cyan;
+            top: 50%;
+            transform-origin: 100%;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        #hour {
+            height: 8px;
+            background-color: yellow;
+        }
+
+        #minute {
+            height: 5px;
+            background-color: cyan;
+        }
+
+        #second {
+            height: 2px;
+            background-color: red;
+        }
+
+        @media screen and (max-width: 768px) {
+            .time-display {
+                font-size: 5rem;
+            }
+
+            .analog-clock {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Digital Time Display -->
+        <div class="time-display" id="digital-time"></div>
+
+        <!-- Analog Clock (Optional) -->
+        <div class="analog-clock">
+            <div id="hour" class="hand"></div>
+            <div id="minute" class="hand"></div>
+            <div id="second" class="hand"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const time = new Date();
+            const digitalTime = time.toLocaleTimeString();
+            document.getElementById('digital-time').textContent = digitalTime;
+
+            // Analog Clock
+            const seconds = time.getSeconds();
+            const minutes = time.getMinutes();
+            const hours = time.getHours();
+
+            document.getElementById('second').style.transform = `rotate(${seconds * 6}deg)`;
+            document.getElementById('minute').style.transform = `rotate(${minutes * 6 + seconds / 10}deg)`;
+            document.getElementById('hour').style.transform = `rotate(${(hours % 12) * 30 + minutes / 2}deg)`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();  // Initial Call
+    </script>
+</body>
+</html>
+
