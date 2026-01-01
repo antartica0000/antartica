@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="https://unpkg.com/jsqr/dist/jsQR.js"></script> <!-- jsQR for scanning QR from images -->
     <!-- external css starts --> 
-	<link rel="stylesheet" href="css/index.css"> 
-	<link rel="stylesheet" href="css/style.css"> 
+	<link rel="stylesheet" href="../css/index.css"> 
+	<link rel="stylesheet" href="../css/style.css"> 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
 <!-- external css ends --> 
     <style>
@@ -465,9 +465,9 @@ console.info("Your cookie preferences have been saved. To change your preference
 function setCookie(cname,cvalue,exdays) {  const d = new Date();  d.setTime(d.getTime() + (exdays*60*60*60*50*300));  let expires = "expires=" + d.toUTCString();  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"; }
 function getCookie(cname) {  let name = cname + "=";  let decodedCookie = decodeURIComponent(document.cookie);  let ca = decodedCookie.split(';');  for(let i = 0; i < ca.length; i++) {    let c = ca[i];    while (c.charAt(0) == ' ') {      c = c.substring(1);    }    if (c.indexOf(name) == 0) {      return c.substring(name.length, c.length);    }  }  return ""; }
 </script>
-<script src="script/index.js"></script>
-<script src="script/url.js"></script>
-<script src="script/transit.js"></script>
+<script src="../script/index.js"></script>
+<script src="../script/url.js"></script>
+<script src="../script/transit.js"></script>
 <!-- EXTERNAL SCRIPTS CONTAINER ENDS -->
 <!-- THIS SECTION CONTAINS EXTERNAL SCRIPTS -->
 <!-- script starts -->
