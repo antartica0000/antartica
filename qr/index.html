@@ -217,32 +217,6 @@
 
 	
     <div class="container">
-		<!-- COOKIE CONSENT SECTION STARTS -->
-<!-- id="cookieconsent" start-->
-<div class="content" id="cookieconsenta" style="cursor: default;">
-	<h2 title="Cookies on Antartica.Org">Cookies on Antartica.Org</h2>
-	<p title="This website uses cookies. Essential and functional cookies are necessary for the proper functioning of the website and cannot be refused. Other cookies are used for statistical purposes (analytical cookies) and these cookies are only placed if you choose to do so.">This website uses cookies. Essential and functional cookies are necessary for the proper functioning of the website and cannot be refused. Other cookies are used for statistical purposes (analytical cookies) and these cookies are only placed if you choose to do so. Find out more on <a href="cookies" title="how we use cookie">how we use cookies.</a></p>
-<div id="cookieconsentbutton">
-<br>
-	<button class="button cookieconsentbutton" onclick="cookieconsenttype1Function()" title="Accept optional cookies">Accept optional cookies</button><br><br>
-	<button class="button cookieconsentbutton" onclick="cookieconsenttype2Function()" title="Refuse optional cookies">Refuse optional cookies</button>
-<br><br>
-</div>
-<div id="testcookiebb">
-<p id="testcookieab" title="Current cookie consent status: (default) Only essential cookies are enabled (4)"></p>
-<b><p id="testcookie" title="[ Some parts of this page may not work because cookies are disabled. ]"></p></b>
-</div>
-</div>
-<!-- id="cookieconsent" ends-->
-
-<!-- id="cookieconsent2" start-->
-<div class="content" id="cookieconsentb" style="cursor: default;">
-	<p title="Your cookie preferences have been saved. To change your preferences at any time, see our or visit the link in the page footer.">Your cookie preferences have been saved. To change your preferences at any time, see our <a href="cookies" title="cookie policy">cookie policy</a> or visit the link in the page footer.</p>
-	<button class="button cookieconsentbutton" onclick="bbcookieconsenttype1Function()" title="Close">Close</button>
-<br><br>
-</div>
-<!-- id="cookieconsent2" ends-->
-<!-- COOKIE CONSENT SECTION ENDS -->
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         <h1>QR Code App</h1>
         
@@ -385,43 +359,7 @@
 <!-- EXTERNAL SCRIPTS CONTAINER STARTS -->
 <script src='../script/scripta1.js'></script>
 <script  src="../script/script.js"></script>
-<script src="../script/cookieconsent.js"></script>
 <script>
-let cookieconsent = getCookie("cookieconsent");
-if (cookieconsent == "1") {
-let ae = getCookie("ae");
-	if (ae == "1") {
-	document.getElementById("cookieconsentb").style.display = 'none';
-	}
-	else {
-	document.getElementById("cookieconsentb").style.display = 'block';
-	}
-
-console.info("Privacy Info - Cookie Consent: Optional cookies accepted (1)");
-document.getElementById("currentcookieconsentstatus").innerHTML = "Optional cookies accepted (1)"; 
-}
-
-else if (cookieconsent == "2") {
-let ae = getCookie("ae");
-	if (ae == "1") {
-	document.getElementById("cookieconsentb").style.display = 'none';
-	}
-	else {
-	document.getElementById("cookieconsentb").style.display = 'block';
-	}
-
-console.info("Privacy Info - Cookie Consent: Optional cookies refused (2)"); 
-document.getElementById("currentcookieconsentstatus").innerHTML = "Optional cookies refused (2)"; 
-}
-
-else {
-document.getElementById("cookieconsenta").style.display = 'block';
-setCookie("cookieconsent", "0", 30);
-setCookie("ae", "0", 30);
-console.info("Privacy Info - Cookie Consent: (default) Only essential cookies are enabled (3)"); 
-document.getElementById("currentcookieconsentstatus").innerHTML = "(default) Only essential cookies are enabled (3)"; 
-}
-
 
 setCookie("testcookie", "1", 30);
 var testa = document.getElementById("testcookiebb");
