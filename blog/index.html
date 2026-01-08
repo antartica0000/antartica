@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog</title>
+
+<style>
+/* THEME VARIABLES */
+:root {
+  --bg: #0f1117;
+  --bg-alt: #151924;
+  --nav-bg: #0b0d12;
+  --border: #1f2330;
+  --text: #e6e6e6;
+  --muted: #cfd3ff;
+  --accent: #7aa2ff;
+}
+
+[data-theme="light"] {
+  --bg: #f6f7fb;
+  --bg-alt: #ffffff;
+  --nav-bg: #ffffff;
+  --border: #dcdfea;
+  --text: #1a1a1a;
+  --muted: #4b5563;
+  --accent: #2563eb;
+}
+
+/* RESET */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* prevent horizontal scroll */
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* TOP NAV */
+.topnav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 100;
+}
+
+.logo { font-weight: 700; font-size: 1.2rem; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-links a {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+/* HAMBURGER MENU SMALL SCREEN FULL-SCREEN OVERLAY */
+.hamburger-wrapper { display: none; position: relative; }
+
+.hamburger-menu {
+  display: none;
+  position: fixed;
+  top: 60px; /* below topnav */
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 60px);
+  background: var(--bg-alt);
+  flex-direction: column;
+  z-index: 99;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+
+.hamburger-menu a,
+.hamburger-menu button {
+  padding: 1rem;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.hamburger-menu button:last-child,
+.hamburger-menu a:last-child { border-bottom: none; }
+
+/* HAMBURGER MENU FONT ADJUSTMENTS */
+@media (max-width: 400px) {
+  .hamburger-menu a,
+  .hamburger-menu button {
+    font-size: 1rem; /* smaller than default 1.1rem */
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 200px) {
+  .hamburger-menu a,
+  .hamburger-menu button {
+    font-size: 0.8rem; /* ultra-small screens */
+    padding: 0.6rem;
+  }
+}
+
+/* MAIN CONTAINER */
+.container {
+  flex: 1;
+  width: 100%;
+  max-width: 80vw;
+  margin: auto;
+  padding: 1.5rem;
+}
+
+/* HEADER */
+.blog-header { text-align: center; margin-bottom: 2rem; }
+.blog-header h1 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
+.blog-header p { font-size: clamp(0.8rem, 2.5vw, 1rem); color: var(--muted); }
+
+/* BLOG GRID */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  word-wrap: break-word;
+  justify-items: center; /* center items horizontally */
+}
+
+/* BLOG CARD */
+.blog-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.blog-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.blog-content { padding: 1rem; }
+.blog-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.4rem; }
+.blog-date { font-size: 0.75rem; color: var(--accent); margin-bottom: 0.5rem; }
+.blog-excerpt { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.5rem; }
+.read-more { font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+
+/* FOOTER */
+footer {
+  background: var(--nav-bg);
+  border-top: 1px solid var(--border);
+  padding: 1rem;
+}
+
+.footer-content {
+  max-width: 80vw;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+/* SMALL SCREENS */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger-wrapper { display: block; }
+}
+
+/* TINY SCREENS (<400px) */
+@media (max-width: 400px) {
+  .blog-grid {
+    grid-template-columns: 1fr; /* single column */
+    gap: 1rem;
+  }
+
+  .blog-card {
+    width: 95%; /* almost full screen */
+    max-width: 95%;
+  }
+
+  .container {
+    padding: 1rem;
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="topnav">
+  <div class="logo">ANTARTICA</div>
+
+  <!-- LARGE SCREEN NAV + THEME -->
+  <div class="nav-links" id="navLinks">
+    <a href="../">Home</a>
+    <a href="#">Blog</a>
+    <a href="#">Contact</a>
+    <button class="icon-btn" id="themeToggle">🌙</button>
+  </div>
+
+  <!-- HAMBURGER MENU SMALL SCREEN -->
+  <div class="hamburger-wrapper">
+    <button class="icon-btn" id="hamburger">&#9776;</button>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <a href="#">Home</a>
+      <a href="#">Blog</a>
+      <a href="#">Contact</a>
+      <button id="themeToggleMenu">🌙</button>
+    </div>
+  </div>
+</nav>
+
+<main class="container" id="mainContent">
+  <header class="blog-header">
+    <h1>Blog</h1>
+    <p>Thoughts, tutorials, and updates</p>
+  </header>
+
+  <section class="blog-grid" id="posts"></section>
+</main>
+
+<footer id="footer">
+  <div class="footer-content">
+    <div>
+      <a href="#">Home</a> · <a href="#">Contact</a>
+    </div>
+    <div>© <span id="year"></span> Antartica.Org</div>
+  </div>
+</footer>
+
+<script>
+/* YEAR */
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* BLOG POSTS */
+const blogPosts = [
+  {title: "Dark UI Design", date:"Jan 2026", content:"Learn how to design beautiful dark user interfaces that are easy on the eyes."},
+  {title: "Responsive Layouts", date:"Jan 2026", content:"Creating web layouts that adapt seamlessly to all device sizes."},
+  {title: "Minimal Web Design", date:"Dec 2025", content:"Why minimalism improves user experience and readability."},
+  {title: "Mobile-First UI", date:"Dec 2025", content:"Designing for mobile devices first ensures better usability."},
+  {title: "CSS Clamp Tips", date:"Dec 2025", content:"Using clamp() to create fluid typography that scales."},
+  {title: "Grid vs Flexbox", date:"Nov 2025", content:"Choosing the right layout technique for your web projects."},
+  {title: "Performance Optimization", date:"Nov 2025", content:"Tips to make your website fast on all devices."},
+  {title: "Accessibility Design", date:"Nov 2025", content:"Making your website usable for everyone, including disabled users."},
+  {title: "Typography Best Practices", date:"Oct 2025", content:"Selecting fonts and sizes for readability and style."},
+  {title: "Design Systems", date:"Oct 2025", content:"How to maintain consistency across large projects using design systems."}
+];
+
+const postsContainer = document.getElementById("posts");
+postsContainer.innerHTML = blogPosts.map((post,i)=>`
+  <article class="blog-card">
+    <img src="https://picsum.photos/600/400?${i+1}" alt="${post.title}">
+    <div class="blog-content">
+      <span class="blog-date">${post.date}</span>
+      <h3 class="blog-title">${post.title}</h3>
+      <p class="blog-excerpt">${post.content}</p>
+      <a href="#" class="read-more">Read more →</a>
+    </div>
+  </article>
+`).join("");
+
+
+/* THEME TOGGLE */
+const root = document.documentElement;
+const themeToggle = document.getElementById("themeToggle");
+const themeToggleMenu = document.getElementById("themeToggleMenu");
+
+// Default dark theme
+root.setAttribute("data-theme","dark");
+
+function toggleTheme() {
+  const isLight = root.getAttribute("data-theme") === "light";
+  root.setAttribute("data-theme", isLight ? "dark" : "light");
+  themeToggle.textContent = isLight ? "🌙" : "🌞";
+  themeToggleMenu.textContent = isLight ? "🌙" : "🌞";
+}
+
+themeToggle.onclick = toggleTheme;
+themeToggleMenu.onclick = toggleTheme;
+
+
+/* HAMBURGER MENU TOGGLE FULLSCREEN HIDE CONTENT */
+const hamburger = document.getElementById("hamburger");
+const hamburgerMenu = document.getElementById("hamburgerMenu");
+const mainContent = document.getElementById("mainContent");
+const footer = document.getElementById("footer");
+
+hamburger.onclick = () => {
+  if(hamburgerMenu.style.display === "flex") {
+    hamburgerMenu.style.display = "none";
+    mainContent.style.display = "block";
+    footer.style.display = "block";
+  } else {
+    hamburgerMenu.style.display = "flex";
+    hamburgerMenu.style.flexDirection = "column";
+    mainContent.style.display = "none";
+    footer.style.display = "none";
+  }
+};
+</script>
+
+</body>
+</html>
