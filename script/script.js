@@ -8,6 +8,14 @@
 
 // major change done to the layout of the code
 
+
+// CODE HISTROY
+// CODE HISTROY IS RECORDED SINCE 2026
+
+//  8-1-26 NEW ELEMENTS ADDED TO THE CODE
+
+// Code histroy part ends
+
 (function() {
   var Post, app;
 
@@ -58,6 +66,7 @@
 
 // SCRIPT ENDS
 // Copyright © Antartica Org. All rights reserved. - United States
+
 
 
 
