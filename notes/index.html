@@ -1,47 +1,407 @@
-<!-- Copyright © Antartica Org. All rights reserved. - United States -->
-<!-- Page Starts -->
-<!-- Language (en-US) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dark Workspace Editor + PDF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!DOCTYPE html> 
-<html dir="ltr" lang="en-US">
-<head> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.min.js"></script>
 
-<!-- meta tags starts -->
-	<title>Notes</title>
-	<meta charset="utf-8" /> 
-	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1, viewport-fit=cover" /> 
-	<meta property="og:site_name" content="Notes" /> 
-	<meta name="apple-mobile-web-app-title" content="Notes" /> <meta name="apple-mobile-web-app-status-bar-style" content="black" /> 
-	<meta name="theme-color" content="#000000" />
-	<link rel="icon" type="image/x-icon" href="../images/antartica.png">
-	<meta name="description" content="Notes"/> <meta name="keywords" content="Notes">
-<!-- meta tags ends -->
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.8.162/pdf.worker.min.js";
+</script>
 
-<!-- external css starts --> 
-	<link rel="stylesheet" href="../css/index.css"> 
-<!-- external css ends --> 
+<style>
+:root{
+  --bg:#0f1115;
+  --panel:#161a22;
+  --border:#2a2f3a;
+  --hover:#1e2430;
+  --text:#e6e6e6;
+  --accent:#3b82f6;
+}
+
+body{
+  margin:0;
+  font-family:Inter,Segoe UI,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ===== TOP BAR ===== */
+.topnav{
+  height:32px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:0 12px;
+  border-bottom:1px solid var(--border);
+}
+.topnav button{
+  background:none;
+  border:none;
+  color:var(--text);
+  cursor:pointer;
+  font-size:14px;
+}
+.topnav button:hover{ opacity:.8 }
+
+/* ===== TABS ===== */
+.tabs{
+  height:28px;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.tab{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:4px 10px;
+  cursor:pointer;
+  border-right:1px solid var(--border);
+  font-size:13px;
+  background:var(--panel);
+  user-select:none;
+}
+.tab.active{ background:var(--hover); }
+.tab.dragging{ opacity:.4 }
+
+.close{ font-size:11px; opacity:.6; }
+.close:hover{ opacity:1 }
+
+.newtab{
+  padding:4px 10px;
+  cursor:pointer;
+  background:var(--panel);
+}
+
+/* ===== WORKSPACE ===== */
+.workspace{
+  height:calc(100vh - 60px);
+  overflow:auto;
+}
+
+/* ===== EDITOR ===== */
+.editor{ padding:20px }
+.page{
+  width:210mm;
+  min-height:297mm;
+  margin:auto;
+  padding:20mm;
+  outline:none;
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+/* ===== PDF ===== */
+.pdf-controls{
+  position:sticky;
+  top:0;
+  display:flex;
+  justify-content:space-between;
+  padding:6px 10px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+}
+.pdf-controls button{
+  background:none;
+  border:none;
+  color:var(--text);
+  cursor:pointer;
+}
+canvas{
+  display:block;
+  margin:16px auto;
+  background:#000;
+}
+
+/* ===== CALCULATOR ===== */
+.calculator{
+  max-width:360px;
+  margin:40px auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+}
+.calc-display{
+  width:100%;
+  height:48px;
+  background:#0b0e13;
+  color:var(--text);
+  border:none;
+  padding:10px;
+  font-size:18px;
+  margin-bottom:10px;
+}
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.calc-grid button{
+  height:42px;
+  background:#0b0e13;
+  color:var(--text);
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-size:14px;
+}
+.calc-grid button:hover{ background:var(--hover) }
+.calc-op{ color:var(--accent) }
+.calc-wide{ grid-column:span 2 }
+</style>
 </head>
 
 <body>
-<div class="fixed-con">
 
-<div id="main"> <!-- id="main" start-->
-
-<!-- topnav starts -->
-<div class="topnav" id="myTopnav">
-	<a href="javascript:void(0);" id="title" title="Notes"  contentEditable="true">Notes</a>
+<div class="topnav">
+  <button onclick="openTXT()" title="Open TXT"><i class="fa-solid fa-folder-open"></i></button>
+  <button onclick="saveActiveTXT()" title="Save TXT"><i class="fa-solid fa-floppy-disk"></i></button>
+  <button onclick="openPDF()" title="Open PDF"><i class="fa-solid fa-file-pdf"></i></button>
+  <button onclick="openCalculator()" title="Calculator"><i class="fa-solid fa-calculator"></i></button>
+  <button onclick="printActive()" title="Print"><i class="fa-solid fa-print"></i></button>
 </div>
-<!-- topnav ends -->
 
-<!-- content starts -->
-<div class="content" id="content">
-<h1 contentEditable="true">Title</h1>
-<p contentEditable="true">Content<br>By: antartica.org</p>
+<div class="tabs" id="tabs">
+  <div class="newtab" onclick="createEditorTab()">
+    <i class="fa-solid fa-plus"></i>
+  </div>
 </div>
-<!-- content ends -->
 
-<!-- id="main" end -->
-</body> </html>
+<div class="workspace" id="workspace"></div>
 
-<!-- Page Ends -->
-<!-- Copyright © Antartica Org. All rights reserved. - United States -->
+<script>
+let tabs=[], active=null, dragTabId=null;
+
+/* ===== TAB CREATION ===== */
+function createEditorTab(title="Untitled",content=""){
+  const t={id:crypto.randomUUID(),mode:"editor",title,text:content};
+  tabs.push(t); setActive(t.id); persist();
+}
+function createPDFTab(pdf,name){
+  const t={id:crypto.randomUUID(),mode:"pdf",title:name,pdf,scale:1};
+  tabs.push(t); setActive(t.id); persist();
+}
+function createCalculatorTab(){
+  const t={id:crypto.randomUUID(),mode:"calc",title:"Calculator",expr:""};
+  tabs.push(t); setActive(t.id); persist();
+}
+
+/* ===== RENDER ===== */
+function setActive(id){ active=id; renderTabs(); renderWorkspace(); }
+
+function renderTabs(){
+  const bar=document.getElementById("tabs");
+  bar.querySelectorAll(".tab").forEach(e=>e.remove());
+
+  tabs.forEach(t=>{
+    const el=document.createElement("div");
+    el.className="tab"+(t.id===active?" active":"");
+    el.draggable=true;
+
+    el.innerHTML=`<span>${t.title}</span><i class="fa-solid fa-xmark close"></i>`;
+    el.onclick=()=>setActive(t.id);
+
+    el.ondblclick=()=>{
+      el.innerHTML=`<input value="${t.title}" style="background:none;color:#fff;border:none;width:90px">`;
+      const i=el.firstChild;
+      i.focus();
+      i.onblur=()=>{t.title=i.value||"Untitled"; renderTabs(); persist();}
+      i.onkeydown=e=>e.key==="Enter"&&i.blur();
+    };
+
+    el.querySelector(".close").onclick=e=>{
+      e.stopPropagation();
+      tabs=tabs.filter(x=>x.id!==t.id);
+      active=tabs[0]?.id||null;
+      renderTabs(); renderWorkspace(); persist();
+    };
+
+    el.ondragstart=()=>{ dragTabId=t.id; el.classList.add("dragging"); };
+    el.ondragend=()=>{ dragTabId=null; el.classList.remove("dragging"); persist(); };
+    el.ondragover=e=>{
+      e.preventDefault();
+      const from=tabs.findIndex(x=>x.id===dragTabId);
+      const to=tabs.findIndex(x=>x.id===t.id);
+      if(from!==to){
+        const m=tabs.splice(from,1)[0];
+        tabs.splice(to,0,m);
+        renderTabs();
+      }
+    };
+
+    bar.insertBefore(el,bar.querySelector(".newtab"));
+  });
+}
+
+function renderWorkspace(){
+  const w=document.getElementById("workspace");
+  w.innerHTML="";
+  const t=tabs.find(x=>x.id===active);
+  if(!t) return;
+
+  if(t.mode==="editor") w.appendChild(renderEditor(t));
+  if(t.mode==="pdf") w.appendChild(renderPDFView(t));
+  if(t.mode==="calc") w.appendChild(renderCalculator(t));
+}
+
+/* ===== EDITOR ===== */
+function renderEditor(t){
+  const p=document.createElement("div");
+  p.className="editor";
+  const page=document.createElement("div");
+  page.className="page";
+  page.contentEditable=true;
+  page.innerHTML=t.text;
+  page.oninput=()=>{t.text=page.innerHTML; persist();}
+  p.appendChild(page);
+  return p;
+}
+
+/* ===== CALCULATOR ===== */
+function renderCalculator(t){
+  const c=document.createElement("div");
+  c.className="calculator";
+  c.innerHTML=`
+    <input class="calc-display" value="${t.expr}" readonly>
+    <div class="calc-grid">
+      <button onclick="calc('sin(')">sin</button>
+      <button onclick="calc('cos(')">cos</button>
+      <button onclick="calc('tan(')">tan</button>
+      <button onclick="calc('√(')">√</button>
+
+      <button onclick="calc('7')">7</button>
+      <button onclick="calc('8')">8</button>
+      <button onclick="calc('9')">9</button>
+      <button class="calc-op" onclick="calc('/')">÷</button>
+
+      <button onclick="calc('4')">4</button>
+      <button onclick="calc('5')">5</button>
+      <button onclick="calc('6')">6</button>
+      <button class="calc-op" onclick="calc('*')">×</button>
+
+      <button onclick="calc('1')">1</button>
+      <button onclick="calc('2')">2</button>
+      <button onclick="calc('3')">3</button>
+      <button class="calc-op" onclick="calc('-')">−</button>
+
+      <button onclick="calc('0')">0</button>
+      <button onclick="calc('.')">.</button>
+      <button onclick="calc('^')">^</button>
+      <button class="calc-op" onclick="calc('+')">+</button>
+
+      <button class="calc-wide" onclick="calcClear()">C</button>
+      <button class="calc-wide calc-op" onclick="calcEval()">=</button>
+    </div>
+  `;
+  return c;
+}
+
+function calc(v){
+  const t=tabs.find(x=>x.id===active);
+  t.expr+=v; renderWorkspace(); persist();
+}
+function calcClear(){
+  const t=tabs.find(x=>x.id===active);
+  t.expr=""; renderWorkspace(); persist();
+}
+function calcEval(){
+  const t=tabs.find(x=>x.id===active);
+  try{
+    t.expr=String(Function("return "+t.expr.replace("√","Math.sqrt"))());
+  }catch{ t.expr="Error"; }
+  renderWorkspace(); persist();
+}
+
+/* ===== PDF ===== */
+function renderPDFView(t){
+  const p=document.createElement("div");
+  p.innerHTML=`
+    <div class="pdf-controls">
+      <span>${Math.round(t.scale*100)}%</span>
+      <div>
+        <button onclick="zoom('${t.id}',0.1)">+</button>
+        <button onclick="zoom('${t.id}',-0.1)">−</button>
+      </div>
+    </div>
+    <div id="pdf-${t.id}"></div>
+  `;
+  setTimeout(()=>drawPDF(t),0);
+  return p;
+}
+
+async function drawPDF(t){
+  const c=document.getElementById(`pdf-${t.id}`);
+  if(!c) return;
+  c.innerHTML="";
+  for(let i=1;i<=t.pdf.numPages;i++){
+    const page=await t.pdf.getPage(i);
+    const v=page.getViewport({scale:t.scale});
+    const canvas=document.createElement("canvas");
+    canvas.width=v.width;
+    canvas.height=v.height;
+    c.appendChild(canvas);
+    await page.render({canvasContext:canvas.getContext("2d"),viewport:v}).promise;
+  }
+}
+
+function zoom(id,d){
+  const t=tabs.find(x=>x.id===id);
+  t.scale=Math.max(0.5,t.scale+d);
+  drawPDF(t);
+}
+
+/* ===== FILE OPS ===== */
+function openTXT(){
+  const i=document.createElement("input");
+  i.type="file"; i.accept=".txt";
+  i.onchange=()=>{
+    const r=new FileReader();
+    r.onload=()=>createEditorTab(i.files[0].name,r.result);
+    r.readAsText(i.files[0]);
+  };
+  i.click();
+}
+function saveActiveTXT(){
+  const t=tabs.find(x=>x.id===active);
+  if(!t||t.mode!=="editor")return;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([t.text],{type:"text/plain"}));
+  a.download=t.title+".txt";
+  a.click();
+}
+function printActive(){
+  const t=tabs.find(x=>x.id===active);
+  if(!t||t.mode!=="editor")return;
+  const w=window.open("");
+  w.document.write(`<div>${t.text}</div>`);
+  w.print(); w.close();
+}
+function openPDF(){
+  const i=document.createElement("input");
+  i.type="file"; i.accept="application/pdf";
+  i.onchange=async()=>{
+    const pdf=await pdfjsLib.getDocument({data:await i.files[0].arrayBuffer()}).promise;
+    createPDFTab(pdf,i.files[0].name);
+  };
+  i.click();
+}
+function openCalculator(){ createCalculatorTab(); }
+
+/* ===== AUTOSAVE ===== */
+function persist(){ localStorage.setItem("darkWorkspace",JSON.stringify(tabs)); }
+const saved=localStorage.getItem("darkWorkspace");
+if(saved){ tabs=JSON.parse(saved); active=tabs[0]?.id||null; }
+else createEditorTab();
+
+renderTabs(); renderWorkspace();
+</script>
+
+</body>
+</html>
