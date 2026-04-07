@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Antarctica Doc</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Syne:wght@700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Nunito:wght@400;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Raleway:wght@300;400;500;600&family=Josefin+Sans:wght@300;400;600&family=Space+Grotesk:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #16161d;
+  --surface: #1f1f2a;
+  --toolbar-bg: #1f1f2a;
+  --border: #2e2e40;
+  --accent: #5b7bf5;
+  --accent-light: #1a2160;
+  --accent-hover: #4a6ae8;
+  --text-primary: #e4e4f0;
+  --text-secondary: #8888a8;
+  --text-muted: #55556a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-page: 0 2px 8px rgba(0,0,0,0.5), 0 12px 40px rgba(0,0,0,0.4);
+  --paper: #ffffff;
+  --paper-muted: #f5f5f5;
+  --radius: 6px;
+  --radius-sm: 4px;
+  --font-ui: 'DM Sans', sans-serif;
+  --font-doc: 'Lora', Georgia, serif;
+  --toolbar-h: 48px;
+  --menubar-h: 40px;
+  --page-w: 794px; /* A4 portrait width at 96 dpi */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ── Header ── */
+#header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+#titlebar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px 4px;
+  height: 44px;
+}
+
+.app-logo {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: -0.8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+@media (max-width: 480px) {
+  .app-logo { font-size: 14px; }
+}
+.logo-word-antarctica {
+  background: linear-gradient(120deg, #b8ccff 0%, #8eb4ff 40%, #d0e0ff 70%, #a8c4ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+#doc-title {
+  flex: 1;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  border: none; outline: none;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  min-width: 0;
+  cursor: text;
+  transition: background 0.15s;
+}
+#doc-title:hover { background: var(--bg); }
+#doc-title:focus { background: var(--accent-light); }
+
+#header-actions {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+
+.save-status {
+  font-size: 11px; color: var(--text-muted);
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+}
+.save-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #4caf50;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.btn-header {
+  height: 30px; padding: 0 12px;
+  border: none; border-radius: var(--radius-sm);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-share {
+  background: var(--accent); color: #fff;
+}
+.btn-share:hover { background: var(--accent-hover); }
+.btn-icon {
+  width: 30px; height: 30px; padding: 0;
+  background: transparent; color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.btn-icon:hover { background: var(--bg); }
+
+/* ── Menu bar ── */
+#menubar {
+  display: flex; align-items: center;
+  padding: 0 8px;
+  height: var(--menubar-h);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+}
+#menubar::-webkit-scrollbar { display: none; }
+
+.menu-item {
+  position: relative;
+  padding: 0 8px;
+  height: 28px;
+  display: flex; align-items: center;
+  font-size: 12.5px; font-weight: 400;
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  transition: background 0.1s;
+}
+.menu-item:hover, .menu-item.open { background: var(--bg); }
+
+.dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  min-width: 180px;
+  z-index: 300;
+  display: none;
+  padding: 4px;
+  animation: fadeDown 0.1s ease;
+}
+.dropdown.show { display: block; }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+.dd-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px;
+  font-size: 13px; color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+}
+.dd-item:hover { background: var(--accent-light); color: var(--accent); }
+.dd-item .shortcut { font-size: 11px; color: var(--text-muted); margin-left: 24px; }
+.dd-sep { height: 1px; background: var(--border); margin: 4px 0; }
+.dd-item svg { width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0; }
+
+/* ── Toolbar ── */
+#toolbar {
+  display: flex; align-items: center; gap: 1px;
+  padding: 4px 8px;
+  height: var(--toolbar-h);
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+  background: var(--surface);
+}
+#toolbar::-webkit-scrollbar { display: none; }
+
+.tb-sep {
+  width: 1px; height: 22px; background: var(--border);
+  margin: 0 4px; flex-shrink: 0;
+}
+
+.tb-btn {
+  display: flex; align-items: center; justify-content: center;
+  height: 32px; min-width: 32px; padding: 0 6px;
+  border: none; background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer; transition: all 0.12s;
+  color: var(--text-secondary);
+  font-size: 13px; font-family: var(--font-ui);
+  white-space: nowrap; flex-shrink: 0;
+  position: relative;
+}
+.tb-btn:hover { background: var(--bg); color: var(--text-primary); }
+.tb-btn.active { background: var(--accent-light); color: var(--accent); }
+.tb-btn svg { width: 16px; height: 16px; pointer-events: none; }
+
+.tb-select {
+  height: 32px; padding: 0 6px;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-primary);
+  font-family: var(--font-ui); font-size: 13px;
+  cursor: pointer; outline: none;
+  transition: all 0.12s; flex-shrink: 0;
+  max-width: 140px;
+}
+.tb-select option { background: var(--surface); color: var(--text-primary); }
+.tb-select:hover { background: var(--bg); border-color: var(--border); }
+.tb-select:focus { background: var(--accent-light); border-color: var(--accent); }
+
+#font-size-input {
+  width: 42px; height: 32px;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: transparent; text-align: center;
+  font-family: var(--font-ui); font-size: 13px;
+  color: var(--text-primary); outline: none; cursor: text;
+  transition: all 0.12s;
+}
+#font-size-input:hover { background: var(--bg); border-color: var(--border); }
+#font-size-input:focus { background: var(--accent-light); border-color: var(--accent); }
+
+/* Color pickers */
+.color-wrap {
+  position: relative; display: flex; align-items: center;
+  flex-shrink: 0;
+}
+.color-swatch {
+  width: 20px; height: 3px;
+  border-radius: 2px;
+  pointer-events: none;
+  position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+}
+
+/* Tooltip */
+.tb-btn::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: #1a1a1a; color: #fff;
+  font-size: 11px; padding: 3px 7px; border-radius: 4px;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 0.15s;
+}
+.tb-btn:hover::after { opacity: 1; }
+
+/* ── Main content ── */
+#main {
+  position: fixed;
+  top: 132px; /* header height */
+  left: 0; right: 0; bottom: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  padding: 24px 16px 80px;
+  background: var(--bg);
+}
+
+/* Page — exact A4 at 96 dpi: 794 × 1123 px */
+#page {
+  width: var(--page-w);
+  max-width: 100%;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: var(--shadow-page);
+  border-radius: 2px;
+  min-height: 1123px; /* at least one A4 page tall */
+  padding: 72px 80px;
+  position: relative;
+  transition: box-shadow 0.2s, width 0.3s cubic-bezier(.4,0,.2,1), padding 0.3s;
+}
+#page:focus-within { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.09); }
+
+/* Landscape A4 — 1123 × 794 px */
+#page.landscape {
+  width: 1123px;
+  min-height: 794px;
+  padding: 56px 80px;
+}
+
+/* ── A4 sheet boundary ───────────────────────────────────────────────────
+   Infinite scroll: NO gap between pages.
+   A single solid rule marks each A4 sheet boundary.
+   A tiny page-number label hovers in the right margin outside the paper.
+   top / left / right are all set in updatePageBreaks().
+   ──────────────────────────────────────────────────────────────────────── */
+.page-break-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 32px;                       /* 16 px visual margin above + below   */
+  background: var(--bg);              /* matches the app chrome colour        */
+  border-top:    1.5px solid #6868a0;
+  border-bottom: 1.5px solid #6868a0;
+  pointer-events: none;
+  z-index: 5;
+  user-select: none;
+  overflow: visible;
+  box-shadow:
+    0 -3px 8px rgba(0,0,0,0.22),
+    0  3px 8px rgba(0,0,0,0.22);
+}
+/* Page-number label — vertically centred in the gap, right-aligned */
+.page-break-label {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-family: var(--font-ui);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8888a8;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+#editor {
+  min-height: 979px; /* A4 portrait content height: 1123 - 72*2 */
+  outline: none;
+  font-family: var(--font-doc);
+  font-size: 11pt;
+  line-height: 1.75;
+  color: #202020;
+  word-break: break-word;
+  caret-color: var(--accent);
+  position: relative; /* anchor for freely-positioned images */
+}
+
+#editor:empty::before {
+  content: 'Start writing…';
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Doc content styles */
+#editor h1 { font-size: 2em; line-height: 1.2; margin: 0.6em 0 0.3em; font-weight: 600; }
+#editor h2 { font-size: 1.5em; line-height: 1.3; margin: 0.5em 0 0.25em; font-weight: 600; }
+#editor h3 { font-size: 1.25em; line-height: 1.4; margin: 0.5em 0 0.2em; font-weight: 600; }
+#editor h4 { font-size: 1.1em; margin: 0.5em 0 0.2em; font-weight: 600; }
+#editor h5, #editor h6 { font-size: 1em; margin: 0.4em 0 0.2em; font-weight: 600; }
+#editor p { margin: 0 0 0.5em; }
+#editor ul, #editor ol { padding-left: 2em; margin: 0.5em 0; }
+#editor li { margin: 0.2em 0; }
+#editor blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1em 0; padding: 0.5em 1em;
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--accent-light);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+#editor a { color: var(--accent); text-decoration: underline; }
+#editor table {
+  border-collapse: collapse; width: 100%; margin: 1em 0;
+}
+#editor td, #editor th {
+  border: 1px solid var(--border);
+  padding: 8px 12px; text-align: left;
+}
+#editor th {
+  background: var(--paper-muted); font-weight: 600; font-family: var(--font-ui);
+}
+#editor code {
+  background: #f4f4f0; padding: 1px 5px; border-radius: 3px;
+  font-family: 'Fira Code', 'Courier New', monospace; font-size: 0.9em;
+}
+#editor pre {
+  background: #1e1e2e; color: #cdd6f4;
+  padding: 16px; border-radius: var(--radius); margin: 1em 0;
+  overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 13px;
+}
+#editor hr {
+  border: none; border-top: 2px solid var(--border); margin: 1.5em 0;
+}
+#editor img {
+  max-width: 100%; height: auto; border-radius: var(--radius-sm);
+  cursor: grab;
+  transition: outline 0.1s;
+}
+#editor img.img-selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  cursor: grab;
+}
+#editor img.img-dragging { opacity: 0.4; cursor: grabbing; }
+
+/* Image overlay (resize handles + toolbar) */
+#img-overlay {
+  position: fixed; z-index: 270; pointer-events: none;
+  display: none;
+}
+#img-overlay.show { display: block; }
+
+.img-handle {
+  position: absolute; width: 10px; height: 10px;
+  background: #fff; border: 2px solid var(--accent);
+  border-radius: 2px; pointer-events: all;
+  z-index: 271;
+}
+.img-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+.img-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+.img-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.img-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
+.img-handle.n  { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+.img-handle.s  { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.img-handle.w  { left: -5px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
+.img-handle.e  { right: -5px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
+
+#img-mini-toolbar {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 2px;
+  padding: 4px; pointer-events: all; white-space: nowrap;
+}
+
+/* Drop caret indicator */
+#img-drop-caret {
+  display: inline-block; width: 2px; height: 1.4em;
+  background: var(--accent); vertical-align: middle;
+  animation: caretBlink 0.8s ease infinite;
+  pointer-events: none;
+}
+@keyframes caretBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── Table toolbar (contextual) ── */
+#table-toolbar {
+  position: fixed; z-index: 260;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  pointer-events: auto;
+}
+#table-toolbar.show { display: flex; }
+.tt-btn {
+  height: 28px; padding: 0 8px;
+  border: none; background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px; font-family: var(--font-ui); font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px;
+  transition: all 0.12s;
+}
+.tt-btn:hover { background: var(--accent-light); color: var(--accent); }
+.tt-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.tt-sep { width: 1px; height: 18px; background: var(--border); margin: 0 2px; }
+.tt-del { color: #ff6b6b; }
+.tt-del:hover { background: rgba(255,107,107,0.1); color: #ff6b6b; }
+
+/* ── Column resize handle ── */
+#editor table { position: relative; }
+#editor td, #editor th { position: relative; }
+.col-resize-handle {
+  position: absolute; top: 0; right: -3px;
+  width: 6px; height: 100%;
+  cursor: col-resize; z-index: 10;
+  background: transparent;
+}
+.col-resize-handle:hover, .col-resize-handle.dragging {
+  background: var(--accent);
+  opacity: 0.5;
+}
+.row-resize-handle {
+  position: absolute; bottom: -3px; left: 0;
+  width: 100%; height: 6px;
+  cursor: row-resize; z-index: 10;
+  background: transparent;
+}
+.row-resize-handle:hover, .row-resize-handle.dragging {
+  background: var(--accent);
+  opacity: 0.5;
+}
+
+/* ── Word count bar ── */
+#statusbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  height: 28px;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 16px;
+  font-size: 11px; color: var(--text-muted);
+}
+.status-item { display: flex; align-items: center; gap: 4px; }
+#zoom-control { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.zoom-btn {
+  width: 20px; height: 20px; border: none; background: none;
+  cursor: pointer; color: var(--text-muted); font-size: 14px;
+  border-radius: 3px; display: flex; align-items: center; justify-content: center;
+}
+.zoom-btn:hover { background: var(--bg); color: var(--text-primary); }
+
+/* ── Find & Replace ── */
+#find-bar {
+  position: fixed; top: 132px; right: 16px; z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 12px;
+  width: 320px;
+  display: none;
+  animation: slideIn 0.15s ease;
+}
+#find-bar.show { display: block; }
+@keyframes slideIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+
+.find-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; }
+.find-row:last-child { margin-bottom: 0; }
+.find-input {
+  flex: 1; height: 32px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-primary);
+  font-family: var(--font-ui); font-size: 13px; outline: none;
+  transition: border 0.15s;
+}
+.find-input:focus { border-color: var(--accent); }
+.find-btn {
+  height: 32px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); cursor: pointer; font-size: 12px;
+  font-family: var(--font-ui); color: var(--text-primary); white-space: nowrap;
+  transition: all 0.12s;
+}
+.find-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.find-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.find-btn.primary:hover { background: var(--accent-hover); }
+#find-count { font-size: 11px; color: var(--text-muted); }
+.find-close {
+  position: absolute; top: 8px; right: 8px;
+  background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text-muted);
+  border-radius: 3px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+}
+.find-close:hover { background: var(--bg); }
+
+/* ── Link dialog ── */
+#link-dialog {
+  position: fixed; inset: 0; z-index: 400;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(2px);
+}
+#link-dialog.show { display: flex; }
+.dialog-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 20px;
+  width: min(380px, 90vw);
+  animation: fadeDown 0.15s ease;
+}
+.dialog-title { font-weight: 600; font-size: 14px; margin-bottom: 12px; }
+.dialog-input {
+  width: 100%; height: 36px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-primary);
+  font-family: var(--font-ui); font-size: 13px; outline: none; margin-bottom: 8px;
+  transition: border 0.15s;
+}
+.dialog-input:focus { border-color: var(--accent); }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+.dialog-btn {
+  height: 32px; padding: 0 14px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-size: 13px;
+  font-family: var(--font-ui); transition: all 0.12s;
+}
+.dialog-btn:hover { background: var(--bg); }
+.dialog-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.dialog-btn.primary:hover { background: var(--accent-hover); }
+
+/* ── Image dialog ── */
+#image-dialog {
+  position: fixed; inset: 0; z-index: 400;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(2px);
+}
+#image-dialog.show { display: flex; }
+
+/* ── Table dialog ── */
+#table-dialog {
+  position: fixed; inset: 0; z-index: 400;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(2px);
+}
+#table-dialog.show { display: flex; }
+
+/* ── Mobile toolbar collapse ── */
+@media (max-width: 600px) {
+  #page { padding: 40px 24px; }
+  .save-status .save-label { display: none; }
+  .btn-share span { display: none; }
+  #main { top: 128px; }
+  #titlebar { gap: 6px; padding: 6px 8px 4px; height: 40px; }
+  #doc-title { font-size: 12px; padding: 3px 6px; min-width: 0; }
+  .save-dot { width: 5px; height: 5px; }
+}
+@media (max-width: 400px) {
+  #page { padding: 28px 16px; }
+  #titlebar { gap: 4px; padding: 5px 6px 3px; }
+  #doc-title { font-size: 11px; }
+}
+
+/* ── Print ── */
+/* Default @page for portrait; landscape overridden via JS beforeprint handler */
+@page { size: A4 portrait; margin: 19mm 21mm; }
+
+@media print {
+  /* Hide all UI chrome */
+  #header, #statusbar, #find-bar, #float-toolbar,
+  #img-overlay, #table-toolbar,
+  #sidebar, #sidebar-backdrop { display: none !important; }
+
+  /* Hide on-screen page-break indicators — browser handles real breaks */
+  .page-break-line { display: none !important; }
+
+  /* Reset document layout */
+  html, body {
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+  #main {
+    position: static !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    background: white !important;
+  }
+
+  /* Strip the screen-only paper shadow / border-radius / zoom transform.
+     Padding is zeroed so the @page margins are the sole whitespace. */
+  #page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    transform: none !important;
+    transform-origin: unset !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;   /* @page margin handles all whitespace */
+  }
+  #editor {
+    min-height: 0 !important;
+    color: #202020 !important;
+  }
+
+  /* Prevent images from crossing page boundaries */
+  #editor img { max-width: 100% !important; page-break-inside: avoid; }
+
+  /* Keep headings with their following content */
+  #editor h1, #editor h2, #editor h3,
+  #editor h4, #editor h5, #editor h6 { page-break-after: avoid; }
+
+  /* Clean up editor-only styles */
+  .img-selected   { outline: none !important; }
+  .search-highlight { background: transparent !important; color: inherit !important; }
+}
+
+/* ── Scrollbar ── */
+#main::-webkit-scrollbar { width: 6px; }
+#main::-webkit-scrollbar-track { background: transparent; }
+#main::-webkit-scrollbar-thumb { background: #3a3a52; border-radius: 3px; }
+
+/* ── Sidebar ── */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 260px;
+  background: #18181f;
+  border-right: 1px solid var(--border);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-260px);
+  transition: transform 0.22s cubic-bezier(.4,0,.2,1);
+  box-shadow: 2px 0 16px rgba(0,0,0,0.35);
+}
+#sidebar.open { transform: translateX(0); }
+
+#sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px;
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 0;
+}
+#sidebar-header .sh-title {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.btn-new-doc {
+  display: flex; align-items: center; gap: 6px;
+  height: 32px; padding: 0 12px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.btn-new-doc:hover { background: var(--accent-hover); }
+.btn-new-doc:active { background: var(--accent-hover); transform: scale(0.97); }
+
+#doc-list {
+  flex: 1; overflow-y: auto; padding: 8px;
+  scrollbar-width: thin; scrollbar-color: #3a3a52 transparent;
+  -webkit-overflow-scrolling: touch;
+}
+#doc-list::-webkit-scrollbar { width: 4px; }
+#doc-list::-webkit-scrollbar-thumb { background: #3a3a52; border-radius: 2px; }
+
+.doc-item {
+  display: flex; align-items: stretch;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.12s;
+  margin-bottom: 4px;
+  position: relative;
+}
+.doc-item:hover { background: var(--surface); }
+.doc-item.active { background: var(--accent-light); }
+.doc-item.active .doc-item-title { color: var(--accent); }
+
+.doc-item-body {
+  flex: 1; padding: 10px 8px 10px 12px; min-width: 0;
+}
+.doc-item-title {
+  font-size: 13px; font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.doc-item-meta {
+  font-size: 10px; color: var(--text-muted);
+}
+
+/* Delete button: always visible on touch devices, hover-only on desktop */
+.doc-item-del {
+  width: 36px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); opacity: 0;
+  border: none; background: none; cursor: pointer;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 14px; transition: all 0.1s;
+}
+.doc-item:hover .doc-item-del { opacity: 1; }
+.doc-item-del:hover { color: #ff6b6b; background: rgba(255,107,107,0.08); }
+.doc-item-del:active { color: #ff6b6b; }
+
+@media (hover: none) {
+  /* Touch device: always show delete button */
+  .doc-item-del { opacity: 0.45; }
+  .doc-item.active .doc-item-del { opacity: 0.7; }
+}
+
+#sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 89;
+  background: rgba(0,0,0,0.45);
+}
+#sidebar-backdrop.show { display: block; }
+
+/* Push layout when sidebar open (desktop only) */
+@media (min-width: 900px) {
+  body.sidebar-open #header { left: 260px; }
+  body.sidebar-open #main   { left: 260px; }
+  body.sidebar-open #statusbar { left: 260px; }
+  body.sidebar-open #find-bar  { right: 16px; }
+}
+
+/* Sidebar goes full-screen, above header for narrow screens */
+@media (max-width: 899px) {
+  #sidebar {
+    width: 100vw;
+    transform: translateX(-100vw);
+    z-index: 110;
+  }
+  #sidebar.open { transform: translateX(0); }
+
+  #sidebar-header { height: 60px; padding: 0 16px; }
+  #sidebar-header .sh-title { font-size: 12px; }
+  .btn-new-doc { height: 36px; padding: 0 14px; font-size: 13px; }
+
+  #doc-list { padding: 10px; }
+
+  .doc-item { margin-bottom: 6px; border-radius: 8px; }
+  .doc-item-body { padding: 12px 10px 12px 14px; }
+  .doc-item-title { font-size: 14px; margin-bottom: 4px; }
+  .doc-item-meta { font-size: 11px; }
+  .doc-item-del { width: 44px; opacity: 0.5; }
+  .doc-item.active .doc-item-del { opacity: 0.8; }
+}
+
+
+/* Sidebar toggle button */
+.btn-sidebar-toggle {
+  width: 30px; height: 30px; padding: 0;
+  background: transparent; color: var(--text-secondary);
+  border: none; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+}
+.btn-sidebar-toggle:hover { background: var(--bg); color: var(--text-primary); }
+
+/* Smooth header/statusbar transitions */
+#header, #statusbar { transition: left 0.22s cubic-bezier(.4,0,.2,1); }
+#main { transition: left 0.22s cubic-bezier(.4,0,.2,1), top 0.15s; }
+
+/* ── Highlight search results ── */
+.search-highlight { background: #fff176; border-radius: 2px; }
+.search-highlight.current { background: #ff9800; color: white; border-radius: 2px; }
+
+/* ── Heading styles in dropdown ── */
+.dd-h1 { font-size: 18px; font-weight: 700; font-family: var(--font-doc); }
+.dd-h2 { font-size: 15px; font-weight: 600; font-family: var(--font-doc); }
+.dd-h3 { font-size: 13px; font-weight: 600; font-family: var(--font-doc); }
+
+/* Floating format popup for mobile */
+#float-toolbar {
+  position: fixed; z-index: 250;
+  background: #1e1e2e;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  padding: 4px;
+  display: none;
+  gap: 2px;
+  align-items: center;
+}
+#float-toolbar.show { display: flex; }
+.ft-btn {
+  width: 32px; height: 32px; border: none;
+  background: transparent; color: #cdd6f4;
+  border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.1s;
+}
+.ft-btn:hover { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<div id="sidebar-backdrop" onclick="closeSidebar()"></div>
+<div id="sidebar">
+  <div id="sidebar-header">
+    <span class="sh-title">Documents</span>
+    <button class="btn-new-doc" onclick="createNewDoc()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New
+    </button>
+  </div>
+  <div id="doc-list"></div>
+</div>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<div id="header">
+  <div id="titlebar">
+    <button class="btn-sidebar-toggle" onclick="toggleSidebar()" title="Documents">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="7" height="18" rx="1"/><line x1="14" y1="7" x2="21" y2="7"/><line x1="14" y1="12" x2="21" y2="12"/><line x1="14" y1="17" x2="21" y2="17"/></svg>
+    </button>
+    <div class="app-logo"><span class="logo-word-antarctica">Antarctica</span></div>
+    <input id="doc-title" type="text" value="Untitled Document" spellcheck="false">
+  </div>
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <!-- Undo / Redo -->
+    <button class="tb-btn" data-tip="Undo (Ctrl+Z)" onclick="exec('undo')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 00-4-4H4"/></svg>
+    </button>
+    <button class="tb-btn" data-tip="Redo (Ctrl+Y)" onclick="exec('redo')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-page-theme" data-tip="Toggle page colour" onclick="togglePageTheme()" style="position:relative">
+      <svg id="page-theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg id="page-theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-orientation" data-tip="Toggle orientation (Portrait / Landscape)" onclick="toggleOrientation()" style="position:relative">
+      <svg id="orient-portrait-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/></svg>
+      <svg id="orient-landscape-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><rect x="2" y="5" width="20" height="14" rx="2"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Print -->
+    <button class="tb-btn" data-tip="Print (Ctrl+P)" onclick="printDoc()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Font family -->
+    <select class="tb-select" id="font-family" style="width:130px" onchange="setFont(this.value)" data-tip="Font">
+      <option value="Lora, Georgia, serif">Lora</option>
+      <option value="'DM Sans', sans-serif">DM Sans</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="'Times New Roman', serif">Times New Roman</option>
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="'Courier New', monospace">Courier New</option>
+      <option value="Verdana, sans-serif">Verdana</option>
+      <option value="Trebuchet MS, sans-serif">Trebuchet</option>
+      <option value="'Playfair Display', Georgia, serif">Playfair Display</option>
+      <option value="'Inter', sans-serif">Inter</option>
+      <option value="'Nunito', sans-serif">Nunito</option>
+      <option value="'Merriweather', serif">Merriweather</option>
+      <option value="'Raleway', sans-serif">Raleway</option>
+      <option value="'Josefin Sans', sans-serif">Josefin Sans</option>
+      <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+      <option value="'Fraunces', serif">Fraunces</option>
+      <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option>
+      <option value="'EB Garamond', serif">EB Garamond</option>
+    </select>
+
+    <!-- Font size -->
+    <input type="number" id="font-size-input" value="11" min="6" max="96" onchange="setFontSize(this.value)" onkeydown="if(event.key==='Enter')setFontSize(this.value)">
+
+    <button class="tb-btn" data-tip="Decrease font" onclick="changeFontSize(-1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="tb-btn" data-tip="Increase font" onclick="changeFontSize(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Heading -->
+    <select class="tb-select" id="heading-select" style="width:110px" onchange="applyHeading(this.value)">
+      <option value="p">Normal</option>
+      <option value="h1">Heading 1</option>
+      <option value="h2">Heading 2</option>
+      <option value="h3">Heading 3</option>
+      <option value="h4">Heading 4</option>
+      <option value="h5">Heading 5</option>
+      <option value="pre">Preformat</option>
+    </select>
+    <div class="tb-sep"></div>
+
+    <!-- Bold, Italic, Underline, Strike -->
+    <button class="tb-btn" id="btn-bold" data-tip="Bold (Ctrl+B)" onclick="exec('bold')"><b>B</b></button>
+    <button class="tb-btn" id="btn-italic" data-tip="Italic (Ctrl+I)" onclick="exec('italic')"><i>I</i></button>
+    <button class="tb-btn" id="btn-underline" data-tip="Underline (Ctrl+U)" onclick="exec('underline')"><u>U</u></button>
+    <button class="tb-btn" id="btn-strike" data-tip="Strikethrough" onclick="exec('strikeThrough')"><s>S</s></button>
+    <div class="tb-sep"></div>
+
+    <!-- Superscript/Subscript -->
+    <button class="tb-btn" data-tip="Superscript" onclick="exec('superscript')">x<sup style="font-size:8px">2</sup></button>
+    <button class="tb-btn" data-tip="Subscript" onclick="exec('subscript')">x<sub style="font-size:8px">2</sub></button>
+    <div class="tb-sep"></div>
+
+    <!-- Text Color -->
+    <div class="color-wrap">
+      <button class="tb-btn" data-tip="Text color" onclick="document.getElementById('text-color').click()" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events:none"><path d="M4 20h4l10.5-10.5a1.5 1.5 0 000-2.12l-1.88-1.88a1.5 1.5 0 00-2.12 0L4 16v4z"/></svg>
+        <div class="color-swatch" id="text-color-swatch" style="background:#1a1a1a;width:18px"></div>
+      </button>
+      <input type="color" id="text-color" value="#1a1a1a" style="position:absolute;opacity:0;width:0;height:0" onchange="setTextColor(this.value)">
+    </div>
+
+    <!-- Highlight -->
+    <div class="color-wrap">
+      <button class="tb-btn" data-tip="Highlight color" onclick="document.getElementById('highlight-color').click()" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events:none"><path d="M9 11l-4 9 1 1 4-2 4 2 1-1-4-9z"/><path d="M12 2l2 7H10L12 2z"/></svg>
+        <div class="color-swatch" id="highlight-swatch" style="background:#fff176;width:18px"></div>
+      </button>
+      <input type="color" id="highlight-color" value="#fff176" style="position:absolute;opacity:0;width:0;height:0" onchange="setHighlight(this.value)">
+    </div>
+
+    <button class="tb-btn" data-tip="Clear formatting" onclick="exec('removeFormat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><path d="M6 6l5.5 5.5"/><path d="M11 5h7v2h-3.5"/><path d="M3 19h7"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Alignment -->
+    <button class="tb-btn" id="btn-left" data-tip="Align left (Ctrl+L)" onclick="exec('justifyLeft')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-center" data-tip="Center (Ctrl+E)" onclick="exec('justifyCenter')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-right" data-tip="Align right (Ctrl+R)" onclick="exec('justifyRight')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-justify" data-tip="Justify" onclick="exec('justifyFull')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Lists -->
+    <button class="tb-btn" id="btn-ul" data-tip="Bullet list" onclick="exec('insertUnorderedList')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-ol" data-tip="Numbered list" onclick="exec('insertOrderedList')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Indent / Outdent -->
+    <button class="tb-btn" data-tip="Decrease indent" onclick="exec('outdent')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="6" x2="9" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="9" y2="18"/><polyline points="3 8 7 12 3 16"/></svg>
+    </button>
+    <button class="tb-btn" data-tip="Increase indent" onclick="exec('indent')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="9 8 13 12 9 16"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Link, Image, Table -->
+    <button class="tb-btn" data-tip="Insert link (Ctrl+K)" onclick="showLinkDialog()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="tb-btn" data-tip="Insert image" onclick="showImageDialog()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </button>
+    <button class="tb-btn" data-tip="Insert table" onclick="showTableDialog()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+
+    <!-- Find -->
+    <button class="tb-btn" data-tip="Find & Replace (Ctrl+H)" onclick="showFind()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+
+    <!-- Blockquote -->
+    <button class="tb-btn" data-tip="Blockquote" onclick="insertBlockquote()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+    </button>
+
+    <!-- Line height -->
+    <select class="tb-select" style="width:80px" onchange="setLineHeight(this.value)" data-tip="Line spacing">
+      <option value="1.5">1.5x</option>
+      <option value="1.75" selected>1.75x</option>
+      <option value="2">2x</option>
+      <option value="2.5">2.5x</option>
+      <option value="1">Single</option>
+    </select>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div id="main">
+  <div id="page">
+    <div id="editor" contenteditable="true" spellcheck="true"></div>
+  </div>
+</div>
+
+<!-- ══════════════ STATUS BAR ══════════════ -->
+<div id="statusbar">
+  <div class="status-item">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <span id="wc-words">0 words</span>
+  </div>
+  <div class="status-item"><span id="wc-chars">0 chars</span></div>
+  <div class="status-item" id="sel-info" style="display:none"><span id="sel-words">0 sel</span></div>
+  <div id="zoom-control">
+    <button class="zoom-btn" onclick="zoomOut()">−</button>
+    <span id="zoom-label" style="font-size:11px;color:var(--text-muted);min-width:36px;text-align:center">100%</span>
+    <button class="zoom-btn" onclick="zoomIn()">+</button>
+  </div>
+</div>
+
+<!-- ══════════════ FIND & REPLACE ══════════════ -->
+<div id="find-bar">
+  <button class="find-close" onclick="closeFind()">×</button>
+  <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Find & Replace</div>
+  <div class="find-row">
+    <input type="text" class="find-input" id="find-input" placeholder="Find…" oninput="findText()">
+    <span id="find-count" style="font-size:11px;color:var(--text-muted);white-space:nowrap"></span>
+  </div>
+  <div class="find-row">
+    <input type="text" class="find-input" id="replace-input" placeholder="Replace with…">
+  </div>
+  <div class="find-row" style="gap:6px;margin-bottom:0">
+    <button class="find-btn" onclick="findPrev()">◀ Prev</button>
+    <button class="find-btn" onclick="findNext()">Next ▶</button>
+    <button class="find-btn" onclick="replaceOne()">Replace</button>
+    <button class="find-btn primary" onclick="replaceAll()">All</button>
+  </div>
+</div>
+
+<!-- ══════════════ LINK DIALOG ══════════════ -->
+<div id="link-dialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Insert Link</div>
+    <input type="text" class="dialog-input" id="link-text" placeholder="Display text">
+    <input type="url" class="dialog-input" id="link-url" placeholder="https://…">
+    <div class="dialog-actions">
+      <button class="dialog-btn" onclick="closeLinkDialog()">Cancel</button>
+      <button class="dialog-btn primary" onclick="insertLink()">Insert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ IMAGE DIALOG ══════════════ -->
+<div id="image-dialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Insert Image</div>
+    <input type="url" class="dialog-input" id="image-url" placeholder="Image URL (https://…)">
+    <div style="text-align:center;margin:8px 0;font-size:12px;color:var(--text-muted)">— or —</div>
+    <input type="file" id="image-file" accept="image/*" style="font-size:13px;width:100%" onchange="loadImageFile(this)">
+    <input type="text" class="dialog-input" id="image-alt" placeholder="Alt text (optional)" style="margin-top:8px">
+    <div class="dialog-actions">
+      <button class="dialog-btn" onclick="closeImageDialog()">Cancel</button>
+      <button class="dialog-btn primary" onclick="insertImage()">Insert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TABLE DIALOG ══════════════ -->
+<div id="table-dialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Insert Table</div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <div style="flex:1">
+        <label style="font-size:12px;color:var(--text-muted)">Rows</label>
+        <input type="number" class="dialog-input" id="table-rows" value="3" min="1" max="20" style="display:block;width:100%;margin-top:4px">
+      </div>
+      <div style="flex:1">
+        <label style="font-size:12px;color:var(--text-muted)">Columns</label>
+        <input type="number" class="dialog-input" id="table-cols" value="3" min="1" max="10" style="display:block;width:100%;margin-top:4px">
+      </div>
+    </div>
+    <label style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" id="table-header" checked> Include header row
+    </label>
+    <div class="dialog-actions">
+      <button class="dialog-btn" onclick="closeTableDialog()">Cancel</button>
+      <button class="dialog-btn primary" onclick="insertTable()">Insert</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image overlay: resize handles + mini toolbar -->
+<div id="img-overlay">
+  <div class="img-handle nw" data-dir="nw"></div>
+  <div class="img-handle n"  data-dir="n"></div>
+  <div class="img-handle ne" data-dir="ne"></div>
+  <div class="img-handle w"  data-dir="w"></div>
+  <div class="img-handle e"  data-dir="e"></div>
+  <div class="img-handle sw" data-dir="sw"></div>
+  <div class="img-handle s"  data-dir="s"></div>
+  <div class="img-handle se" data-dir="se"></div>
+  <div id="img-mini-toolbar">
+    <button class="tt-btn" onclick="imgAlign('left')" title="Float left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="3" width="7" height="7"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="3" y1="10" x2="10" y2="10"/></svg>
+      Float L
+    </button>
+    <button class="tt-btn" onclick="imgAlign('none')" title="Inline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="3" y1="6" x2="21" y2="6"/><rect x="8" y="9" width="8" height="8"/><line x1="3" y1="20" x2="21" y2="20"/></svg>
+      Inline
+    </button>
+    <button class="tt-btn" onclick="imgAlign('right')" title="Float right">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="14" y="3" width="7" height="7"/><line x1="3" y1="14" x2="21" y2="14"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="14" y1="10" x2="21" y2="10"/></svg>
+      Float R
+    </button>
+    <div class="tt-sep"></div>
+    <button class="tt-btn tt-del" onclick="imgDelete()" title="Delete image">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+      Delete
+    </button>
+  </div>
+</div>
+
+<!-- Floating toolbar -->
+<div id="float-toolbar">
+  <button class="ft-btn" onclick="exec('bold')" title="Bold"><b>B</b></button>
+  <button class="ft-btn" onclick="exec('italic')" title="Italic"><i>I</i></button>
+  <button class="ft-btn" onclick="exec('underline')" title="Underline"><u>U</u></button>
+  <button class="ft-btn" onclick="exec('strikeThrough')" title="Strike"><s>S</s></button>
+  <button class="ft-btn" onclick="showLinkDialog()" title="Link">🔗</button>
+</div>
+
+<!-- Table contextual toolbar -->
+<div id="table-toolbar">
+  <button class="tt-btn" onclick="tableAddRowAbove()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="3" x2="12" y2="9"/></svg>
+    Row ↑
+  </button>
+  <button class="tt-btn" onclick="tableAddRowBelow()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="12" y1="15" x2="12" y2="21"/></svg>
+    Row ↓
+  </button>
+  <div class="tt-sep"></div>
+  <button class="tt-btn" onclick="tableAddColLeft()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="12" x2="9" y2="12"/></svg>
+    Col ←
+  </button>
+  <button class="tt-btn" onclick="tableAddColRight()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="15" y1="12" x2="21" y2="12"/></svg>
+    Col →
+  </button>
+  <div class="tt-sep"></div>
+  <button class="tt-btn" onclick="tableDeleteRow()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    Del Row
+  </button>
+  <button class="tt-btn" onclick="tableDeleteCol()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    Del Col
+  </button>
+  <div class="tt-sep"></div>
+  <button class="tt-btn tt-del" onclick="tableDelete()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+    Delete Table
+  </button>
+</div>
+
+<!-- Hidden file input for open -->
+<input type="file" id="open-file" accept=".html,.htm,.txt" style="display:none" onchange="openFileRead(this)">
+
+<script>
+'use strict';
+
+// ── A4 page dimensions at 96 dpi ──
+const A4 = { w: 794, h: 1123 }; // portrait: 210mm × 297mm
+
+function getPageDims() {
+  return pageIsLandscape
+    ? { pageW: A4.h, pageH: A4.w, padV: 56, padH: 80 }
+    : { pageW: A4.w, pageH: A4.h, padV: 72, padH: 80 };
+}
+
+function updatePageBreaks() {
+  const pageEl   = document.getElementById('page');
+  const editorEl = document.getElementById('editor');
+  const { pageH, padV, padH } = getPageDims();
+
+  // Remove previous indicators
+  pageEl.querySelectorAll('.page-break-line').forEach(b => b.remove());
+
+  // Content available per printed page (page height minus top+bottom margins)
+  const contentH = pageH - 2 * padV;
+
+  // Ensure at least one full page of editor content
+  editorEl.style.minHeight = contentH + 'px';
+  // Reset any previously forced page min-height before measuring
+  pageEl.style.minHeight = '';
+
+  // Calculate how many full A4 pages the current content needs,
+  // then snap #page to exactly that many pages so each page is always
+  // fully visible (no partial pages at the bottom).
+  const rawH     = pageEl.scrollHeight;
+  const numPages = Math.max(1, Math.ceil(rawH / pageH));
+  pageEl.style.minHeight = (numPages * pageH) + 'px';
+
+  // The gap strip is 32 px tall and must be centred exactly on the break
+  // point so that the border-top is the true bottom of one page and
+  // border-bottom is the true top of the next.
+  const GAP = 32;  // must match .page-break-line height in CSS
+
+  for (let n = 1; n <= numPages; n++) {
+    // Exact break point in #page coordinates
+    const breakY = padV + n * contentH;
+    // Shift up by half the gap so the strip straddles the break perfectly
+    const top = breakY - GAP / 2;
+
+    const line = document.createElement('div');
+    line.className = 'page-break-line';
+    line.style.top   = top + 'px';
+    line.style.left  = '-' + padH + 'px';
+    line.style.right = '-' + padH + 'px';
+
+    const label = document.createElement('span');
+    label.className   = 'page-break-label';
+    label.textContent = 'p.' + (n + 1);
+    line.appendChild(label);
+
+    pageEl.appendChild(line);
+  }
+}
+
+
+const editor = document.getElementById('editor');
+let currentZoom = 1;
+let savedRange = null;
+let imageBase64 = null;
+
+// ══════════════════════════════════════
+// ── Multi-document management ──
+// ══════════════════════════════════════
+const STORE_KEY = 'antarcticadoc_v2';
+let docs = [];
+let activeId = null;
+
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) { const parsed = JSON.parse(raw); docs = parsed.docs || []; activeId = parsed.activeId || null; }
+  } catch(e) {}
+  // Migrate legacy single-doc
+  if (!docs.length) {
+    const legacyContent = localStorage.getItem('antarcticadoc_content') || '';
+    const legacyTitle   = localStorage.getItem('antarcticadoc_title')   || 'Untitled Document';
+    const id = genId();
+    docs = [{ id, title: legacyTitle, content: legacyContent, created: Date.now(), modified: Date.now() }];
+    activeId = id;
+    saveStore();
+  }
+  if (!docs.find(d => d.id === activeId)) activeId = docs[0].id;
+}
+
+function saveStore() {
+  localStorage.setItem(STORE_KEY, JSON.stringify({ docs, activeId }));
+}
+
+function getActive() { return docs.find(d => d.id === activeId); }
+
+function saveCurrentToStore() {
+  const doc = getActive();
+  if (!doc) return;
+  doc.content = editor.innerHTML;
+  doc.title   = document.getElementById('doc-title').value;
+  doc.modified = Date.now();
+  doc.pageDark = pageDark;
+  doc.landscape = pageIsLandscape;
+  doc.zoom = currentZoom;
+  saveStore();
+}
+
+function switchDoc(id) {
+  saveCurrentToStore();
+  activeId = id;
+  const doc = getActive();
+  if (!doc) return;
+  editor.innerHTML = doc.content || '';
+  document.getElementById('doc-title').value = doc.title || 'Untitled Document';
+  applyPageTheme(doc.pageDark || false);
+  applyOrientation(doc.landscape || false);
+  setZoom(doc.zoom || 1);
+  saveStore();
+  renderSidebar();
+  updateWordCount();
+  updatePageBreaks();
+  editor.focus();
+}
+
+function createNewDoc() {
+  saveCurrentToStore();
+  const id = genId();
+  docs.unshift({ id, title: 'Untitled Document', content: '', created: Date.now(), modified: Date.now() });
+  activeId = id;
+  editor.innerHTML = '';
+  document.getElementById('doc-title').value = 'Untitled Document';
+  applyPageTheme(false);
+  applyOrientation(false);
+  setZoom(1);
+  saveStore();
+  renderSidebar();
+  editor.focus();
+  closeMenus();
+  // On mobile close sidebar after creating
+  closeSidebar();
+}
+
+function deleteDoc(id, e) {
+  e.stopPropagation();
+  const doc = docs.find(d => d.id === id);
+  const label = doc ? `"${doc.title}"` : 'this document';
+  if (docs.length === 1) { alert('You must have at least one document.'); return; }
+  if (!confirm(`Delete ${label}? This cannot be undone.`)) return;
+  docs = docs.filter(d => d.id !== id);
+  if (activeId === id) {
+    activeId = docs[0].id;
+    const next = getActive();
+    editor.innerHTML = next.content || '';
+    document.getElementById('doc-title').value = next.title || 'Untitled Document';
+  }
+  saveStore();
+  renderSidebar();
+  updateWordCount();
+}
+
+function relativeTime(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 60000)   return 'just now';
+  if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+  if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+  return new Date(ts).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+}
+
+function renderSidebar() {
+  const list = document.getElementById('doc-list');
+  list.innerHTML = '';
+  docs.forEach(doc => {
+    const item = document.createElement('div');
+    item.className = 'doc-item' + (doc.id === activeId ? ' active' : '');
+    item.innerHTML = `
+      <div class="doc-item-body" onclick="switchDoc('${doc.id}'); closeSidebar()">
+        <div class="doc-item-title">${escHtml(doc.title || 'Untitled Document')}</div>
+        <div class="doc-item-meta">${relativeTime(doc.modified)}</div>
+      </div>
+      <button class="doc-item-del" title="Delete document" onclick="deleteDoc('${doc.id}', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>`;
+    list.appendChild(item);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Sidebar open/close ──
+let sidebarOpen = false;
+function toggleSidebar() { sidebarOpen ? closeSidebar() : openSidebar(); }
+function openSidebar() {
+  sidebarOpen = true;
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('show');
+  document.body.classList.add('sidebar-open');
+}
+function closeSidebar() {
+  sidebarOpen = false;
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('show');
+  document.body.classList.remove('sidebar-open');
+}
+
+// ── execCommand wrapper ──
+function exec(cmd, val = null) {
+  editor.focus();
+  document.execCommand(cmd, false, val);
+  updateToolbarState();
+}
+
+function formatBlock(tag) {
+  exec('formatBlock', tag);
+  closeMenus();
+}
+
+function applyHeading(val) {
+  exec('formatBlock', val);
+}
+
+// ── Font ──
+function setFont(family) {
+  saveSelection();
+  exec('fontName', family);
+  restoreSelection();
+}
+
+function setFontSize(pt) {
+  pt = Math.max(6, Math.min(96, parseInt(pt)));
+  document.getElementById('font-size-input').value = pt;
+  const sel = window.getSelection();
+  if (sel.rangeCount) {
+    const range = sel.getRangeAt(0);
+    if (!range.collapsed) {
+      const span = document.createElement('span');
+      span.style.fontSize = pt + 'pt';
+      range.surroundContents(span);
+      return;
+    }
+  }
+  exec('fontSize', 3);
+  const els = editor.querySelectorAll('font[size="3"]');
+  els.forEach(el => { el.removeAttribute('size'); el.style.fontSize = pt + 'pt'; });
+}
+
+function changeFontSize(delta) {
+  const inp = document.getElementById('font-size-input');
+  const newVal = (parseInt(inp.value) || 11) + delta;
+  setFontSize(newVal);
+}
+
+// ── Color ──
+function setTextColor(hex) {
+  document.getElementById('text-color-swatch').style.background = hex;
+  exec('foreColor', hex);
+}
+
+function setHighlight(hex) {
+  document.getElementById('highlight-swatch').style.background = hex;
+  exec('hiliteColor', hex);
+}
+
+// ── Line height ──
+function setLineHeight(val) {
+  editor.style.lineHeight = val;
+}
+
+// ── Zoom ──
+function setZoom(z) {
+  currentZoom = Math.max(0.5, Math.min(2, z));
+  document.getElementById('page').style.transform = `scale(${currentZoom})`;
+  document.getElementById('page').style.transformOrigin = 'top center';
+  document.getElementById('main').style.paddingBottom = (80 + (currentZoom - 1) * 400) + 'px';
+  document.getElementById('zoom-label').textContent = Math.round(currentZoom * 100) + '%';
+}
+function zoomIn()  { setZoom(currentZoom + 0.1); }
+function zoomOut() { setZoom(currentZoom - 0.1); }
+
+// ── Word count ──
+function updateWordCount() {
+  const text = editor.innerText.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  const chars = text.length;
+  document.getElementById('wc-words').textContent = words + ' word' + (words !== 1 ? 's' : '');
+  document.getElementById('wc-chars').textContent = chars + ' char' + (chars !== 1 ? 's' : '');
+  const sel = window.getSelection();
+  const selInfo = document.getElementById('sel-info');
+  if (sel && !sel.isCollapsed) {
+    const selText = sel.toString().trim();
+    const selWords = selText ? selText.split(/\s+/).length : 0;
+    document.getElementById('sel-words').textContent = selWords + ' selected';
+    selInfo.style.display = 'flex';
+  } else { selInfo.style.display = 'none'; }
+}
+
+// ── Toolbar state ──
+function updateToolbarState() {
+  const cmds = ['bold','italic','underline','strikeThrough','insertUnorderedList','insertOrderedList',
+                 'justifyLeft','justifyCenter','justifyRight','justifyFull'];
+  const map = { bold:'btn-bold', italic:'btn-italic', underline:'btn-underline', strikeThrough:'btn-strike',
+                insertUnorderedList:'btn-ul', insertOrderedList:'btn-ol',
+                justifyLeft:'btn-left', justifyCenter:'btn-center', justifyRight:'btn-right', justifyFull:'btn-justify' };
+  cmds.forEach(cmd => {
+    const btn = document.getElementById(map[cmd]);
+    if (btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+  });
+  updateWordCount();
+}
+
+// ── Selection save/restore ──
+function saveSelection() {
+  const sel = window.getSelection();
+  if (sel.rangeCount) savedRange = sel.getRangeAt(0).cloneRange();
+}
+function restoreSelection() {
+  if (!savedRange) return;
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(savedRange);
+}
+
+// ── Menus ──
+function toggleMenu(id) {
+  document.querySelectorAll('.dropdown').forEach(d => { if (d.id !== id) d.classList.remove('show'); });
+  document.querySelectorAll('.menu-item').forEach(m => { if (m.dataset.menu !== id) m.classList.remove('open'); });
+  const dd = document.getElementById(id);
+  const isOpen = dd.classList.toggle('show');
+  dd.closest('.menu-item').classList.toggle('open', isOpen);
+}
+function closeMenus() {
+  document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('open'));
+}
+
+// ── Find & Replace ──
+let findMatches = [], findIndex = 0;
+function showFind() { closeMenus(); document.getElementById('find-bar').classList.add('show'); document.getElementById('find-input').focus(); }
+function closeFind() {
+  document.getElementById('find-bar').classList.remove('show');
+  clearHighlights();
+  findMatches = []; findIndex = 0;
+  document.getElementById('find-count').textContent = '';
+}
+function clearHighlights() {
+  editor.querySelectorAll('.search-highlight').forEach(el => {
+    el.replaceWith(...el.childNodes);
+  });
+  editor.normalize();
+}
+function findText() {
+  clearHighlights();
+  findMatches = []; findIndex = 0;
+  const q = document.getElementById('find-input').value;
+  if (!q) { document.getElementById('find-count').textContent = ''; return; }
+  const walker = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+  const regex = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi');
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node => {
+    let m, parts = [], last = 0;
+    const text = node.textContent;
+    while ((m = regex.exec(text)) !== null) {
+      if (m.index > last) parts.push(document.createTextNode(text.slice(last, m.index)));
+      const span = document.createElement('span');
+      span.className = 'search-highlight';
+      span.textContent = m[0];
+      parts.push(span);
+      findMatches.push(span);
+      last = m.index + m[0].length;
+    }
+    if (parts.length) {
+      if (last < text.length) parts.push(document.createTextNode(text.slice(last)));
+      node.replaceWith(...parts);
+    }
+  });
+  document.getElementById('find-count').textContent = findMatches.length ? `${findMatches.length} found` : 'Not found';
+  if (findMatches.length) { findIndex = 0; highlightCurrent(); }
+}
+function highlightCurrent() {
+  findMatches.forEach((m,i) => m.classList.toggle('current', i === findIndex));
+  if (findMatches[findIndex]) findMatches[findIndex].scrollIntoView({ block:'center' });
+  document.getElementById('find-count').textContent = `${findIndex+1} / ${findMatches.length}`;
+}
+function findNext() { if (!findMatches.length) return; findIndex = (findIndex+1) % findMatches.length; highlightCurrent(); }
+function findPrev() { if (!findMatches.length) return; findIndex = (findIndex-1+findMatches.length) % findMatches.length; highlightCurrent(); }
+function replaceOne() {
+  if (!findMatches[findIndex]) return;
+  const rep = document.getElementById('replace-input').value;
+  findMatches[findIndex].replaceWith(document.createTextNode(rep));
+  findMatches.splice(findIndex, 1);
+  if (findIndex >= findMatches.length) findIndex = 0;
+  document.getElementById('find-count').textContent = findMatches.length ? `${findIndex+1} / ${findMatches.length}` : 'Done';
+  if (findMatches.length) highlightCurrent();
+}
+function replaceAll() {
+  const rep = document.getElementById('replace-input').value;
+  findMatches.forEach(m => m.replaceWith(document.createTextNode(rep)));
+  findMatches = []; findIndex = 0;
+  document.getElementById('find-count').textContent = 'Done';
+}
+
+// ── Link dialog ──
+function showLinkDialog() {
+  closeMenus(); saveSelection();
+  const sel = window.getSelection();
+  document.getElementById('link-text').value = sel && !sel.isCollapsed ? sel.toString() : '';
+  document.getElementById('link-url').value = '';
+  document.getElementById('link-dialog').classList.add('show');
+  document.getElementById('link-url').focus();
+}
+function closeLinkDialog() { document.getElementById('link-dialog').classList.remove('show'); }
+function insertLink() {
+  const text = document.getElementById('link-text').value.trim();
+  const url  = document.getElementById('link-url').value.trim();
+  if (!url) return;
+  closeLinkDialog(); restoreSelection(); editor.focus();
+  exec('insertHTML', `<a href="${url}" target="_blank">${text || url}</a>`);
+}
+
+// ── Image ──
+function showImageDialog() {
+  closeMenus(); saveSelection();
+  imageBase64 = null;
+  document.getElementById('image-url').value = '';
+  document.getElementById('image-alt').value = '';
+  document.getElementById('image-file').value = '';
+  document.getElementById('image-dialog').classList.add('show');
+}
+function closeImageDialog() { document.getElementById('image-dialog').classList.remove('show'); imageBase64 = null; }
+function loadImageFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { imageBase64 = e.target.result; };
+  reader.readAsDataURL(file);
+}
+function insertImage() {
+  const url = imageBase64 || document.getElementById('image-url').value.trim();
+  const alt = document.getElementById('image-alt').value.trim() || 'Image';
+  if (!url) return;
+  closeImageDialog(); restoreSelection(); editor.focus();
+  exec('insertHTML', `<img src="${url}" alt="${alt}" style="max-width:100%">`);
+}
+
+// ── Table ──
+function showTableDialog() { closeMenus(); saveSelection(); document.getElementById('table-dialog').classList.add('show'); }
+function closeTableDialog() { document.getElementById('table-dialog').classList.remove('show'); }
+function insertTable() {
+  const rows = parseInt(document.getElementById('table-rows').value) || 3;
+  const cols = parseInt(document.getElementById('table-cols').value) || 3;
+  const header = document.getElementById('table-header').checked;
+  closeTableDialog(); restoreSelection(); editor.focus();
+  let html = '<table>';
+  if (header) {
+    html += '<thead><tr>';
+    for (let c = 0; c < cols; c++) html += `<th>Header ${c+1}</th>`;
+    html += '</tr></thead>';
+  }
+  html += '<tbody>';
+  for (let r = 0; r < rows; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table><p><br></p>';
+  exec('insertHTML', html);
+}
+
+// ── Image interaction (select, resize, drag+drop, delete, align) ──
+(function() {
+  const overlay = document.getElementById('img-overlay');
+  let selectedImg = null;
+
+  // ── Overlay positioning ──
+  function positionOverlay(img) {
+    const r = img.getBoundingClientRect();
+    overlay.style.left   = r.left   + window.scrollX + 'px';
+    overlay.style.top    = r.top    + window.scrollY + 'px';
+    overlay.style.width  = r.width  + 'px';
+    overlay.style.height = r.height + 'px';
+    // Switch to fixed while dragging, absolute otherwise
+    overlay.style.position = 'fixed';
+    overlay.style.left   = r.left   + 'px';
+    overlay.style.top    = r.top    + 'px';
+    overlay.classList.add('show');
+  }
+
+  function selectImg(img) {
+    if (selectedImg && selectedImg !== img) selectedImg.classList.remove('img-selected');
+    selectedImg = img;
+    img.classList.add('img-selected');
+    positionOverlay(img);
+  }
+
+  function deselectImg() {
+    if (selectedImg) selectedImg.classList.remove('img-selected');
+    selectedImg = null;
+    overlay.classList.remove('show');
+  }
+
+  window.addEventListener('scroll', () => { if (selectedImg) positionOverlay(selectedImg); }, true);
+  window.addEventListener('resize', () => { if (selectedImg) positionOverlay(selectedImg); });
+
+  // ── Click to select ──
+  editor.addEventListener('click', e => {
+    if (e.target.tagName === 'IMG') selectImg(e.target);
+    else if (!e.target.closest('#img-overlay')) deselectImg();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') deselectImg(); });
+
+  // ── Resize ──
+  let resizing = false, resizeDir = '', resizeStart = {}, resizeOrigin = {};
+
+  overlay.querySelectorAll('.img-handle').forEach(handle => {
+    const onStart = e => {
+      e.preventDefault(); e.stopPropagation();
+      if (!selectedImg) return;
+      resizing = true;
+      resizeDir = handle.dataset.dir;
+      const pt = e.touches ? e.touches[0] : e;
+      resizeStart  = { x: pt.clientX, y: pt.clientY };
+      resizeOrigin = { w: selectedImg.offsetWidth, h: selectedImg.offsetHeight };
+      document.addEventListener('mousemove', onResizeMove);
+      document.addEventListener('touchmove', onResizeMove, { passive: false });
+      document.addEventListener('mouseup',   onResizeEnd);
+      document.addEventListener('touchend',  onResizeEnd);
+    };
+    handle.addEventListener('mousedown',  onStart);
+    handle.addEventListener('touchstart', onStart, { passive: false });
+  });
+
+  function onResizeMove(e) {
+    if (!resizing || !selectedImg) return;
+    e.preventDefault();
+    const pt = e.touches ? e.touches[0] : e;
+    const dx = pt.clientX - resizeStart.x;
+    const dy = pt.clientY - resizeStart.y;
+    const d  = resizeDir;
+    let w = resizeOrigin.w, h = resizeOrigin.h;
+    if (d.includes('e')) w = Math.max(40, resizeOrigin.w + dx);
+    if (d.includes('w')) w = Math.max(40, resizeOrigin.w - dx);
+    if (d.includes('s')) h = Math.max(20, resizeOrigin.h + dy);
+    if (d.includes('n')) h = Math.max(20, resizeOrigin.h - dy);
+    if (d === 'n' || d === 's') { selectedImg.style.height = h + 'px'; selectedImg.style.width = 'auto'; }
+    else { selectedImg.style.width = w + 'px'; selectedImg.style.height = 'auto'; }
+    positionOverlay(selectedImg);
+  }
+
+  function onResizeEnd() {
+    resizing = false;
+    document.removeEventListener('mousemove', onResizeMove);
+    document.removeEventListener('touchmove', onResizeMove);
+    document.removeEventListener('mouseup',   onResizeEnd);
+    document.removeEventListener('touchend',  onResizeEnd);
+    triggerSaveIndicator();
+  }
+
+  // ── Drag to reposition — free 2D, clone follows cursor ──
+  let dragging = false, dragImg = null, dragClone = null;
+  let dragOffsetX = 0, dragOffsetY = 0;
+
+  function startDrag(img, cx, cy) {
+    dragging    = true;
+    dragImg     = img;
+
+    const r = img.getBoundingClientRect();
+    dragOffsetX = cx - r.left;
+    dragOffsetY = cy - r.top;
+
+    // Fixed clone that tracks the cursor with zero coordinate confusion
+    dragClone = img.cloneNode(false);
+    dragClone.removeAttribute('id');
+    dragClone.style.cssText = [
+      'position:fixed',
+      'pointer-events:none',
+      'z-index:9999',
+      'opacity:0.82',
+      'border-radius:4px',
+      'box-shadow:0 8px 32px rgba(0,0,0,0.35)',
+      `width:${r.width}px`,
+      `height:${r.height}px`,
+      `left:${r.left}px`,
+      `top:${r.top}px`,
+      'margin:0',
+      'transition:none'
+    ].join(';');
+    document.body.appendChild(dragClone);
+
+    img.style.opacity = '0.15';   // dim original so it's visible but not confusing
+    overlay.classList.remove('show');
+  }
+
+  function moveDrag(cx, cy) {
+    if (!dragging || !dragClone) return;
+    dragClone.style.left = (cx - dragOffsetX) + 'px';
+    dragClone.style.top  = (cy - dragOffsetY) + 'px';
+  }
+
+  function endDrag(cx, cy) {
+    if (!dragImg) return;
+    dragging = false;
+
+    if (dragClone) { dragClone.remove(); dragClone = null; }
+
+    const editorEl   = document.getElementById('editor');
+    const editorRect = editorEl.getBoundingClientRect();
+    const mainEl     = document.getElementById('main');
+
+    // Convert viewport drop coords → editor-local coords (account for CSS scale zoom)
+    const scale = currentZoom || 1;
+    const left  = (cx - dragOffsetX - editorRect.left) / scale;
+    const top   = (cy - dragOffsetY - editorRect.top)  / scale;
+
+    dragImg.style.position = 'absolute';
+    dragImg.style.left     = left + 'px';
+    dragImg.style.top      = top  + 'px';
+    dragImg.style.margin   = '0';
+    dragImg.style.float    = 'none';
+    dragImg.style.maxWidth = 'none';
+    dragImg.style.zIndex   = '10';
+    dragImg.style.opacity  = '1';
+
+    selectImg(dragImg);
+    dragImg = null;
+    triggerSaveIndicator();
+  }
+
+  // Mouse drag — start on mousedown with small move threshold
+  editor.addEventListener('mousedown', e => {
+    if (e.target.tagName !== 'IMG' || e.button !== 0) return;
+    e.preventDefault();
+    const img = e.target;
+    const startX = e.clientX, startY = e.clientY;
+    let started = false;
+
+    function onMove(ev) {
+      if (!started && (Math.abs(ev.clientX - startX) > 4 || Math.abs(ev.clientY - startY) > 4)) {
+        started = true;
+        selectImg(img);
+        startDrag(img, startX, startY);
+      }
+      if (started) moveDrag(ev.clientX, ev.clientY);
+    }
+
+    function onUp(ev) {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup',   onUp);
+      if (started) {
+        endDrag(ev.clientX, ev.clientY);
+      } else {
+        selectImg(img);
+      }
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onUp);
+  });
+
+  // Touch drag
+  editor.addEventListener('touchstart', e => {
+    if (e.target.tagName !== 'IMG') return;
+    const img = e.target;
+    selectImg(img);
+    const t0 = e.touches[0];
+    const startX = t0.clientX, startY = t0.clientY;
+    let started = false;
+
+    function onMove(ev) {
+      const t = ev.touches[0];
+      if (!started && (Math.abs(t.clientX - startX) > 6 || Math.abs(t.clientY - startY) > 6)) {
+        started = true;
+        startDrag(img, startX, startY);
+      }
+      if (started) { ev.preventDefault(); moveDrag(t.clientX, t.clientY); }
+    }
+
+    function onEnd(ev) {
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend',  onEnd);
+      if (started) {
+        const t = ev.changedTouches[0];
+        endDrag(t.clientX, t.clientY);
+      }
+    }
+
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend',  onEnd);
+  }, { passive: true });
+
+  // ── Align ──
+  window.imgAlign = function(val) {
+    if (!selectedImg) return;
+    if (val === 'left')  { selectedImg.style.float = 'left';  selectedImg.style.margin = '0 12px 8px 0'; }
+    if (val === 'right') { selectedImg.style.float = 'right'; selectedImg.style.margin = '0 0 8px 12px'; }
+    if (val === 'none')  { selectedImg.style.float = '';      selectedImg.style.margin = ''; }
+    setTimeout(() => positionOverlay(selectedImg), 50);
+    triggerSaveIndicator();
+  };
+
+  // ── Delete ──
+  window.imgDelete = function() {
+    if (!selectedImg) return;
+    selectedImg.remove();
+    deselectImg();
+    triggerSaveIndicator();
+  };
+})();
+function insertHR() { exec('insertHTML', '<hr>'); closeMenus(); }
+function insertDate() { exec('insertText', new Date().toLocaleString()); closeMenus(); }
+function insertCodeBlock() { exec('insertHTML', '<pre><code>// Code here</code></pre><p><br></p>'); closeMenus(); }
+function insertBlockquote() { exec('insertHTML', '<blockquote>Blockquote text</blockquote><p><br></p>'); closeMenus(); }
+
+// ── Table contextual toolbar ──
+const tableToolbar = document.getElementById('table-toolbar');
+let activeCell = null;
+
+function getActiveTable() {
+  return activeCell ? activeCell.closest('table') : null;
+}
+
+function showTableToolbar(cell) {
+  activeCell = cell;
+  const table = cell.closest('table');
+  const rect = table.getBoundingClientRect();
+  tableToolbar.classList.add('show');
+  const tbW = tableToolbar.offsetWidth || 480;
+  let left = rect.left;
+  left = Math.max(8, Math.min(left, window.innerWidth - tbW - 8));
+  tableToolbar.style.left = left + 'px';
+  tableToolbar.style.top  = (rect.top - tableToolbar.offsetHeight - 6) + 'px';
+}
+
+function hideTableToolbar() {
+  tableToolbar.classList.remove('show');
+  activeCell = null;
+}
+
+editor.addEventListener('click', e => {
+  const cell = e.target.closest('td, th');
+  if (cell && editor.contains(cell)) { showTableToolbar(cell); }
+  else hideTableToolbar();
+});
+
+function tableAddRowBelow() {
+  if (!activeCell) return;
+  const row = activeCell.closest('tr');
+  const cols = row.cells.length;
+  const newRow = document.createElement('tr');
+  for (let i = 0; i < cols; i++) newRow.appendChild(document.createElement('td')).innerHTML = '&nbsp;';
+  row.after(newRow);
+  triggerSaveIndicator();
+}
+
+function tableAddRowAbove() {
+  if (!activeCell) return;
+  const row = activeCell.closest('tr');
+  const cols = row.cells.length;
+  const newRow = document.createElement('tr');
+  for (let i = 0; i < cols; i++) newRow.appendChild(document.createElement('td')).innerHTML = '&nbsp;';
+  row.before(newRow);
+  triggerSaveIndicator();
+}
+
+function tableAddColRight() {
+  if (!activeCell) return;
+  const table = getActiveTable();
+  const colIdx = activeCell.cellIndex;
+  table.querySelectorAll('tr').forEach(row => {
+    const cell = document.createElement(row.closest('thead') ? 'th' : 'td');
+    cell.innerHTML = '&nbsp;';
+    const ref = row.cells[colIdx + 1];
+    ref ? row.insertBefore(cell, ref) : row.appendChild(cell);
+  });
+  triggerSaveIndicator();
+}
+
+function tableAddColLeft() {
+  if (!activeCell) return;
+  const table = getActiveTable();
+  const colIdx = activeCell.cellIndex;
+  table.querySelectorAll('tr').forEach(row => {
+    const cell = document.createElement(row.closest('thead') ? 'th' : 'td');
+    cell.innerHTML = '&nbsp;';
+    const ref = row.cells[colIdx];
+    ref ? row.insertBefore(cell, ref) : row.appendChild(cell);
+  });
+  triggerSaveIndicator();
+}
+
+function tableDeleteRow() {
+  if (!activeCell) return;
+  const row = activeCell.closest('tr');
+  const table = getActiveTable();
+  if (table.rows.length <= 1) { tableDelete(); return; }
+  row.remove();
+  hideTableToolbar();
+  triggerSaveIndicator();
+}
+
+function tableDeleteCol() {
+  if (!activeCell) return;
+  const table = getActiveTable();
+  const colIdx = activeCell.cellIndex;
+  if (table.rows[0] && table.rows[0].cells.length <= 1) { tableDelete(); return; }
+  table.querySelectorAll('tr').forEach(row => {
+    if (row.cells[colIdx]) row.deleteCell(colIdx);
+  });
+  hideTableToolbar();
+  triggerSaveIndicator();
+}
+
+function tableDelete() {
+  const table = getActiveTable();
+  if (table) { table.remove(); hideTableToolbar(); triggerSaveIndicator(); }
+}
+
+// ── Column & Row resize ──
+(function() {
+  let dragging = false, startPos = 0, startSize = 0, dragCell = null, handle = null, mode = '';
+
+  function addResizeHandles(table) {
+    table.querySelectorAll('td, th').forEach(cell => {
+      if (!cell.querySelector('.col-resize-handle')) {
+        const h = document.createElement('div');
+        h.className = 'col-resize-handle';
+        h.addEventListener('mousedown', e => onDragStart(e, 'col'));
+        cell.appendChild(h);
+      }
+      if (!cell.querySelector('.row-resize-handle')) {
+        const h = document.createElement('div');
+        h.className = 'row-resize-handle';
+        h.addEventListener('mousedown', e => onDragStart(e, 'row'));
+        cell.appendChild(h);
+      }
+    });
+  }
+
+  function onDragStart(e, m) {
+    e.preventDefault(); e.stopPropagation();
+    dragging = true; mode = m;
+    handle = e.target;
+    dragCell = handle.parentElement;
+    handle.classList.add('dragging');
+    if (mode === 'col') {
+      startPos = e.clientX;
+      startSize = dragCell.offsetWidth;
+    } else {
+      startPos = e.clientY;
+      startSize = dragCell.offsetHeight;
+    }
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', onDragEnd);
+  }
+
+  function onDrag(e) {
+    if (!dragging) return;
+    if (mode === 'col') {
+      const w = Math.max(40, startSize + e.clientX - startPos);
+      dragCell.style.width = w + 'px';
+      dragCell.style.minWidth = w + 'px';
+    } else {
+      const h = Math.max(24, startSize + e.clientY - startPos);
+      dragCell.style.height = h + 'px';
+      dragCell.style.minHeight = h + 'px';
+      // Apply same height to all cells in the same row
+      const row = dragCell.closest('tr');
+      if (row) Array.from(row.cells).forEach(c => {
+        c.style.height = h + 'px';
+        c.style.minHeight = h + 'px';
+      });
+    }
+  }
+
+  function onDragEnd() {
+    dragging = false;
+    if (handle) handle.classList.remove('dragging');
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('mouseup', onDragEnd);
+    triggerSaveIndicator();
+  }
+
+  new MutationObserver(() => {
+    editor.querySelectorAll('table').forEach(addResizeHandles);
+  }).observe(editor, { childList: true, subtree: true });
+
+  editor.querySelectorAll('table').forEach(addResizeHandles);
+})();
+
+// ── Page colour toggle (white / black) — per document ──
+let pageDark = false;
+function applyPageTheme(dark) {
+  pageDark = dark;
+  const page      = document.getElementById('page');
+  const editorEl  = document.getElementById('editor');
+  const iconLight = document.getElementById('page-theme-icon-light');
+  const iconDark  = document.getElementById('page-theme-icon-dark');
+  const btn       = document.getElementById('btn-page-theme');
+  if (dark) {
+    page.style.background   = '#1a1a1a';
+    page.style.boxShadow    = '0 2px 8px rgba(0,0,0,0.8), 0 12px 40px rgba(0,0,0,0.7)';
+    editorEl.style.color    = '#e4e4e4';
+    editorEl.style.caretColor = '#7ba7ff';
+    iconLight.style.display = 'block';
+    iconDark.style.display  = 'none';
+    btn.classList.add('active');
+    btn.setAttribute('data-tip', 'Switch to white page');
+  } else {
+    page.style.background   = '';
+    page.style.boxShadow    = '';
+    editorEl.style.color    = '';
+    editorEl.style.caretColor = '';
+    iconLight.style.display = 'none';
+    iconDark.style.display  = 'block';
+    btn.classList.remove('active');
+    btn.setAttribute('data-tip', 'Switch to dark page');
+  }
+}
+function togglePageTheme() {
+  applyPageTheme(!pageDark);
+  const doc = getActive();
+  if (doc) { doc.pageDark = pageDark; saveStore(); }
+}
+
+// ── Page orientation toggle (portrait / landscape) — per document ──
+let pageIsLandscape = false;
+function applyOrientation(landscape) {
+  pageIsLandscape = landscape;
+  const page = document.getElementById('page');
+  const portraitIcon   = document.getElementById('orient-portrait-icon');
+  const landscapeIcon  = document.getElementById('orient-landscape-icon');
+  const btn            = document.getElementById('btn-orientation');
+  if (landscape) {
+    page.classList.add('landscape');
+    portraitIcon.style.display  = 'none';
+    landscapeIcon.style.display = 'block';
+    btn.classList.add('active');
+    btn.setAttribute('data-tip', 'Switch to Portrait');
+  } else {
+    page.classList.remove('landscape');
+    portraitIcon.style.display  = 'block';
+    landscapeIcon.style.display = 'none';
+    btn.classList.remove('active');
+    btn.setAttribute('data-tip', 'Switch to Landscape');
+  }
+  updatePageBreaks();
+}
+function toggleOrientation() {
+  applyOrientation(!pageIsLandscape);
+  const doc = getActive();
+  if (doc) { doc.landscape = pageIsLandscape; saveStore(); }
+}
+
+// ── Print ──
+function printDoc() {
+  const title = document.getElementById('doc-title').value || 'Document';
+  const { padV, padH } = getPageDims();
+
+  // Clone editor content, strip editor-only artifacts
+  const clone = document.getElementById('editor').cloneNode(true);
+  clone.querySelectorAll('.page-break-line').forEach(el => el.remove());
+  clone.querySelectorAll('.img-selected').forEach(el => el.classList.remove('img-selected'));
+  clone.querySelectorAll('.search-highlight').forEach(el => {
+    el.replaceWith(document.createTextNode(el.textContent));
+  });
+
+  // Convert px → mm at 96 dpi  (1 px = 25.4/96 mm)
+  const px2mm = px => (px * 25.4 / 96).toFixed(1);
+  const pageSize = pageIsLandscape ? 'A4 landscape' : 'A4 portrait';
+  const marginV  = px2mm(padV);   // e.g. 72 px → ~19 mm
+  const marginH  = px2mm(padH);   // e.g. 80 px → ~21 mm
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${title.replace(/[<>"]/g, c => ({'<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @page { size: ${pageSize}; margin: ${marginV}mm ${marginH}mm; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Lora', Georgia, serif; font-size: 11pt; line-height: 1.75; color: #202020; background: white; }
+    h1 { font-size: 2em;   line-height: 1.2; margin: .6em 0 .3em;  font-weight: 600; page-break-after: avoid; }
+    h2 { font-size: 1.5em; line-height: 1.3; margin: .5em 0 .25em; font-weight: 600; page-break-after: avoid; }
+    h3 { font-size: 1.25em;line-height: 1.4; margin: .5em 0 .2em;  font-weight: 600; page-break-after: avoid; }
+    h4 { font-size: 1.1em; margin: .5em 0 .2em;  font-weight: 600; page-break-after: avoid; }
+    h5, h6 { font-size: 1em; margin: .4em 0 .2em; font-weight: 600; page-break-after: avoid; }
+    p  { margin: 0 0 .5em; }
+    ul, ol { padding-left: 2em; margin: .5em 0; }
+    li { margin: .2em 0; }
+    blockquote { border-left: 3px solid #5b7bf5; margin: 1em 0; padding: .5em 1em; color: #555; font-style: italic; }
+    a  { color: #5b7bf5; text-decoration: underline; }
+    table { border-collapse: collapse; width: 100%; margin: 1em 0; page-break-inside: avoid; }
+    td, th { border: 1px solid #ccc; padding: 8px 12px; text-align: left; }
+    th { background: #f5f5f5; font-weight: 600; }
+    code { background: #f4f4f0; padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: .9em; }
+    pre  { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; margin: 1em 0; font-size: 13px; white-space: pre-wrap; page-break-inside: avoid; }
+    hr   { border: none; border-top: 2px solid #ddd; margin: 1.5em 0; }
+    img  { max-width: 100%; height: auto; page-break-inside: avoid; }
+  </style>
+</head>
+<body>${clone.innerHTML}</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=1100');
+  if (!win) { alert('Pop-up blocked — please allow pop-ups for this page and try again.'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.addEventListener('load', () => setTimeout(() => { win.print(); win.close(); }, 350));
+}
+
+// Native Ctrl+P fallback: reset zoom before browser renders, restore after
+window.addEventListener('beforeprint', () => {
+  const pageEl = document.getElementById('page');
+  pageEl.dataset.printZoom = currentZoom;
+  pageEl.style.transform       = 'none';
+  pageEl.style.transformOrigin = '';
+  // Inject correct @page size for current orientation
+  let s = document.getElementById('_printPageStyle');
+  if (!s) { s = document.createElement('style'); s.id = '_printPageStyle'; document.head.appendChild(s); }
+  s.textContent = pageIsLandscape
+    ? '@page { size: A4 landscape; margin: 15mm 21mm; }'
+    : '@page { size: A4 portrait;  margin: 19mm 21mm; }';
+});
+window.addEventListener('afterprint', () => {
+  const pageEl = document.getElementById('page');
+  setZoom(parseFloat(pageEl.dataset.printZoom) || 1);
+  const s = document.getElementById('_printPageStyle');
+  if (s) s.textContent = '';
+});
+
+// ── Save / Open ──
+function triggerSaveIndicator() {
+  clearTimeout(window._saveTimer);
+  window._saveTimer = setTimeout(() => {
+    saveCurrentToStore();
+    renderSidebar();
+    updatePageBreaks();
+  }, 400);
+}
+
+function saveAsHTML() {
+  const title = document.getElementById('doc-title').value || 'document';
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:0 20px;font-size:11pt;line-height:1.75}</style></head><body>${editor.innerHTML}</body></html>`;
+  download(title + '.html', html, 'text/html');
+  closeMenus();
+}
+function saveAsTxt() {
+  const title = document.getElementById('doc-title').value || 'document';
+  download(title + '.txt', editor.innerText, 'text/plain');
+  closeMenus();
+}
+function download(filename, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], {type}));
+  a.download = filename; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function newDoc() { createNewDoc(); }
+
+function openFile() { document.getElementById('open-file').click(); closeMenus(); }
+function openFileRead(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    if (file.name.endsWith('.html') || file.name.endsWith('.htm')) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(e.target.result, 'text/html');
+      editor.innerHTML = doc.body.innerHTML;
+    } else {
+      editor.innerText = e.target.result;
+    }
+    document.getElementById('doc-title').value = file.name.replace(/\.[^.]+$/, '');
+    triggerSaveIndicator();
+  };
+  reader.readAsText(file);
+}
+
+function shareDoc() {
+  const title = document.getElementById('doc-title').value;
+  if (navigator.share) {
+    navigator.share({ title, text: editor.innerText.slice(0, 200) + '…' });
+  } else {
+    const data = btoa(encodeURIComponent(editor.innerHTML));
+    const url = window.location.href + '#' + data;
+    navigator.clipboard.writeText(url).then(() => alert('Link copied to clipboard!'));
+  }
+}
+
+// ── Floating toolbar on selection ──
+const floatBar = document.getElementById('float-toolbar');
+function hideFloatToolbar() { floatBar.classList.remove('show'); }
+
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !editor.contains(sel.anchorNode)) { hideFloatToolbar(); return; }
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  if (!rect.width) { hideFloatToolbar(); return; }
+  floatBar.classList.add('show');
+  const fbw = floatBar.offsetWidth || 180;
+  let left = rect.left + rect.width/2 - fbw/2;
+  let top = rect.top - 44 + window.scrollY;
+  left = Math.max(8, Math.min(left, window.innerWidth - fbw - 8));
+  floatBar.style.left = left + 'px';
+  floatBar.style.top = top + 'px';
+});
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod) {
+    switch(e.key.toLowerCase()) {
+      case 'b': e.preventDefault(); exec('bold'); break;
+      case 'i': e.preventDefault(); exec('italic'); break;
+      case 'u': e.preventDefault(); exec('underline'); break;
+      case 'k': e.preventDefault(); showLinkDialog(); break;
+      case 'h': e.preventDefault(); showFind(); break;
+      case 's': e.preventDefault(); saveAsHTML(); break;
+      case 'p': e.preventDefault(); printDoc(); break;
+      case 'o': e.preventDefault(); openFile(); break;
+      case 'l': e.preventDefault(); exec('justifyLeft'); break;
+      case 'e': e.preventDefault(); exec('justifyCenter'); break;
+      case 'r': e.preventDefault(); exec('justifyRight'); break;
+      case '=': e.preventDefault(); zoomIn(); break;
+      case '-': e.preventDefault(); zoomOut(); break;
+      case '0': e.preventDefault(); setZoom(1); break;
+      case '[': e.preventDefault(); exec('outdent'); break;
+      case ']': e.preventDefault(); exec('indent'); break;
+    }
+    if (e.shiftKey && e.key.toLowerCase() === 'x') { e.preventDefault(); exec('strikeThrough'); }
+  }
+  if (e.key === 'Escape') {
+    closeFind(); closeMenus(); closeLinkDialog(); closeImageDialog(); closeTableDialog();
+    if (sidebarOpen) closeSidebar();
+  }
+  if (e.key === 'Tab' && editor.contains(document.activeElement || e.target)) {
+    e.preventDefault();
+    exec('insertHTML', '&emsp;&emsp;');
+  }
+  if (e.key === 'F3') { e.preventDefault(); e.shiftKey ? findPrev() : findNext(); }
+});
+
+// ── Editor events ──
+editor.addEventListener('input', () => { triggerSaveIndicator(); updateWordCount(); });
+editor.addEventListener('keyup', updateToolbarState);
+editor.addEventListener('mouseup', updateToolbarState);
+document.getElementById('doc-title').addEventListener('input', triggerSaveIndicator);
+
+// ── Init ──
+window.addEventListener('DOMContentLoaded', () => {
+  loadStore();
+  const doc = getActive();
+  if (doc) {
+    editor.innerHTML = doc.content || '';
+    document.getElementById('doc-title').value = doc.title || 'Untitled Document';
+    applyPageTheme(doc.pageDark || false);
+    applyOrientation(doc.landscape || false);
+    setZoom(doc.zoom || 1);
+  }
+  renderSidebar();
+  updateWordCount();
+  updatePageBreaks();
+});
+
+// Close menus on outside click
+document.addEventListener('pointerdown', e => {
+  if (!e.target.closest('.menu-item')) closeMenus();
+  if (e.target.closest('#link-dialog .dialog-box') === null && e.target.closest('#link-dialog')) closeLinkDialog();
+  if (e.target.closest('#image-dialog .dialog-box') === null && e.target.closest('#image-dialog')) closeImageDialog();
+  if (e.target.closest('#table-dialog .dialog-box') === null && e.target.closest('#table-dialog')) closeTableDialog();
+  if (!e.target.closest('#table-toolbar') && !e.target.closest('td') && !e.target.closest('th')) hideTableToolbar();
+});
+
+// ── Swipe to close sidebar on mobile ──
+(function() {
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!sidebarOpen) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // Left swipe > 60px and more horizontal than vertical
+    if (dx < -60 && Math.abs(dy) < Math.abs(dx)) closeSidebar();
+  }, { passive: true });
+})();
+
+// Responsive header height
+function updateMainTop() {
+  const h = document.getElementById('header').offsetHeight;
+  document.getElementById('main').style.top = h + 'px';
+  document.getElementById('find-bar').style.top = (h + 8) + 'px';
+}
+new ResizeObserver(updateMainTop).observe(document.getElementById('header'));
+updateMainTop();
+</script>
+</body>
+</html>
