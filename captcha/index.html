@@ -1,307 +1,992 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CAPTCHA</title>
-  <style>
-    /* Global Styles */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000000; /* Black background */
-      color: #ffffff; /* White text */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Human Verification — Antartica.Org</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@600;800&family=Outfit:wght@300;400;500;600&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030A13;--surface:#071524;--surface2:#0C1E32;--surface3:#102843;
+  --border:rgba(56,189,248,.14);--border2:rgba(56,189,248,.3);
+  --ice:#38BDF8;--aurora:#818CF8;--teal:#2DD4BF;
+  --success:#34D399;--error:#F87171;--warn:#FBBF24;
+  --text:#D0EEFF;--muted:#486880;--r:18px;--rs:12px;--tr:.25s cubic-bezier(.4,0,.2,1)
+}
+html{font-size:16px}
+body{
+  font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+  padding:16px 16px 36px;
+  background-image:
+    radial-gradient(ellipse 120% 50% at 50% -5%,rgba(56,189,248,.08) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 35% at 10% 80%,rgba(129,140,248,.05) 0%,transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='.7' fill='rgba(56,189,248,.18)'/%3E%3C/svg%3E");
+}
 
-    /* Top Heading */
-    .top-heading {
-      font-size: 35px;
-      color: #00ffff; /* Cyan color */
-      margin-bottom: 20px;
-      margin-top: 50px; /* Increased top margin */
-    }
+/* ── BRAND BAR ──────────────────── */
+.brand-bar{
+  width:100%;max-width:560px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0 24px;animation:fadeUp .45s both;
+}
+.brand-logo{display:flex;align-items:center;gap:10px}
+.brand-icon svg{width:38px;height:38px;flex-shrink:0}
+.brand-name{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(.82rem,2.4vw,.98rem);
+  letter-spacing:.07em;color:var(--ice);line-height:1.1;
+}
+.brand-tagline{font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.live-badge{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(56,189,248,.06);border:1px solid var(--border);
+  border-radius:99px;padding:5px 12px;
+  font-size:.67rem;color:var(--muted);letter-spacing:.05em;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-    .captcha-container {
-      background-color: #222222;
-      border-radius: 10px;
-      padding: 40px; /* Increased padding for larger margin */
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
-      margin: 50px; /* Larger margin around the CAPTCHA */
-    }
+/* ── CARD ───────────────────────── */
+.card{
+  width:100%;max-width:560px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r);
+  padding:clamp(20px,5vw,36px);
+  animation:fadeUp .45s .08s both;position:relative;overflow:hidden;
+  box-shadow:0 0 80px rgba(56,189,248,.04),0 24px 64px rgba(0,0,0,.45);
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--ice) 30%,var(--aurora) 65%,var(--teal) 85%,transparent 100%);
+}
 
-    h1 {
-      font-size: 40px;
-      color: #00ffff; /* Cyan text */
-      margin-bottom: 20px;
-    }
+/* ── ATTEMPT METER ──────────────── */
+.attempt-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:10px}
+.attempt-label{font-size:.7rem;color:var(--muted);white-space:nowrap;letter-spacing:.03em}
+.attempt-dots{display:flex;gap:5px;flex:1}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--surface3);border:1px solid rgba(56,189,248,.2);transition:var(--tr)}
+.dot.used{background:var(--error);border-color:var(--error);box-shadow:0 0 6px rgba(248,113,113,.4)}
+.dot.ok{background:var(--success);border-color:var(--success)}
+.attempt-count{font-family:'Azeret Mono',monospace;font-size:.72rem;color:var(--muted);white-space:nowrap}
 
-    p {
-      color: #888888;
-      margin-bottom: 30px;
-    }
+/* ── TYPE BADGE ─────────────────── */
+.type-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.22);
+  border-radius:8px;padding:4px 10px;
+  font-size:.68rem;color:var(--ice);font-weight:600;
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;
+}
 
-    .captcha-image {
-      margin-bottom: 20px;
-      width: 100%;
-      max-width: 500px;
-    }
+/* ── INSTRUCTION ────────────────── */
+.instruction{font-size:clamp(.9rem,2.4vw,1rem);font-weight:500;line-height:1.65;color:var(--text);margin-bottom:14px}
+.instruction strong{color:var(--ice)}
+.instruction em{color:var(--warn);font-style:normal;font-weight:600}
 
-    .captcha-input {
-      margin-bottom: 20px;
-      padding: 10px;
-      width: 100%;
-      font-size: 20px;
-      border: 1px solid #888888;
-      border-radius: 5px;
-      background-color: #333333;
-      color: #ffffff;
-    }
+/* ── CHALLENGE ──────────────────── */
+.challenge{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:14px;margin-bottom:14px;min-height:110px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+}
 
-    .captcha-button {
-      padding: 10px 20px;
-      background-color: #00ffff; /* Cyan button */
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      color: #000000;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      width: 100%;
-    }
+/* Math */
+.math-eq{font-family:'Azeret Mono',monospace;font-size:clamp(1.5rem,5.5vw,2.4rem);color:var(--text);padding:20px 22px;text-align:center;line-height:1.5}
+.math-op{color:var(--ice);margin:0 7px}
+.math-eq-sign{color:var(--muted);margin:0 7px}
+.math-blank{display:inline-block;border-bottom:3px solid var(--ice);min-width:55px;color:var(--ice);text-align:center}
+.math-paren{color:rgba(56,189,248,.45)}
 
-    .captcha-button:hover {
-      background-color: #00b3b3; /* Darker cyan on hover */
-    }
+/* Canvas */
+#captcha-canvas{width:100%;height:auto;display:block}
 
-    .error-message {
-      color: #ff0000;
-      margin-top: 10px;
-      font-size: 14px;
-      display: none;
-    }
+/* Colors */
+.color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:14px;width:100%}
+.color-btn{
+  height:58px;border-radius:11px;border:3px solid transparent;cursor:pointer;transition:var(--tr);
+  font-size:.72rem;font-weight:700;color:rgba(255,255,255,.88);
+  text-shadow:0 1px 4px rgba(0,0,0,.7);font-family:'Outfit',sans-serif;outline:none;letter-spacing:.02em;
+}
+.color-btn:active{transform:scale(.93)}
+.color-btn.selected{border-color:white;box-shadow:0 0 0 4px rgba(255,255,255,.12)}
 
-    /* Access Denied page styling */
-    .access-denied {
-      font-size: 24px;
-      color: #ff0000;
-      text-align: center;
-      padding: 50px;
-    }
+/* Choice */
+.choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:12px;width:100%}
+.choice-grid.c3{grid-template-columns:repeat(3,1fr)}
+.choice-btn{
+  padding:14px 10px;min-height:54px;background:var(--surface3);
+  border:2px solid var(--border);border-radius:11px;
+  color:var(--text);font-size:clamp(.88rem,2.3vw,1rem);
+  font-weight:600;font-family:'Syne',sans-serif;cursor:pointer;transition:var(--tr);
+  text-align:center;display:flex;align-items:center;justify-content:center;
+}
+.choice-btn:hover{border-color:var(--ice);background:rgba(56,189,248,.07);color:var(--ice)}
+.choice-btn:active{transform:scale(.96)}
+.choice-btn.selected{border-color:var(--ice);background:rgba(56,189,248,.13);color:var(--ice)}
 
-    /* For users with JavaScript disabled */
-    .no-js {
-      display: none;
-    }
+/* Emoji */
+.emoji-wrap{display:flex;flex-wrap:wrap;gap:3px;padding:12px;justify-content:center}
+.emoji-item{font-size:clamp(1.1rem,3.3vw,1.5rem);padding:2px;user-select:none}
 
-    .no-js-message {
-      font-size: 18px;
-      color: #ffffff;
-      background-color: #333333;
-      padding: 20px;
-      text-align: center;
-      border-radius: 10px;
-    }
+/* Grid select */
+.sq-grid{display:grid;gap:5px;padding:12px}
+.sq-cell{border-radius:7px;cursor:pointer;border:3px solid transparent;transition:var(--tr);aspect-ratio:1;min-height:32px}
+.sq-cell.selected{border-color:white;transform:scale(.9);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
 
-    .no-js p {
-      color: #00ffff;
-      font-size: 18px;
-    }
+/* Dual slider */
+.dual-slider-wrap{padding:18px 20px;width:100%}
+.slider-target-disp{text-align:center;font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;color:var(--ice);margin-bottom:6px}
+.slider-target-disp small{display:block;font-size:.68rem;color:var(--muted);font-family:'Outfit',sans-serif;margin-bottom:3px}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.slider-lbl{font-size:.72rem;color:var(--muted);width:20px;text-align:center;font-family:'Azeret Mono',monospace}
+.slider-val-num{font-family:'Azeret Mono',monospace;font-size:.82rem;color:var(--ice);width:30px;text-align:right}
+input[type=range]{-webkit-appearance:none;flex:1;height:8px;border-radius:99px;background:var(--surface3);border:1px solid var(--border);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--ice),var(--aurora));box-shadow:0 2px 10px rgba(56,189,248,.4);transition:var(--tr);cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--ice),var(--aurora));border:none}
+.sum-row{text-align:center;font-family:'Azeret Mono',monospace;font-size:1rem;color:var(--muted);margin-top:6px}
+.sum-row span{color:var(--text)}
 
-    .privacy-notice {
-      font-size: 14px;
-      color: #888888;
-      margin-top: 10px;
-      line-height: 1.5;
-    }
+/* Word cipher */
+.word-display{font-family:'Azeret Mono',monospace;font-size:clamp(1.5rem,5vw,2.4rem);letter-spacing:.18em;color:var(--ice);padding:18px;text-align:center}
+.hint-sub{font-size:.75rem;color:var(--muted);padding:0 16px 14px;text-align:center;line-height:1.5}
 
-  </style>
+/* Odd one out — numbers */
+.oon-item{
+  padding:12px 8px;min-height:58px;background:var(--surface3);
+  border:2px solid var(--border);border-radius:11px;
+  font-family:'Azeret Mono',monospace;font-weight:500;
+  font-size:clamp(.95rem,2.8vw,1.15rem);cursor:pointer;transition:var(--tr);
+  text-align:center;color:var(--text);display:flex;align-items:center;justify-content:center;
+}
+.oon-item:hover{border-color:var(--ice);color:var(--ice)}
+.oon-item.selected{border-color:var(--error);background:rgba(248,113,113,.1);color:var(--error)}
+
+/* True/False */
+.tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:12px;width:100%}
+.tf-btn{
+  padding:20px 10px;border-radius:13px;border:2px solid var(--border);
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;transition:var(--tr);color:var(--text);
+}
+.tf-btn.t{background:rgba(52,211,153,.06)}
+.tf-btn.f{background:rgba(248,113,113,.06)}
+.tf-btn.t:hover,.tf-btn.t.selected{background:rgba(52,211,153,.18);border-color:var(--success);color:var(--success)}
+.tf-btn.f:hover,.tf-btn.f.selected{background:rgba(248,113,113,.18);border-color:var(--error);color:var(--error)}
+.tf-btn:active{transform:scale(.96)}
+.statement-box{padding:18px;text-align:center;font-size:clamp(.88rem,2.5vw,1rem);line-height:1.7;font-weight:500}
+
+/* Memory grid */
+.mem-status{text-align:center;padding:10px 16px;font-family:'Azeret Mono',monospace;font-size:.82rem;color:var(--ice);letter-spacing:.03em}
+.mem-cell{border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .18s;aspect-ratio:1;background:var(--surface3);min-height:36px}
+.mem-cell.flash{background:var(--ice);box-shadow:0 0 14px rgba(56,189,248,.7)}
+.mem-cell.selected{background:rgba(56,189,248,.28);border-color:var(--ice)}
+
+/* Cipher */
+.cipher-display{font-family:'Azeret Mono',monospace;font-size:clamp(1.7rem,5.5vw,2.6rem);letter-spacing:.2em;color:var(--warn);padding:18px;text-align:center}
+.cipher-sub{font-size:.75rem;color:var(--muted);padding:0 14px 14px;text-align:center;line-height:1.6}
+
+/* Binary */
+.binary-display{font-family:'Azeret Mono',monospace;font-size:clamp(1.3rem,4.5vw,2.2rem);letter-spacing:.1em;padding:20px;text-align:center}
+.bit-1{color:var(--success)}.bit-0{color:rgba(52,211,153,.28)}
+.bit-hint{text-align:center;font-size:.72rem;color:var(--muted);padding:0 14px 14px}
+
+/* Clock */
+#clock-canvas{display:block;margin:0 auto;max-width:200px;width:90%;height:auto}
+
+/* Roman */
+.roman-display{font-family:'Orbitron',monospace;font-size:clamp(1.1rem,3.8vw,1.9rem);color:var(--warn);padding:20px;text-align:center;letter-spacing:.06em;font-weight:700;line-height:1.4}
+
+/* Pattern display */
+.pattern-row{display:flex;align-items:center;gap:7px;padding:18px 14px;flex-wrap:wrap;justify-content:center}
+.pat-item{background:rgba(56,189,248,.1);border:1.5px solid rgba(56,189,248,.25);border-radius:10px;padding:9px 13px;font-family:'Azeret Mono',monospace;font-size:clamp(.95rem,2.8vw,1.2rem);color:var(--text)}
+.pat-arrow{color:var(--muted);font-size:1.1rem}
+.pat-blank{background:var(--surface2);border:2px dashed var(--ice);border-radius:10px;padding:9px 13px;font-size:1.3rem;color:var(--ice)}
+
+/* ── INPUT ──────────────────────── */
+.input-row{margin-bottom:13px}
+.text-inp{
+  width:100%;padding:14px 16px;background:var(--surface2);border:2px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-size:1.05rem;font-family:'Azeret Mono',monospace;
+  outline:none;transition:var(--tr);-moz-appearance:textfield;
+}
+.text-inp::-webkit-outer-spin-button,.text-inp::-webkit-inner-spin-button{-webkit-appearance:none}
+.text-inp:focus{border-color:var(--ice);background:rgba(56,189,248,.05)}
+.text-inp::placeholder{color:var(--muted)}
+
+/* ── SUBMIT ─────────────────────── */
+.submit-btn{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,var(--ice) 0%,var(--aurora) 100%);
+  border:none;border-radius:var(--rs);color:var(--bg);
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.04em;
+  cursor:pointer;transition:var(--tr);box-shadow:0 4px 22px rgba(56,189,248,.28);
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(56,189,248,.42)}
+.submit-btn:active{transform:none}
+.submit-btn:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ── FEEDBACK ───────────────────── */
+.feedback{display:none;align-items:center;gap:8px;margin-top:11px;padding:10px 13px;border-radius:9px;font-size:.87rem;font-weight:500}
+.feedback.show{display:flex;animation:fadeUp .3s both}
+.feedback.err{background:rgba(248,113,113,.09);border:1px solid rgba(248,113,113,.26);color:var(--error)}
+.feedback.ok{background:rgba(52,211,153,.09);border:1px solid rgba(52,211,153,.26);color:var(--success)}
+.feedback.info{background:rgba(56,189,248,.09);border:1px solid rgba(56,189,248,.26);color:var(--ice)}
+
+/* ── CHANGE ROW ─────────────────── */
+.change-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:13px}
+.change-btn{
+  background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);
+  font-size:.75rem;font-family:'Outfit',sans-serif;cursor:pointer;padding:8px 13px;
+  transition:var(--tr);display:flex;align-items:center;gap:5px;
+}
+.change-btn:hover:not(:disabled){color:var(--text);border-color:var(--ice)}
+.change-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.change-chip{
+  font-size:.67rem;color:var(--muted);background:var(--surface2);
+  border:1px solid var(--border);border-radius:6px;padding:3px 7px;
+  font-family:'Azeret Mono',monospace;white-space:nowrap;
+}
+.change-chip.locked{color:var(--error);border-color:rgba(248,113,113,.2);background:rgba(248,113,113,.05)}
+
+/* ── ACCESS DENIED ──────────────── */
+.access-denied{display:none;text-align:center;animation:fadeUp .5s both;padding:20px;max-width:440px;width:100%}
+.denied-icon{font-size:3.5rem;margin-bottom:14px}
+.denied-title{font-family:'Orbitron',monospace;font-weight:700;font-size:1.35rem;color:var(--error);margin-bottom:10px}
+.access-denied p{color:var(--muted);font-size:.9rem;line-height:1.75}
+.access-denied a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border)}
+.access-denied a:hover{color:var(--ice)}
+
+/* ── FOOTER ─────────────────────── */
+.page-footer{margin-top:18px;font-size:.7rem;color:var(--muted);text-align:center;letter-spacing:.04em;animation:fadeUp .5s .14s both}
+.page-footer a{color:var(--muted);text-decoration:none}
+.page-footer a:hover{color:var(--ice)}
+
+/* ── ANIMS ──────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .4s ease}
+
+/* ── RESPONSIVE ─────────────────── */
+@media(max-width:380px){
+  .color-grid{grid-template-columns:repeat(2,1fr)}
+  .choice-grid.c3{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:600px){body{padding:28px 20px 52px}}
+</style>
 </head>
 <body>
 
+<!-- Brand Bar -->
+<div class="brand-bar">
+  <div class="brand-logo">
+    <div class="brand-icon">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="22" fill="rgba(56,189,248,.07)" stroke="rgba(56,189,248,.28)" stroke-width="1.4"/>
+        <line x1="24" y1="5" x2="24" y2="43" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="5" y1="24" x2="43" y2="24" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="9.9" y1="9.9" x2="38.1" y2="38.1" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="38.1" y1="9.9" x2="9.9" y2="38.1" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="24" y1="5" x2="20" y2="10.5" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="24" y1="5" x2="28" y2="10.5" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="24" y1="43" x2="20" y2="37.5" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="24" y1="43" x2="28" y2="37.5" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="5" y1="24" x2="10.5" y2="20" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="5" y1="24" x2="10.5" y2="28" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="43" y1="24" x2="37.5" y2="20" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <line x1="43" y1="24" x2="37.5" y2="28" stroke="#38BDF8" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="3.8" fill="#38BDF8"/>
+        <circle cx="24" cy="24" r="1.6" fill="#030A13"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">ANTARTICA.ORG</div>
+      <div class="brand-tagline">Guardians of the Last Wilderness</div>
+    </div>
+  </div>
+  <div class="live-badge"><div class="live-dot"></div>Secure</div>
+</div>
 
-  <!-- Access Denied Page (hidden if captcha is valid) -->
-  <div id="access-denied" class="access-denied" style="display:none;">
-    <p>Access Denied. You have exceeded the allowed CAPTCHA attempts.</p>
+<!-- Access Denied -->
+<div class="access-denied" id="access-denied">
+  <div class="denied-icon">🔒</div>
+  <div class="denied-title">Access Denied</div>
+  <p>You have exceeded the maximum number of allowed verification attempts.<br><br>
+  Please contact <a href="mailto:support@antartica.org">support@antartica.org</a> for assistance.</p>
+</div>
+
+<!-- CAPTCHA Card -->
+<div class="card" id="captcha-card">
+  <div class="attempt-row">
+    <span class="attempt-label">Attempts used</span>
+    <div class="attempt-dots" id="attempt-dots"></div>
+    <span class="attempt-count" id="attempt-count">0 / 8</span>
   </div>
 
-  <!-- CAPTCHA Container (hidden if captcha is invalid or if access denied) -->
-  <div id="captcha-container" class="captcha-container">
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <h1>CAPTCHA</h1>
-    <p>How many <span id="shape-name"></span> shapes are there? Multiply the answer by <span id="multiply-value"></span> and enter it below.</p>
-    <canvas id="captcha-canvas" class="captcha-image" width="500" height="400"></canvas>
-    <input type="text" id="captcha-input" class="captcha-input" placeholder="Enter the number of shapes * multiplier" />
-    <button class="captcha-button" id="verify-button" onclick="verifyCaptcha()">Verify</button>
-    
-    <!-- Privacy notice -->
-    <p class="privacy-notice">
-      * By default only strictly necessary cookies are used in this page
-    </p>
-    
-    <div class="error-message" id="error-message">Incorrect CAPTCHA. Please try again!</div>
+  <div class="type-badge" id="type-badge">Loading…</div>
+  <div class="instruction" id="instruction">Initialising…</div>
+  <div class="challenge" id="challenge-area"></div>
+  <div id="input-area"></div>
+
+  <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Verify →</button>
+  <div class="feedback" id="feedback"></div>
+
+  <div class="change-row">
+    <button class="change-btn" id="change-btn" onclick="handleChange()">↺ Try a different challenge</button>
+    <span class="change-chip" id="change-chip">1 change left</span>
   </div>
+</div>
 
-  <script>
-    // Helper function to get cookies
-    function getCookie(name) {
-      const cookieArr = document.cookie.split(';');
-      for (let i = 0; i < cookieArr.length; i++) {
-        const cookie = cookieArr[i].trim();
-        if (cookie.startsWith(name + "=")) {
-          return cookie.substring(name.length + 1);
+<div class="page-footer">
+  Strictly necessary cookies only &nbsp;·&nbsp;
+  <a href="https://antartica.org/privacy" target="_blank">Privacy Policy</a> &nbsp;·&nbsp;
+  © 2025 <a href="https://antartica.org" target="_blank">Antartica.Org</a>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   COOKIES
+══════════════════════════════════════ */
+const C={
+  get(n){const x=document.cookie.split(';').find(c=>c.trim().startsWith(n+'='));return x?x.trim().slice(n.length+1):''},
+  set(n,v,d=30){const e=new Date;e.setTime(e.getTime()+d*864e5);document.cookie=`${n}=${v};expires=${e.toUTCString()};path=/`}
+};
+const MAX=8;
+const getAttempts=()=>parseInt(C.get('captchacount'))||0;
+const incAttempts=()=>C.set('captchacount',getAttempts()+1);
+const resetAttempts=()=>C.set('captchacount','0');
+const getStatus=()=>C.get('captcha')||'0';
+const setStatus=v=>C.set('captcha',v);
+const getChanges=()=>parseInt(C.get('captchachanges'))||0;
+const useChange=()=>C.set('captchachanges','1');
+const canChange=()=>getChanges()<1;
+
+/* ══════════════════════════════════════
+   STATE / UTILS
+══════════════════════════════════════ */
+let currentCaptcha=null,memTimer=null;
+const state={type:null,selectedValue:null};
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+
+/* ══════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════ */
+function renderAttemptMeter(){
+  const used=getAttempts(),rem=Math.max(0,MAX-used);
+  document.getElementById('attempt-dots').innerHTML=Array.from({length:MAX},(_,i)=>`<div class="dot ${i<used?'used':'ok'}"></div>`).join('');
+  document.getElementById('attempt-count').textContent=`${used} / ${MAX}`;
+}
+function updateChangeUI(){
+  const btn=document.getElementById('change-btn'),chip=document.getElementById('change-chip');
+  if(!canChange()){
+    btn.disabled=true;
+    chip.textContent='🔒 Locked';chip.className='change-chip locked';
+  } else {
+    btn.disabled=false;chip.textContent='1 change left';chip.className='change-chip';
+  }
+}
+function showFeedback(t,msg){const el=document.getElementById('feedback');el.className=`feedback ${t} show`;el.innerHTML=msg}
+function hideFeedback(){document.getElementById('feedback').className='feedback'}
+function showAccessDenied(){
+  document.getElementById('captcha-card').style.display='none';
+  document.querySelector('.brand-bar').style.opacity='.4';
+  document.getElementById('access-denied').style.display='block';
+}
+
+/* ══════════════════════════════════════
+   INTERACTION CALLBACKS
+══════════════════════════════════════ */
+function selectChoice(val,el){
+  state.selectedValue=val;
+  document.querySelectorAll('.choice-btn,.oon-item').forEach(b=>b.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+  if(['colorMatch','oddOneOut'].includes(state.type)) setTimeout(handleSubmit,380);
+}
+function selectTF(val,el){
+  state.selectedValue=val;
+  document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  setTimeout(handleSubmit,300);
+}
+function toggleCell(el){el.classList.toggle('selected')}
+function toggleMem(el){if(!el.classList.contains('no-click'))el.classList.toggle('selected')}
+function updateSum(){
+  const a=parseInt(document.getElementById('sl-a')?.value)||0;
+  const b=parseInt(document.getElementById('sl-b')?.value)||0;
+  const ea=document.getElementById('val-a'),eb=document.getElementById('val-b'),es=document.getElementById('sum-val');
+  if(ea)ea.textContent=a;if(eb)eb.textContent=b;if(es){es.textContent=a+b;es.style.color=`var(--text)`}
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #1 — ADVANCED MATH
+══════════════════════════════════════ */
+function genMath(){
+  const forms=[
+    ()=>{const a=rnd(4,13),b=rnd(10,45);return{display:`<span>${a}</span><sup style="font-size:.58em;vertical-align:super;color:var(--ice)">2</sup><span class="math-op">−</span><span>${b}</span>`,ans:a*a-b}},
+    ()=>{const a=rnd(4,9),b=rnd(3,8),c=rnd(10,40);return{display:`<span class="math-paren">(</span><span>${a}</span><span class="math-op">×</span><span>${b}</span><span class="math-paren">)</span><span class="math-op">+</span><span>${c}</span>`,ans:(a*b)+c}},
+    ()=>{const a=rnd(5,14),b=rnd(3,8),c=rnd(2,6),d=rnd(5,25);return{display:`<span class="math-paren">(</span><span>${a}</span><span class="math-op">+</span><span>${b}</span><span class="math-paren">)</span><span class="math-op">×</span><span>${c}</span><span class="math-op">−</span><span>${d}</span>`,ans:(a+b)*c-d}},
+    ()=>{const a=rnd(30,99),b=rnd(3,9);return{display:`<span>⌊</span><span>${a}</span><span class="math-op">÷</span><span>${b}</span><span>⌋</span>`,ans:Math.floor(a/b)}},
+    ()=>{const a=rnd(3,8),b=rnd(2,6),c=rnd(10,30);return{display:`<span>${a}</span><sup style="font-size:.58em;vertical-align:super;color:var(--ice)">2</sup><span class="math-op">+</span><span>${b}</span><sup style="font-size:.58em;vertical-align:super;color:var(--aurora)">2</sup><span class="math-op">−</span><span>${c}</span>`,ans:a*a+b*b-c}},
+  ];
+  const{display,ans}=pick(forms)();
+  return{
+    type:'math',badge:'🧮 Advanced Math',
+    instruction:'Solve the equation. <strong>⌊x⌋</strong> means floor (round down). Show your working mentally!',
+    renderChallenge(){document.getElementById('challenge-area').innerHTML=`<div class="math-eq">${display}<span class="math-eq-sign"> = </span><span class="math-blank">?</span></div>`},
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="number" class="text-inp" id="main-input" placeholder="Your answer…" autocomplete="off" inputmode="decimal"></div>`;
+      document.getElementById('main-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return parseInt(document.getElementById('main-input').value)},
+    verify(v){return v===ans}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #2 — SHAPE × SHAPE
+══════════════════════════════════════ */
+function genShapeCount(){
+  const types=['circle','square','triangle','diamond','star','hexagon'];
+  const pool=[];const cnt=rnd(20,30);for(let i=0;i<cnt;i++)pool.push(pick(types));
+  const tA=pick(types),tB=pick(types.filter(s=>s!==tA));
+  const cA=pool.filter(s=>s===tA).length,cB=pool.filter(s=>s===tB).length;
+  const ans=cA*cB;
+  const label={circle:'circles',square:'squares',triangle:'triangles',diamond:'diamonds',star:'stars',hexagon:'hexagons'};
+  return{
+    type:'shapeCount',badge:'🔷 Shape Multiply',
+    instruction:`Count <strong>${label[tA]}</strong> and <strong>${label[tB]}</strong> separately, then <em>multiply the two counts</em>.`,
+    renderChallenge(){
+      const el=document.getElementById('challenge-area');
+      el.innerHTML='<canvas id="captcha-canvas"></canvas>';
+      const cv=document.getElementById('captcha-canvas');
+      const W=Math.min(el.offsetWidth||520,520);cv.width=W;cv.height=Math.round(W*.5);
+      const ctx=cv.getContext('2d');
+      ctx.fillStyle='#0C1E32';ctx.fillRect(0,0,cv.width,cv.height);
+      const pal=['#38BDF8','#818CF8','#34D399','#FBBF24','#F87171','#A78BFA','#2DD4BF','#F472B6','#FB923C'];
+      pool.forEach(sh=>{
+        const x=rnd(18,cv.width-18),y=rnd(18,cv.height-18),s=rnd(8,17);
+        ctx.fillStyle=pick(pal);ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.beginPath();
+        if(sh==='circle'){ctx.arc(x,y,s,0,Math.PI*2)}
+        else if(sh==='square'){ctx.rect(x-s,y-s,s*2,s*2)}
+        else if(sh==='triangle'){ctx.moveTo(x,y-s);ctx.lineTo(x+s,y+s);ctx.lineTo(x-s,y+s);ctx.closePath()}
+        else if(sh==='diamond'){ctx.moveTo(x,y-s);ctx.lineTo(x+s,y);ctx.lineTo(x,y+s);ctx.lineTo(x-s,y);ctx.closePath()}
+        else if(sh==='star'){
+          for(let i=0;i<5;i++){const a1=(i*4*Math.PI/5)-Math.PI/2,a2=(i*4*Math.PI/5+2*Math.PI/5)-Math.PI/2;
+            if(i===0)ctx.moveTo(x+s*Math.cos(a1),y+s*Math.sin(a1));else ctx.lineTo(x+s*Math.cos(a1),y+s*Math.sin(a1));
+            ctx.lineTo(x+(s*.42)*Math.cos(a2),y+(s*.42)*Math.sin(a2));}ctx.closePath();
+        }else if(sh==='hexagon'){for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/6;if(i===0)ctx.moveTo(x+s*Math.cos(a),y+s*Math.sin(a));else ctx.lineTo(x+s*Math.cos(a),y+s*Math.sin(a))}ctx.closePath()}
+        ctx.fill();ctx.stroke();
+      });
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="number" class="text-inp" id="main-input" placeholder="count(${label[tA]}) × count(${label[tB]}) = ?" autocomplete="off" inputmode="numeric"></div>`;
+      document.getElementById('main-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return parseInt(document.getElementById('main-input').value)},
+    verify(v){return v===ans}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #3 — DOUBLE STROOP COLOR
+══════════════════════════════════════ */
+function genColorMatch(){
+  const COLORS={red:'#EF4444',orange:'#F97316',yellow:'#EAB308',green:'#22C55E',cyan:'#06B6D4',blue:'#3B82F6',violet:'#8B5CF6',pink:'#EC4899',lime:'#84CC16',white:'#E5E7EB'};
+  const keys=Object.keys(COLORS);
+  const target=pick(keys);
+  const bgKeys=shuffle([target,...shuffle(keys.filter(k=>k!==target)).slice(0,5)]);
+  const usedLabels=new Set();
+  const buttons=bgKeys.map(bg=>{
+    const avail=keys.filter(k=>k!==bg&&!usedLabels.has(k));
+    const label=avail.length?pick(avail):pick(keys.filter(k=>k!==bg));
+    usedLabels.add(label);
+    return{bg,label,isTarget:bg===target};
+  });
+  const correctIdx=buttons.findIndex(b=>b.isTarget);
+  return{
+    type:'colorMatch',badge:'🎨 Double Stroop',
+    instruction:`Tap the button whose <strong>background colour</strong> is <em>${target.toUpperCase()}</em>. Warning: the button <em>labels are intentionally wrong</em>.`,
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`<div class="color-grid">${buttons.map((b,i)=>`<button class="color-btn" style="background:${COLORS[b.bg]}" onclick="selectChoice(${i},this)">${b.label}</button>`).join('')}</div>`;
+    },
+    renderInput(){document.getElementById('input-area').innerHTML=''},
+    getInput(){return state.selectedValue!==null?parseInt(state.selectedValue):null},
+    verify(v){return v===correctIdx}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #4 — COMPLEX SEQUENCE
+══════════════════════════════════════ */
+function genSequence(){
+  const gens=[
+    ()=>{const s=rnd(1,6),d1=rnd(2,5),d2=rnd(1,3);const a=[s,s+d1,s+2*d1+d2,s+3*d1+3*d2,s+4*d1+6*d2];return{seq:a.slice(0,5),ans:a[5]??s+5*d1+10*d2}},
+    ()=>{const a=rnd(2,5),b=rnd(2,5);const seq=[a,b,a+b,a+2*b,a+3*b];return{seq,ans:a+4*b}},
+    ()=>{const r=pick([2,3]),s=rnd(1,4);const seq=[s,s*r,s*r**2,s*r**3,s*r**4];return{seq,ans:s*r**5}},
+    ()=>{const base=rnd(2,5);const seq=Array.from({length:6},(_,i)=>(base+i)**2-base);return{seq:seq.slice(0,5),ans:seq[5]}},
+    ()=>{const a=rnd(2,7),b=rnd(3,9);const seq=[a*b,a*(b+1),(a+1)*(b+1),(a+1)*(b+2),(a+2)*(b+2)];return{seq,ans:(a+2)*(b+3)}},
+  ];
+  const{seq,ans}=pick(gens)();
+  const distractors=shuffle([ans+rnd(1,8),ans-rnd(1,8),ans+rnd(9,22),Math.abs(ans*2-seq[3])].filter(v=>v!==ans)).slice(0,3);
+  const choices=shuffle([ans,...distractors]);
+  return{
+    type:'sequence',badge:'🔢 Complex Pattern',
+    instruction:'What is the next number? The differences between terms may also change — look for the deeper pattern.',
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`<div class="pattern-row">${seq.map(n=>`<div class="pat-item">${n}</div><span class="pat-arrow">→</span>`).join('')}<div class="pat-blank">?</div></div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="choice-grid">${choices.map(c=>`<button class="choice-btn" onclick="selectChoice(${c},this)">${c}</button>`).join('')}</div>`;
+    },
+    getInput(){return state.selectedValue!==null?parseInt(state.selectedValue):null},
+    verify(v){return v===ans}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #5 — EMOJI MULTIPLY
+══════════════════════════════════════ */
+function genEmojiCount(){
+  const sets=[
+    {a:'🍎',b:'🍊',pool:['🍎','🍊','🍋','🍇','🍓','🍒','🫐','🍑','🥝','🍈']},
+    {a:'⭐',b:'🌙',pool:['⭐','🌙','☀️','⚡','❄️','🌊','🔥','💫','🌈','🌪️']},
+    {a:'🐶',b:'🐱',pool:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯']},
+    {a:'🚗',b:'🚕',pool:['🚗','🚕','🚙','🚌','🏎️','🚓','🚑','🚒','🛻','🚐']},
+    {a:'🌹',b:'🌻',pool:['🌹','🌻','🌷','🌸','💐','🌼','🌺','🌾','🍀','🌿']},
+  ];
+  const s=pick(sets);
+  const pool=[];for(let i=0;i<rnd(44,58);i++)pool.push(pick(s.pool));
+  shuffle(pool);
+  const cA=pool.filter(e=>e===s.a).length,cB=pool.filter(e=>e===s.b).length,ans=cA*cB;
+  return{
+    type:'emojiCount',badge:'😀 Emoji Multiply',
+    instruction:`Count <strong>${s.a}</strong> and <strong>${s.b}</strong> in the grid, then <em>multiply</em> the two counts. There are ${pool.length} emoji total!`,
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`<div class="emoji-wrap">${pool.map(e=>`<span class="emoji-item">${e}</span>`).join('')}</div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="number" class="text-inp" id="main-input" placeholder="count(${s.a}) × count(${s.b}) = ?" autocomplete="off" inputmode="numeric"></div>`;
+      document.getElementById('main-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return parseInt(document.getElementById('main-input').value)},
+    verify(v){return v===ans}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #6 — DOUBLE CIPHER (shift + reverse)
+══════════════════════════════════════ */
+function genWordCipher(){
+  const words=['PYTHON','CASTLE','DRAGON','FOREST','BRIDGE','PLANET','SYNTAX','VECTOR','MATRIX','CIPHER','SUMMIT','FROZEN','ARCTIC','SECTOR','COSMOS'];
+  const word=pick(words),shift=rnd(2,7);
+  const shifted=word.split('').map(c=>String.fromCharCode(((c.charCodeAt(0)-65+shift)%26)+65)).join('');
+  const ans=shifted.split('').reverse().join('');
+  return{
+    type:'wordCipher',badge:'🔤 Double Cipher',
+    instruction:`<strong>Step 1:</strong> Shift every letter forward by <em>${shift}</em> positions (A→${String.fromCharCode(65+shift)}, Z→${String.fromCharCode(65+(25+shift)%26)}). <strong>Step 2:</strong> Reverse the result. Enter the final string.`,
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`<div><div class="word-display">${word}</div><div class="hint-sub">Shift +${shift}, then reverse → ? (${word.length} characters)</div></div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="text" class="text-inp" id="main-input" placeholder="Shifted + reversed result…" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="12" style="text-transform:uppercase;letter-spacing:.12em"></div>`;
+      const inp=document.getElementById('main-input');
+      inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'')});
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return document.getElementById('main-input').value.toUpperCase().trim()},
+    verify(v){return v===ans}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #7 — INVERSE GRID SELECT
+══════════════════════════════════════ */
+function genGridSelect(){
+  const colorList=['red','blue','green','orange','violet','teal'];
+  const hexMap={red:'#EF4444',blue:'#3B82F6',green:'#22C55E',orange:'#F97316',violet:'#8B5CF6',teal:'#14B8A6'};
+  const exclude=pick(colorList);
+  const dim=6;const cells=Array.from({length:dim*dim},()=>pick(colorList));
+  const correct=new Set(cells.map((c,i)=>c!==exclude?i:-1).filter(i=>i>=0));
+  return{
+    type:'gridSelect',badge:'🟦 Inverse Select',
+    instruction:`Select every square that is <strong>NOT</strong> <em style="color:${hexMap[exclude]}">${exclude}</em>. ${dim*dim - (cells.filter(c=>c===exclude).length)} cells to select. Then verify.`,
+    renderChallenge(){
+      const el=document.getElementById('challenge-area');el.style.padding='0';
+      el.innerHTML=`<div class="sq-grid" style="grid-template-columns:repeat(${dim},1fr);padding:11px;width:100%">${cells.map((c,i)=>`<div class="sq-cell" style="background:${hexMap[c]}" data-idx="${i}" onclick="toggleCell(this)"></div>`).join('')}</div>`;
+    },
+    renderInput(){document.getElementById('input-area').innerHTML=''},
+    getInput(){return new Set([...document.querySelectorAll('.sq-cell.selected')].map(el=>+el.dataset.idx))},
+    verify(val){if(val.size!==correct.size)return false;for(const v of val)if(!correct.has(v))return false;return true}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #8 — DUAL SLIDER SUM
+══════════════════════════════════════ */
+function genDualSlider(){
+  const target=rnd(75,165),tol=3;
+  return{
+    type:'dualSlider',badge:'🎚️ Dual Slider',
+    instruction:`Adjust <strong>both sliders</strong> so their values <em>sum to exactly ${target}</em>. Tolerance: ±${tol}.`,
+    renderChallenge(){
+      const half=Math.floor(target/2);
+      document.getElementById('challenge-area').innerHTML=`
+        <div class="dual-slider-wrap">
+          <div class="slider-target-disp"><small>Target sum</small>${target}</div>
+          <div class="slider-row">
+            <span class="slider-lbl">A</span>
+            <input type="range" min="0" max="${target}" value="${half}" id="sl-a" oninput="updateSum()">
+            <span class="slider-val-num" id="val-a">${half}</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-lbl">B</span>
+            <input type="range" min="0" max="${target}" value="${target-half}" id="sl-b" oninput="updateSum()">
+            <span class="slider-val-num" id="val-b">${target-half}</span>
+          </div>
+          <div class="sum-row">Current sum: <span id="sum-val">${target}</span></div>
+        </div>`;
+    },
+    renderInput(){document.getElementById('input-area').innerHTML=''},
+    getInput(){return(parseInt(document.getElementById('sl-a')?.value)||0)+(parseInt(document.getElementById('sl-b')?.value)||0)},
+    verify(v){return Math.abs(v-target)<=tol}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #9 — MATHEMATICAL ODD ONE OUT
+══════════════════════════════════════ */
+function genOddOneOut(){
+  const isPrime=n=>{if(n<2)return false;for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0)return false;return true};
+  const puzzles=[
+    ()=>{
+      const primes=[7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67];
+      const comps=[6,9,14,15,21,22,25,26,27,28,33,34,35,38,39,45,46,49,50,51];
+      const five=shuffle(primes).slice(0,5),odd=pick(comps.filter(n=>!five.includes(n)));
+      return{items:shuffle([...five,odd]),odd,desc:'which is NOT a prime number'};
+    },
+    ()=>{
+      const base=pick([3,4,6,7,8]);
+      const mults=Array.from({length:25},(_,i)=>(i+2)*base).filter(n=>n>10&&n<120);
+      const five=shuffle(mults).slice(0,5);
+      const nonMults=Array.from({length:80},(_,i)=>i+2).filter(n=>n%base!==0&&n>10&&n<120&&!five.includes(n));
+      const odd=pick(nonMults);
+      return{items:shuffle([...five,odd]),odd,desc:`which is NOT a multiple of ${base}`};
+    },
+    ()=>{
+      const sqs=[4,9,16,25,36,49,64,81,100,121,144,169];
+      const nonSq=[5,6,7,8,10,11,12,13,14,15,17,18,19,20,21,22,23,24,26,27];
+      const five=shuffle(sqs).slice(0,5),odd=pick(nonSq);
+      return{items:shuffle([...five,odd]),odd,desc:'which is NOT a perfect square'};
+    },
+    ()=>{
+      const fibs=[2,3,5,8,13,21,34,55,89,144];
+      const nonFib=[4,6,7,9,10,11,12,14,15,16,18,19,20,22,24];
+      const four=shuffle(fibs).slice(0,5),odd=pick(nonFib);
+      return{items:shuffle([...four,odd]),odd,desc:'which is NOT a Fibonacci number'};
+    },
+  ];
+  const p=pick(puzzles)();
+  const oddIdx=p.items.indexOf(p.odd);
+  return{
+    type:'oddOneOut',badge:'🔍 Odd One Out',
+    instruction:`Tap the number <em>${p.desc}</em>.`,
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`<div class="choice-grid c3" style="padding:12px">${p.items.map((n,i)=>`<div class="oon-item" onclick="selectChoice(${i},this)">${n}</div>`).join('')}</div>`;
+    },
+    renderInput(){document.getElementById('input-area').innerHTML=''},
+    getInput(){return state.selectedValue!==null?parseInt(state.selectedValue):null},
+    verify(v){return v===oddIdx}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #10 — COUNTERINTUITIVE T/F
+══════════════════════════════════════ */
+function genTrueFalse(){
+  const facts=[
+    {q:'Hot water can freeze faster than cold water under some conditions. (Mpemba effect)',a:true},
+    {q:'Folding a piece of paper 42 times would theoretically reach the Moon.',a:true},
+    {q:'The electric eel is not actually an eel — it belongs to the knifefish family.',a:true},
+    {q:'The mathematical constant 0.999… (repeating forever) is exactly equal to 1.',a:true},
+    {q:'Cleopatra VII lived closer in time to the Moon landing than to the Great Pyramid\'s construction.',a:true},
+    {q:'There are more possible chess games than atoms in the observable universe.',a:true},
+    {q:'A jiffy is a real scientific unit of time — approximately 10 milliseconds.',a:true},
+    {q:'Honey found in ancient Egyptian tombs (3,000+ years old) is still technically edible.',a:true},
+    {q:'The Great Wall of China is clearly visible from the Moon with the naked eye.',a:false},
+    {q:'Humans use only 10% of their brains at any given time.',a:false},
+    {q:'Sound travels faster through air than through water.',a:false},
+    {q:'Lightning never strikes the same place twice.',a:false},
+    {q:'The universe is approximately 4.5 billion years old.',a:false},
+    {q:'Bats are completely blind.',a:false},
+    {q:'A day on Mercury is shorter than a year on Mercury.',a:false},
+    {q:'Glass is a slow-moving liquid — old windows are thicker at the bottom because the glass "flowed".',a:false},
+  ];
+  const f=pick(facts);
+  return{
+    type:'trueFalse',badge:'✅ True or False',
+    instruction:'Is this statement true or false? Many of these are deliberately counterintuitive.',
+    renderChallenge(){document.getElementById('challenge-area').innerHTML=`<div class="statement-box">"${f.q}"</div>`},
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="tf-grid"><button class="tf-btn t" onclick="selectTF(true,this)">✓ TRUE</button><button class="tf-btn f" onclick="selectTF(false,this)">✗ FALSE</button></div>`;
+    },
+    getInput(){return state.selectedValue},
+    verify(v){return v===f.a}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #11 — MEMORY GRID (flash & recall)
+══════════════════════════════════════ */
+function genMemoryGrid(){
+  const dim=5,total=25,numHigh=rnd(7,10);
+  const target=new Set();
+  while(target.size<numHigh)target.add(rnd(0,total-1));
+  return{
+    type:'memoryGrid',badge:'🧠 Memory Grid',
+    instruction:`Memorise the <em>${numHigh} highlighted cells</em>. You have <em>4 seconds</em>, then the grid goes dark. Recreate the pattern from memory.`,
+    renderChallenge(){
+      const el=document.getElementById('challenge-area');
+      el.innerHTML=`<div style="width:100%;padding:0 12px 12px"><div class="mem-status" id="mem-status">⏱ Memorising… <span id="mem-count">4</span>s</div><div class="sq-grid" id="mem-grid" style="grid-template-columns:repeat(${dim},1fr);pointer-events:none;padding:0">${Array.from({length:total},(_,i)=>`<div class="mem-cell no-click ${target.has(i)?'flash':''}" data-idx="${i}" style="min-height:40px"></div>`).join('')}</div></div>`;
+      if(memTimer)clearInterval(memTimer);
+      let cnt=4;
+      memTimer=setInterval(()=>{
+        cnt--;const ce=document.getElementById('mem-count');if(ce)ce.textContent=cnt;
+        if(cnt<=0){
+          clearInterval(memTimer);
+          document.querySelectorAll('.mem-cell').forEach(c=>{c.classList.remove('flash','no-click');c.onclick=()=>toggleMem(c)});
+          const g=document.getElementById('mem-grid');if(g)g.style.pointerEvents='auto';
+          const s=document.getElementById('mem-status');if(s)s.textContent='Now recreate the pattern from memory ↓';
         }
+      },1000);
+    },
+    renderInput(){document.getElementById('input-area').innerHTML=''},
+    getInput(){return new Set([...document.querySelectorAll('.mem-cell.selected')].map(el=>+el.dataset.idx))},
+    verify(val){if(val.size!==target.size)return false;for(const v of val)if(!target.has(v))return false;return true}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #12 — CAESAR CIPHER
+══════════════════════════════════════ */
+function genCaesarCipher(){
+  const words=['PYTHON','CASTLE','DRAGON','SYNTAX','VECTOR','MATRIX','CIPHER','FROZEN','ARCTIC','BRIDGE','PLANET','COSMOS','SUMMIT','SECTOR','VORTEX'];
+  const word=pick(words),shift=rnd(4,11);
+  const encoded=word.split('').map(c=>String.fromCharCode(((c.charCodeAt(0)-65+shift)%26)+65)).join('');
+  return{
+    type:'caesarCipher',badge:'🔐 Caesar Cipher',
+    instruction:`Decode the Caesar cipher. The shift is <em>${shift}</em> — each letter was moved <em>forward</em> ${shift} positions. Reverse-engineer it.`,
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`
+        <div><div class="cipher-display">${encoded}</div>
+        <div class="cipher-sub">Shift was +${shift} &nbsp;|&nbsp; A→${String.fromCharCode(65+shift)}, M→${String.fromCharCode(65+(12+shift)%26)}, Z→${String.fromCharCode(65+(25+shift)%26)}<br>To decode: subtract ${shift} from each letter's position</div></div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="text" class="text-inp" id="main-input" placeholder="Decoded word…" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="10" style="text-transform:uppercase;letter-spacing:.15em"></div>`;
+      const inp=document.getElementById('main-input');
+      inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^A-Z]/g,'')});
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return document.getElementById('main-input').value.toUpperCase().trim()},
+    verify(v){return v===word}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #13 — BINARY TO DECIMAL
+══════════════════════════════════════ */
+function genBinary(){
+  const bits=rnd(6,8),decimal=rnd(2**(bits-1),2**bits-1),binary=decimal.toString(2);
+  const positions=binary.split('').map((_,i)=>2**(binary.length-1-i));
+  return{
+    type:'binary',badge:'💻 Binary Decode',
+    instruction:'Convert this binary number to its decimal (base-10) equivalent. Each column\'s value is shown below.',
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=`
+        <div>
+          <div class="binary-display">${binary.split('').map(b=>`<span class="${b==='1'?'bit-1':'bit-0'}">${b}</span>`).join('')}<sub style="color:var(--muted);font-size:.45em;vertical-align:sub;margin-left:4px">₂</sub></div>
+          <div class="bit-hint">${positions.join(' + ')} (for each 1-bit)<br>Sum the values of all <span style="color:var(--success)">green (1)</span> positions</div>
+        </div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="number" class="text-inp" id="main-input" placeholder="Decimal equivalent (0–255)…" autocomplete="off" inputmode="numeric"></div>`;
+      document.getElementById('main-input').addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){return parseInt(document.getElementById('main-input').value)},
+    verify(v){return v===decimal}
+  };
+}
+
+/* ══════════════════════════════════════
+   CAPTCHA #14 — ANALOG CLOCK
+══════════════════════════════════════ */
+function genAnalogClock(){
+  const h=rnd(1,12);
+  const mPool=[7,11,13,17,19,22,23,37,38,41,43,46,47,49,52,53,57,58];
+  const m=pick(mPool);
+  const ans=`${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+  return{
+    type:'analogClock',badge:'🕐 Clock Reading',
+    instruction:`What exact time does the clock show? Enter in <em>HH:MM</em> format. The minute hand is precise — count the tick marks carefully.`,
+    renderChallenge(){
+      const el=document.getElementById('challenge-area');
+      el.innerHTML='<canvas id="clock-canvas" width="220" height="220"></canvas>';
+      const cv=document.getElementById('clock-canvas'),ctx=cv.getContext('2d');
+      const cx=110,cy=110,r=96;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,2*Math.PI);ctx.fillStyle='#0C1E32';ctx.fill();
+      ctx.strokeStyle='#38BDF8';ctx.lineWidth=2.5;ctx.stroke();
+      ctx.beginPath();ctx.arc(cx,cy,r-4,0,2*Math.PI);ctx.strokeStyle='rgba(56,189,248,.18)';ctx.lineWidth=1;ctx.stroke();
+      for(let i=0;i<60;i++){
+        const a=(i*6-90)*Math.PI/180,isMaj=i%5===0,len=isMaj?14:6,wid=isMaj?2.5:1;
+        ctx.beginPath();ctx.moveTo(cx+(r-len)*Math.cos(a),cy+(r-len)*Math.sin(a));ctx.lineTo(cx+(r-3)*Math.cos(a),cy+(r-3)*Math.sin(a));
+        ctx.strokeStyle=isMaj?'#38BDF8':'rgba(56,189,248,.3)';ctx.lineWidth=wid;ctx.stroke();
       }
-      return "";
-    }
+      ctx.fillStyle='#D0EEFF';ctx.font='bold 12px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      [12,1,2,3,4,5,6,7,8,9,10,11].forEach((n,i)=>{const a=(i*30-90)*Math.PI/180;ctx.fillText(n,cx+(r-23)*Math.cos(a),cy+(r-23)*Math.sin(a))});
+      // Hour hand
+      const ha=((h%12+m/60)*30-90)*Math.PI/180;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*.52*Math.cos(ha),cy+r*.52*Math.sin(ha));
+      ctx.strokeStyle='#E0F2FE';ctx.lineWidth=5;ctx.lineCap='round';ctx.stroke();
+      // Minute hand
+      const ma=(m*6-90)*Math.PI/180;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*.77*Math.cos(ma),cy+r*.77*Math.sin(ma));
+      ctx.strokeStyle='#38BDF8';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+      // Center
+      ctx.beginPath();ctx.arc(cx,cy,5.5,0,2*Math.PI);ctx.fillStyle='#38BDF8';ctx.fill();
+      ctx.beginPath();ctx.arc(cx,cy,2,0,2*Math.PI);ctx.fillStyle='#0C1E32';ctx.fill();
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=`<div class="input-row"><input type="text" class="text-inp" id="main-input" placeholder="HH:MM (e.g., 07:47)" autocomplete="off" maxlength="5" inputmode="decimal"></div>`;
+      const inp=document.getElementById('main-input');
+      inp.addEventListener('input',()=>{let v=inp.value.replace(/[^0-9:]/g,'');if(v.length===2&&!v.includes(':'))v+=':';inp.value=v});
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){
+      const v=document.getElementById('main-input').value.trim(),p=v.split(':');
+      if(p.length!==2)return null;
+      return{h:parseInt(p[0]),m:parseInt(p[1])};
+    },
+    verify(v){return v&&v.h===h&&v.m===m}
+  };
+}
 
-    // Helper function to set cookies
-    function setCookie(name, value, days) {
-      const expires = new Date();
-      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-      document.cookie = name + "=" + value + "; expires=" + expires.toUTCString() + "; path=/";
-    }
+/* ══════════════════════════════════════
+   CAPTCHA #15 — ROMAN NUMERALS
+══════════════════════════════════════ */
+function genRoman(){
+  const data=[
+    {n:1999,r:'MCMXCIX'},{n:1994,r:'MCMXCIV'},{n:1984,r:'MCMLXXXIV'},
+    {n:2024,r:'MMXXIV'},{n:1776,r:'MDCCLXXVI'},{n:1492,r:'MCDXCII'},
+    {n:944,r:'CMXLIV'},{n:490,r:'CDXC'},{n:1848,r:'MDCCCXLVIII'},
+    {n:1066,r:'MLXVI'},{n:1649,r:'MDCXLIX'},{n:2019,r:'MMXIX'},
+    {n:888,r:'DCCCLXXXVIII'},{n:1609,r:'MDCIX'},{n:3888,r:'MMMDCCCLXXXVIII'},
+    {n:2499,r:'MMCDXCIX'},{n:3749,r:'MMMDCCXLIX'},{n:1389,r:'MCCCLXXXIX'},
+  ];
+  const ch=pick(data);
+  const toArabic=Math.random()>.45;
+  return{
+    type:'romanNumerals',badge:'🏛️ Roman Numerals',
+    instruction:toArabic
+      ?'Convert this Roman numeral to its decimal (Arabic) equivalent. Remember subtractive notation: IV=4, IX=9, XL=40, XC=90, CD=400, CM=900.'
+      :'Convert this number to <em>correct</em> Roman numeral notation. Subtractive notation is required (e.g., IV not IIII).',
+    renderChallenge(){
+      document.getElementById('challenge-area').innerHTML=toArabic
+        ?`<div class="roman-display">${ch.r}</div>`
+        :`<div class="roman-display" style="color:var(--ice);font-size:clamp(2rem,7vw,3rem)">${ch.n}</div>`;
+    },
+    renderInput(){
+      document.getElementById('input-area').innerHTML=toArabic
+        ?`<div class="input-row"><input type="number" class="text-inp" id="main-input" placeholder="Arabic number…" autocomplete="off" inputmode="numeric"></div>`
+        :`<div class="input-row"><input type="text" class="text-inp" id="main-input" placeholder="Roman numerals (e.g. MMXXIV)…" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="20" style="text-transform:uppercase;letter-spacing:.08em"></div>`;
+      const inp=document.getElementById('main-input');
+      if(!toArabic)inp.addEventListener('input',()=>{inp.value=inp.value.toUpperCase().replace(/[^IVXLCDM]/g,'')});
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSubmit()});
+    },
+    getInput(){const v=document.getElementById('main-input').value;return toArabic?parseInt(v):v.toUpperCase().trim()},
+    verify(v){return toArabic?v===ch.n:v===ch.r}
+  };
+}
 
-    // Check if captcha cookies exist and manage logic accordingly
-    function checkCookies() {
-      const captchaCount = parseInt(getCookie("captchacount")) || 0;
-      const captchaCookie = getCookie("captcha");
+/* ══════════════════════════════════════
+   REGISTRY
+══════════════════════════════════════ */
+const GENERATORS={
+  math:genMath,shapeCount:genShapeCount,colorMatch:genColorMatch,sequence:genSequence,
+  emojiCount:genEmojiCount,wordCipher:genWordCipher,gridSelect:genGridSelect,
+  dualSlider:genDualSlider,oddOneOut:genOddOneOut,trueFalse:genTrueFalse,
+  memoryGrid:genMemoryGrid,caesarCipher:genCaesarCipher,binary:genBinary,
+  analogClock:genAnalogClock,romanNumerals:genRoman
+};
+const KEYS=Object.keys(GENERATORS);
 
-      if (captchaCookie === "2") {
-        document.getElementById("access-denied").style.display = "block";
-        document.getElementById("captcha-container").style.display = "none";
-      } else if (captchaCookie === "1") {
-        window.location.href = "../";
-      } else if (!captchaCookie) {
-        setCookie("captcha", "0", 30); // Set captcha cookie to 0 if not found
-      }
+/* ══════════════════════════════════════
+   LOAD CAPTCHA
+══════════════════════════════════════ */
+function loadNewCaptcha(forceType){
+  if(memTimer){clearInterval(memTimer);memTimer=null}
+  state.selectedValue=null;hideFeedback();
+  const key=forceType||pick(KEYS);
+  state.type=key;
+  currentCaptcha=GENERATORS[key]();
+  document.getElementById('type-badge').textContent=currentCaptcha.badge;
+  document.getElementById('instruction').innerHTML=currentCaptcha.instruction;
+  document.getElementById('captcha-card').classList.remove('shake');
+  currentCaptcha.renderChallenge();
+  currentCaptcha.renderInput();
+  setTimeout(()=>{const inp=document.getElementById('main-input');if(inp)inp.focus()},150);
+}
 
-      // If captcha count exceeds 8, set the cookie to 2 and show access denied
-      if (captchaCount >= 8) {
-        setCookie("captcha", "2", 30);
-        setCookie("captchacount", "0", 30); // Reset captcha count
-        document.getElementById("access-denied").style.display = "block";
-        document.getElementById("captcha-container").style.display = "none";
-      }
-    }
+/* ══════════════════════════════════════
+   CHANGE HANDLER
+══════════════════════════════════════ */
+function handleChange(){
+  if(!canChange()){
+    showFeedback('err','🔒 You have already used your one allowed challenge change.');
+    setTimeout(hideFeedback,2800);return;
+  }
+  useChange();
+  const others=KEYS.filter(k=>k!==state.type);
+  loadNewCaptcha(pick(others));
+  updateChangeUI();
+}
 
-    // Increment captcha attempts
-    function incrementCaptchaAttempt() {
-      let attempts = parseInt(getCookie("captchacount")) || 0;
-      attempts++;
-      
-      if (attempts >= 8) {
-        setCookie("captchacount", attempts, 30); // Update the count in cookie
-        setCookie("captcha", "2", 30); // Lock out if attempts reach 8
-        document.getElementById("access-denied").style.display = "block"; // Show access denied
-        document.getElementById("captcha-container").style.display = "none"; // Hide the CAPTCHA form
-        return; // Prevent further code execution
-      }
-      
-      setCookie("captchacount", attempts, 30);
-    }
+/* ══════════════════════════════════════
+   SUBMIT / VERIFY
+══════════════════════════════════════ */
+function handleSubmit(){
+  const val=currentCaptcha.getInput();
+  const empty=val===null||val===undefined||val===''||(typeof val==='number'&&isNaN(val))||(val instanceof Set&&val.size===0);
+  if(empty){showFeedback('info','⚠️ Please complete the challenge before verifying.');return}
+  if(currentCaptcha.verify(val)){
+    resetAttempts();setStatus('1');C.set('captchachanges','0');
+    showFeedback('ok','✓ Verification successful! Redirecting…');
+    document.getElementById('submit-btn').disabled=true;
+    setTimeout(()=>window.location.href='../',1400);
+  } else {
+    incAttempts();renderAttemptMeter();
+    const rem=MAX-getAttempts();
+    if(rem<=0){setStatus('2');showAccessDenied();return}
+    showFeedback('err',`✗ Incorrect — <strong>${rem}</strong> attempt${rem===1?'':'s'} remaining`);
+    const card=document.getElementById('captcha-card');
+    card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');
+    setTimeout(()=>{hideFeedback();loadNewCaptcha()},2100);
+  }
+}
 
-    // Reset captcha attempt count
-    function resetCaptchaAttempt() {
-      setCookie("captchacount", "0", 30);
-    }
-
-    // Function to generate random shapes and populate the canvas
-    function generateShapes() {
-      const canvas = document.getElementById('captcha-canvas');
-      const ctx = canvas.getContext('2d');
-      const shapeTypes = ['circle', 'square', 'triangle'];
-      const numShapes = Math.floor(Math.random() * 6) + 6;
-      const allShapes = [];
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < numShapes; i++) {
-        const shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
-        const size = Math.random() * 40 + 20;
-        allShapes.push({ shape, x, y, size });
-        ctx.fillStyle = getRandomColor();
-        ctx.strokeStyle = 'pink';
-        ctx.lineWidth = 2;
-        
-        if (shape === 'circle') {
-          ctx.beginPath();
-          ctx.arc(x, y, size, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.stroke();
-        } else if (shape === 'square') {
-          ctx.fillRect(x - size / 2, y - size / 2, size, size);
-          ctx.strokeRect(x - size / 2, y - size / 2, size, size);
-        } else if (shape === 'triangle') {
-          ctx.beginPath();
-          ctx.moveTo(x, y - size / 2);
-          ctx.lineTo(x + size / 2, y + size / 2);
-          ctx.lineTo(x - size / 2, y + size / 2);
-          ctx.closePath();
-          ctx.fill();
-          ctx.stroke();
-        }
-      }
-      
-      // Random shape to count
-      const correctShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-      const shapeCount = allShapes.filter(s => s.shape === correctShape).length;
-
-      // Set multiplier (random number between 2 and 10) and display question
-      const multiplier = Math.floor(Math.random() * 9) + 2; // Random number between 2 and 10
-      document.getElementById('shape-name').textContent = correctShape;
-      document.getElementById('multiply-value').textContent = multiplier;
-      document.getElementById('verify-button').onclick = function() {
-        verifyCaptcha(correctShape, shapeCount, multiplier);
-      };
-    }
-
-    // Function to handle CAPTCHA verification
-    function verifyCaptcha(correctShape, shapeCount, multiplier) {
-      const inputText = document.getElementById('captcha-input').value.trim();
-      const errorMessage = document.getElementById('error-message');
-      const correctAnswer = shapeCount * multiplier;
-      
-      if (parseInt(inputText) === correctAnswer) {
-        resetCaptchaAttempt();
-        setCookie("captcha", "1", 30); // Set captcha to 1 (verified)
-        window.location.href = "../";
-      } else {
-        incrementCaptchaAttempt();
-        errorMessage.style.display = "block";
-        setTimeout(() => {
-          errorMessage.style.display = "none";
-          generateShapes(); // Regenerate shapes on incorrect answer
-        }, 3000);
-      }
-    }
-
-    // Generate random color for shapes
-    function getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
-    }
-
-    // Load page and check cookies
-    window.onload = function() {
-      checkCookies(); // Check the cookie logic
-      if (getCookie("captcha") === "0") {
-        generateShapes(); // Start CAPTCHA if it's set to 0
-      }
-    };
-  </script>
-
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+window.onload=function(){
+  const status=getStatus();
+  if(status==='2'||getAttempts()>=MAX){setStatus('2');showAccessDenied();return}
+  if(status==='1'){window.location.href='../';return}
+  if(!status)setStatus('0');
+  renderAttemptMeter();updateChangeUI();loadNewCaptcha();
+};
+</script>
 </body>
 </html>
