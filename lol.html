@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Antartica.Org — Explore the frozen continent">
+  <meta property="og:site_name" content="Antartica.Org">
+  <meta name="theme-color" content="#080f1c">
+  <title>Home / Antartica.Org</title>
+  <link rel="icon" type="image/x-icon" href="images/antartica.png">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #080f1c;
+      --bg1:       #0c1628;
+      --bg2:       #101e35;
+      --bg3:       #152440;
+      --surface:   #1a2d4e;
+      --border:    rgba(120,170,255,0.12);
+      --border-hi: rgba(0,200,255,0.4);
+      --cyan:      #00c8ff;
+      --cyan-dim:  rgba(0,200,255,0.1);
+      --ice:       #e8f4ff;
+      --muted:     #6a90b8;
+      --danger:    #ff4d6a;
+      --text:      #cce0f5;
+      --r:         14px;
+      --r-sm:      8px;
+      --nav-h:     58px;
+      --bot-h:     62px;
+      --shadow:    0 24px 64px rgba(0,0,0,0.6);
+      --ease:      cubic-bezier(0.16,1,0.3,1);
+      --font-d:    'DM Serif Display', Georgia, serif;
+      --font-b:    'DM Sans', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-b);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: var(--font-b); }
+
+    /* atmosphere */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 100% 55% at 50% -5%, rgba(0,200,255,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 40% at 90% 100%, rgba(0,80,200,0.05) 0%, transparent 60%);
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 0%, transparent 70%);
+      opacity: 0.35;
+    }
+
+    #root { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+    .icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .icon svg { display: block; }
+
+    /* ── TOP NAV ── */
+    .topnav {
+      position: sticky; top: 0; z-index: 90;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(8,15,28,0.88);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 9px;
+      font-weight: 500; font-size: 0.95rem;
+      color: var(--ice); user-select: none;
+    }
+    .brand-mark {
+      width: 30px; height: 30px;
+      background: var(--cyan-dim);
+      border: 1px solid rgba(0,200,255,0.22);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cyan);
+    }
+    .brand-dot { color: var(--cyan); }
+    .nav-actions { display: flex; align-items: center; gap: 3px; }
+    .nav-btn {
+      width: 40px; height: 40px; border: none; background: transparent;
+      border-radius: 10px; color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .nav-btn:hover { background: var(--bg3); color: var(--ice); }
+    .search-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 14px; height: 36px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 50px; border: none;
+      color: var(--muted); font-size: 0.82rem;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .search-pill:hover { background: var(--bg3); color: var(--ice); }
+    .pill-icon { color: var(--cyan); }
+    .pill-text { display: none; }
+    @media (min-width: 480px) { .pill-text { display: inline; } }
+    .kbd-hint {
+      display: none;
+      font-size: 0.68rem; padding: 1px 5px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--muted); margin-left: 2px;
+    }
+    @media (min-width: 640px) { .kbd-hint { display: inline; } }
+
+    /* ── MAIN ── */
+    main { flex: 1; padding: 0 20px 40px; max-width: 1160px; width: 100%; margin: 0 auto; }
+
+    /* ── HERO ── */
+    .hero { padding: 52px 0 44px; }
+    .hero-eyebrow {
+      font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--cyan); }
+    h1.hero-title {
+      font-family: var(--font-d);
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      line-height: 1.05; color: var(--ice);
+      letter-spacing: -0.02em; margin-bottom: 18px;
+    }
+    h1.hero-title em { font-style: italic; color: var(--cyan); }
+    .hero-sub {
+      font-size: clamp(0.88rem, 2vw, 1rem);
+      color: var(--muted); max-width: 400px; line-height: 1.65;
+      margin-bottom: 30px;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 22px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 50px; color: var(--muted); font-size: 0.88rem;
+      cursor: pointer;
+      transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
+    }
+    .hero-cta:hover {
+      border-color: var(--border-hi); background: var(--bg3);
+      color: var(--ice); box-shadow: 0 0 28px rgba(0,200,255,0.1);
+    }
+    .hero-cta .icon { color: var(--cyan); }
+
+    /* ── SECTION HEAD ── */
+    .section-head {
+      display: flex; align-items: center; gap: 14px; margin: 38px 0 18px;
+    }
+    .section-head h2 {
+      font-size: 0.63rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted); white-space: nowrap;
+    }
+    .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── CARD GRID ── */
+    .card-grid {
+      display: grid; gap: 10px;
+      grid-template-columns: repeat(2,1fr);
+    }
+    @media (min-width: 480px)  { .card-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (min-width: 720px)  { .card-grid { grid-template-columns: repeat(4,1fr); } }
+    @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(5,1fr); } }
+
+    .card {
+      background: var(--bg1); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden;
+      opacity: 0; animation: fadeUp 0.45s var(--ease) forwards;
+      transition: border-color .18s;
+    }
+    .card:hover { border-color: rgba(0,200,255,0.22); }
+    .card a, .card button {
+      display: flex; flex-direction: column;
+      padding: 18px 16px 16px; gap: 10px;
+      width: 100%; text-align: left; background: transparent; border: none;
+      cursor: pointer; transition: background .15s;
+    }
+    .card:hover a, .card:hover button { background: var(--bg2); }
+    .card-icon {
+      width: 36px; height: 36px; background: var(--bg3);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      color: var(--cyan); transition: background .15s;
+    }
+    .card:hover .card-icon { background: var(--cyan-dim); }
+    .card-name { font-size: 0.87rem; font-weight: 500; color: var(--ice); line-height: 1.3; }
+    .card-sub  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+    .no-results {
+      grid-column: 1/-1; padding: 56px 20px;
+      text-align: center; color: var(--muted);
+    }
+    .no-results p { margin-top: 12px; font-size: 0.88rem; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 20px calc(var(--bot-h) + 20px);
+      max-width: 1160px; margin: 0 auto; width: 100%;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: repeat(2,1fr);
+      gap: 28px 20px; margin-bottom: 30px;
+    }
+    @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(4,1fr); } }
+    .footer-col h4 {
+      font-size: 0.62rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 13px;
+    }
+    .footer-col a, .footer-col button {
+      display: flex; align-items: center; gap: 7px;
+      margin-bottom: 9px; font-size: 0.83rem; color: var(--muted);
+      background: transparent; border: none; padding: 0;
+      text-align: left; font-family: var(--font-b);
+      cursor: pointer; transition: color .15s;
+    }
+    .footer-col a:hover, .footer-col button:hover { color: var(--ice); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 18px;
+      display: flex; flex-wrap: wrap; align-items: center;
+      justify-content: space-between; gap: 10px;
+    }
+    .footer-copy { font-size: 0.74rem; color: var(--muted); }
+    .footer-copy strong { color: var(--ice); font-weight: 500; }
+    .lang-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 50px;
+      border: 1px solid var(--border); background: var(--bg2);
+      font-size: 0.74rem; color: var(--cyan);
+      transition: border-color .15s;
+    }
+    .lang-pill:hover { border-color: var(--border-hi); }
+
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+      height: var(--bot-h); display: flex;
+      background: rgba(8,15,28,0.94);
+      backdrop-filter: blur(16px) saturate(1.4);
+      border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .bot-btn {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--muted); font-size: 0.58rem; letter-spacing: 0.06em;
+      text-transform: uppercase; font-family: var(--font-b);
+      transition: color .15s; text-decoration: none;
+    }
+    .bot-btn.active { color: var(--cyan); }
+    .bot-btn:hover  { color: var(--ice); }
+
+    /* ── COOKIE ── */
+    #cookie-banner {
+      display: none;
+      position: fixed;
+      bottom: calc(var(--bot-h) + 12px); left: 12px; right: 12px;
+      z-index: 200; max-width: 420px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 20px;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.4s var(--ease);
+    }
+    @media (min-width: 600px) { #cookie-banner { left: auto; right: 16px; } }
+    #cookie-banner h3 {
+      font-size: 0.85rem; font-weight: 500; color: var(--ice);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
+    }
+    #cookie-banner p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+    #cookie-banner a { color: var(--cyan); }
+    .cookie-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border: none; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer;
+      font-family: var(--font-b); transition: opacity .15s, transform .15s;
+    }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-cyan  { background: var(--cyan); color: #050e1c; }
+    .btn-ghost { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--ice); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── OVERLAY ── */
+    #overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(4,10,20,0.78);
+      backdrop-filter: blur(6px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s;
+    }
+    #overlay.open { opacity: 1; pointer-events: all; }
+
+    /* ── UNIFIED SEARCH ── */
+    #search-overlay {
+      position: fixed; inset: 0; z-index: 400;
+      display: flex; flex-direction: column;
+      align-items: center;
+      padding: clamp(40px,8vh,90px) 16px 0;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #search-overlay.open { pointer-events: all; opacity: 1; }
+    .search-modal {
+      width: 100%; max-width: 600px;
+      background: var(--bg2); border: 1px solid var(--border-hi);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+      transform: translateY(-10px) scale(0.98);
+      transition: transform 0.25s var(--ease);
+    }
+    #search-overlay.open .search-modal { transform: translateY(0) scale(1); }
+    .search-input-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 15px 18px; border-bottom: 1px solid var(--border);
+    }
+    .search-input-row .icon { color: var(--cyan); flex-shrink: 0; }
+    #main-search {
+      flex: 1; background: transparent; border: none; outline: none;
+      font-size: 1.05rem; color: var(--ice); font-family: var(--font-b);
+      caret-color: var(--cyan);
+    }
+    #main-search::placeholder { color: var(--muted); }
+    .search-close-btn {
+      width: 28px; height: 28px; border: none;
+      background: var(--bg3); border-radius: 7px;
+      color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, color .15s;
+    }
+    .search-close-btn:hover { background: var(--danger); color: #fff; }
+    .search-results { max-height: 420px; overflow-y: auto; }
+    .search-results::-webkit-scrollbar { width: 4px; }
+    .search-results::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 2px; }
+    .search-group-label {
+      padding: 10px 18px 5px;
+      font-size: 0.61rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .s-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 18px;
+      width: 100%; text-align: left; font-family: var(--font-b);
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text); text-decoration: none;
+      transition: background .12s;
+    }
+    .s-item:hover, .s-item.hi { background: var(--bg3); }
+    .s-item .icon { color: var(--cyan); }
+    .s-item-text { flex: 1; }
+    .s-item-name { font-size: 0.88rem; color: var(--ice); }
+    .s-item-sub  { font-size: 0.73rem; color: var(--muted); }
+    .s-item-arr  { color: var(--muted); }
+    .search-empty { padding: 40px 18px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+    .search-footer-bar {
+      border-top: 1px solid var(--border);
+      padding: 9px 18px;
+      display: flex; align-items: center; gap: 14px;
+      font-size: 0.68rem; color: var(--muted);
+    }
+    .s-hint { display: flex; align-items: center; gap: 4px; }
+    .kbd {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 20px; height: 18px; padding: 0 4px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 4px; font-size: 0.63rem;
+    }
+
+    /* ── NAV DRAWER ── */
+    #nav-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 310;
+      width: min(290px, 88vw);
+      background: var(--bg1); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s var(--ease);
+      overflow-y: auto;
+    }
+    #nav-drawer.open { transform: translateX(0); }
+    .drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 15px 18px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--bg1); z-index: 1;
+    }
+    .close-btn {
+      width: 32px; height: 32px; border: none;
+      background: var(--bg2); border-radius: 8px;
+      color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, color .15s;
+    }
+    .close-btn:hover { background: var(--danger); color: #fff; }
+    .drawer-body { padding: 10px 10px 32px; }
+    .grp-label {
+      font-size: 0.59rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 14px 8px 5px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 10px; border-radius: 10px;
+      font-size: 0.87rem; color: var(--muted);
+      background: transparent; border: none; width: 100%;
+      text-align: left; font-family: var(--font-b); cursor: pointer;
+      transition: background .12s, color .12s; text-decoration: none;
+    }
+    .nav-item .icon { color: var(--muted); transition: color .12s; }
+    .nav-item:hover { background: var(--bg2); color: var(--ice); }
+    .nav-item:hover .icon { color: var(--cyan); }
+
+    /* ── MODALS ── */
+    .modal-wrap {
+      position: fixed; inset: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; pointer-events: none; opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .modal-wrap.open { pointer-events: all; opacity: 1; }
+    .modal-box {
+      width: 100%; max-width: 460px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+      transform: translateY(10px) scale(0.97);
+      transition: transform 0.22s var(--ease);
+    }
+    .modal-wrap.open .modal-box { transform: none; }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 17px 20px; border-bottom: 1px solid var(--border);
+    }
+    .modal-head h2 { font-size: 0.93rem; font-weight: 500; color: var(--ice); }
+    .modal-body { padding: 20px; }
+    .modal-body p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .share-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 4px;
+    }
+    .share-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      padding: 14px 6px; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--r-sm); color: var(--muted); font-size: 0.7rem;
+      font-family: var(--font-b); cursor: pointer; text-decoration: none;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .share-btn .icon { color: var(--muted); transition: color .15s; }
+    .share-btn:hover { background: var(--bg2); color: var(--ice); border-color: var(--border-hi); }
+    .share-btn:hover .icon { color: var(--cyan); }
+
+    noscript { padding: 80px 20px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+<noscript><h2 style="color:#e8f4ff">JavaScript Required</h2><p>Please enable JavaScript to use Antartica.Org.</p></noscript>
+
+<div id="root">
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="/" class="brand">
+    <div class="brand-mark" id="brand-icon"></div>
+    Antartica<span class="brand-dot">.</span>Org
+  </a>
+  <div class="nav-actions">
+    <button class="search-pill" onclick="openSearch()" aria-label="Search Antartica.Org">
+      <span class="icon pill-icon" id="sp-icon"></span>
+      <span class="pill-text">Search</span>
+      <span class="kbd-hint">⌘K</span>
+    </button>
+    <a href="settings.html" class="nav-btn" aria-label="Settings" id="nav-settings-btn"></a>
+    <button class="nav-btn" onclick="openDrawer()" aria-label="Open menu" id="nav-menu-btn"></button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="hero">
+    <p class="hero-eyebrow">Explore the frozen continent</p>
+    <h1 class="hero-title">Ant<em>arc</em>tica<br>Awaits</h1>
+    <p class="hero-sub">Discover facts, resources, and links about the world's most remote continent.</p>
+    <button class="hero-cta" onclick="openSearch()">
+      <span class="icon" id="hero-search-icon"></span>
+      Search Antartica.Org
+      <span class="kbd-hint">⌘K</span>
+    </button>
+  </div>
+  <div class="section-head"><h2>Explore</h2></div>
+  <div class="card-grid" id="card-grid"></div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid" id="footer-grid"></div>
+  <div class="footer-bottom">
+    <span class="footer-copy" id="footer-copy"></span>
+    <a class="lang-pill" href="language/index.html" id="lang-pill"></a>
+  </div>
+</footer>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" aria-label="Primary navigation">
+  <button class="bot-btn active" aria-label="Home" id="bn-home"></button>
+  <button class="bot-btn" onclick="openSearch()" aria-label="Search" id="bn-search"></button>
+  <button class="bot-btn" onclick="openModal('share-modal')" aria-label="Share" id="bn-share"></button>
+  <a class="bot-btn" href="settings.html" aria-label="Settings" id="bn-settings"></a>
+</nav>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <h3><span class="icon" id="cookie-icon"></span> Cookies on Antartica.Org</h3>
+  <p>Essential cookies keep the site working. Optional analytics are your choice. <a href="cookies">Cookie Policy.</a></p>
+  <div class="cookie-actions">
+    <button class="btn btn-cyan" onclick="setCookieConsent(1)">Accept All</button>
+    <button class="btn btn-ghost" onclick="setCookieConsent(2)">Essential Only</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeAll()"></div>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal">
+    <div class="search-input-row">
+      <span class="icon" id="search-modal-icon"></span>
+      <input id="main-search" type="text" placeholder="Search Antartica.Org…" autocomplete="off" spellcheck="false"
+        oninput="onSearch(this.value)" onkeydown="onSearchKey(event)">
+      <button class="search-close-btn" onclick="closeSearch()" aria-label="Close search" id="search-close-icon"></button>
+    </div>
+    <div class="search-results" id="search-results"></div>
+    <div class="search-footer-bar">
+      <span class="s-hint"><span class="kbd">↑↓</span> Navigate</span>
+      <span class="s-hint"><span class="kbd">↵</span> Open</span>
+      <span class="s-hint"><span class="kbd">Esc</span> Close</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV DRAWER -->
+<aside id="nav-drawer" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <div class="drawer-head">
+    <a href="/" class="brand" style="font-size:.88rem">
+      <div class="brand-mark" id="drawer-brand-icon"></div>
+      Antartica<span class="brand-dot">.</span>Org
+    </a>
+    <button class="close-btn" onclick="closeDrawer()" aria-label="Close menu" id="drawer-close-btn"></button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<!-- ABOUT MODAL -->
+<div class="modal-wrap" id="about-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>About Antartica.Org</h2>
+      <button class="close-btn" onclick="closeModal('about-modal')" id="about-close"></button>
+    </div>
+    <div class="modal-body">
+      <p>Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and exploration history.</p>
+      <div class="modal-actions">
+        <a href="terms" class="btn btn-ghost">Terms</a>
+        <button class="btn btn-ghost" onclick="switchModal('about-modal','privacy-modal')">Privacy Policy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="modal-wrap" id="privacy-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Privacy Policy</h2>
+      <button class="close-btn" onclick="closeModal('privacy-modal')" id="priv-close"></button>
+    </div>
+    <div class="modal-body">
+      <p>We collect minimal data and only use cookies as described in our Cookie Policy. Your data is never sold to third parties.</p>
+      <div class="modal-actions">
+        <a href="cookies" class="btn btn-ghost">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCLAIMER MODAL -->
+<div class="modal-wrap" id="disclaimer-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Disclaimer</h2>
+      <button class="close-btn" onclick="closeModal('disclaimer-modal')" id="disc-close"></button>
+    </div>
+    <div class="modal-body">
+      <p>Content on Antartica.Org is for informational purposes only. We make no warranties regarding accuracy and accept no liability for reliance on this content.</p>
+      <div class="modal-actions">
+        <a href="terms" class="btn btn-ghost">Terms</a>
+        <button class="btn btn-ghost" onclick="switchModal('disclaimer-modal','privacy-modal')">Privacy Policy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-wrap" id="share-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Share Antartica.Org</h2>
+      <button class="close-btn" onclick="closeModal('share-modal')" id="share-close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="share-grid" id="share-grid"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- #root -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   ICON SYSTEM — inline Lucide-style SVGs
+═══════════════════════════════════════════════════ */
+const IC = {
+  snowflake: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/><circle cx="12" cy="12" r="2.5"/></svg>`,
+  search:    `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  settings:  `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  menu:      `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  close:     `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  home:      `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  share:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  info:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  cookie:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/></svg>`,
+  globe:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  file:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+  lock:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  alert:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  pen:       `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  grid:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
+  access:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M12 22v-9"/><path d="M5 8l7-2 7 2"/><path d="M5 8l2 7h10l2-7"/></svg>`,
+  message:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  print:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>`,
+  youtube:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>`,
+  instagram: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+  facebook:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+  twitter:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="4" y1="20" x2="20" y2="4"/></svg>`,
+  extlink:   `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+  arrowr:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+};
+const ic = (n, size) => {
+  const svg = (IC[n] || IC.info).replace(/width="\d+"/, `width="${size||16}"`).replace(/height="\d+"/, `height="${size||16}"`);
+  return `<span class="icon">${svg}</span>`;
+};
+
+/* ═══════════════════════════════════════════════════
+   SITE DATA — single source of truth
+═══════════════════════════════════════════════════ */
+const SITE = [
+  { title:'About Antartica',  sub:'Who we are',      group:'Site',    icon:'info',    href:'about',                          action:null },
+  { title:'Settings',         sub:'Preferences',     group:'Site',    icon:'settings',href:'settings.html',                  action:null },
+  { title:'Blog',             sub:'Articles',        group:'Site',    icon:'pen',     href:null,                             action:null },
+  { title:'Share',            sub:'Spread the word', group:'Site',    icon:'share',   href:null,                             action:"openModal('share-modal')" },
+  { title:'Accessibility',    sub:'For everyone',    group:'Site',    icon:'access',  href:'#',                              action:null },
+  { title:'Sitemap',          sub:'All pages',       group:'Site',    icon:'grid',    href:'#',                              action:null },
+  { title:'Terms',            sub:'Usage rules',     group:'Legal',   icon:'file',    href:'terms',                          action:null },
+  { title:'Privacy Policy',   sub:'Data protection', group:'Legal',   icon:'lock',    href:null,                             action:"openModal('privacy-modal')" },
+  { title:'Disclaimer',       sub:'Legal notice',    group:'Legal',   icon:'alert',   href:null,                             action:"openModal('disclaimer-modal')" },
+  { title:'Cookie Policy',    sub:'Data & cookies',  group:'Legal',   icon:'cookie',  href:'cookies',                        action:null },
+  { title:'Change Language',  sub:'Locale settings', group:'More',    icon:'globe',   href:'language/index.html',            action:null },
+  { title:'Wikipedia',        sub:'External',        group:'Explore', icon:'globe',   href:'https://en.wikipedia.org/wiki/Antarctica', action:null },
+  { title:'Google',           sub:'Search Antarctica',group:'Explore',icon:'search',  href:'https://www.google.com/search?q=antarctica', action:null },
+  { title:'Reddit',           sub:'Community',       group:'Explore', icon:'message', href:'https://www.reddit.com/search/?q=antartica', action:null },
+];
+
+const SHARE_LINKS = [
+  { label:'Google',    icon:'search',    href:'https://www.google.com/search?q=antarctica' },
+  { label:'Wikipedia', icon:'globe',     href:'https://en.wikipedia.org/wiki/Antarctica' },
+  { label:'YouTube',   icon:'youtube',   href:'https://www.youtube.com/results?search_query=antarctica' },
+  { label:'Reddit',    icon:'message',   href:'https://www.reddit.com/search/?q=antartica' },
+  { label:'X',         icon:'twitter',   href:'https://twitter.com' },
+  { label:'Instagram', icon:'instagram', href:'https://instagram.com' },
+  { label:'Facebook',  icon:'facebook',  href:'https://facebook.com' },
+  { label:'Print',     icon:'print',     href:null, action:'window.print()' },
+];
+
+const FOOTER_COLS = [
+  { h:'Legal',   keys:['Terms','Privacy Policy','Disclaimer','Cookie Policy'] },
+  { h:'Site',    keys:['About Antartica','Settings','Blog','Share'] },
+  { h:'Explore', keys:['Wikipedia','Google','Reddit','Change Language'] },
+  { h:'More',    keys:['Accessibility','Sitemap'] },
+];
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function byId(id){ return document.getElementById(id); }
+function isExt(h){ return h && h.startsWith('http'); }
+
+function itemTag(p, cls, extraAttrs, content) {
+  if (p.href) {
+    return `<a class="${cls}" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''}${extraAttrs||''}>${content}</a>`;
+  }
+  const oc = p.action ? ` onclick="${p.action}"` : '';
+  return `<button class="${cls}"${oc}${extraAttrs||''}>${content}</button>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD GRID
+═══════════════════════════════════════════════════ */
+function renderCards(filter) {
+  const q = (filter||'').trim().toLowerCase();
+  const items = q ? SITE.filter(p => (p.title+' '+p.sub+' '+p.group).toLowerCase().includes(q)) : SITE;
+  const grid = byId('card-grid');
+  if (!items.length) {
+    grid.innerHTML = `<div class="no-results">${ic('search',24)}<p>No results for "<em>${esc(filter)}</em>"</p></div>`;
+    return;
+  }
+  grid.innerHTML = items.map((p,i) => `
+    <div class="card" style="animation-delay:${i*.032}s">
+      ${itemTag(p,'',``, `
+        <div class="card-icon">${ic(p.icon)}</div>
+        <div>
+          <div class="card-name">${esc(p.title)}</div>
+          <div class="card-sub">${esc(p.sub)}</div>
+        </div>
+        ${isExt(p.href)?`<span class="icon" style="margin-left:auto;color:var(--muted)">${IC.extlink}</span>`:''}
+      `)}
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+function buildFooter() {
+  const map = Object.fromEntries(SITE.map(p => [p.title, p]));
+  byId('footer-grid').innerHTML = FOOTER_COLS.map(col => `
+    <div class="footer-col">
+      <h4>${esc(col.h)}</h4>
+      ${col.keys.map(k => {
+        const p = map[k]; if(!p) return '';
+        return itemTag(p, '', '', `${ic(p.icon)} ${esc(p.title)}`);
+      }).join('')}
+    </div>`).join('');
+
+  byId('lang-pill').innerHTML = `${ic('globe',12)} en&#8209;US`;
+  byId('footer-copy').innerHTML = `Copyright &copy; ${new Date().getFullYear()} <strong>Antartica.Org</strong>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAV DRAWER
+═══════════════════════════════════════════════════ */
+function buildDrawer() {
+  const groups = {};
+  SITE.forEach(p => { (groups[p.group] = groups[p.group]||[]).push(p); });
+  byId('drawer-body').innerHTML = Object.entries(groups).map(([g, pages]) => `
+    <p class="grp-label">${esc(g)}</p>
+    ${pages.map(p => itemTag(p,'nav-item',` onclick="closeDrawer()${p.action?'; '+p.action:''}"`,
+      `${ic(p.icon)} ${esc(p.title)}`
+    )).join('')}
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   SHARE MODAL
+═══════════════════════════════════════════════════ */
+function buildShare() {
+  byId('share-grid').innerHTML = SHARE_LINKS.map(s => {
+    if (s.href) return `<a class="share-btn" href="${esc(s.href)}" target="_blank" rel="noopener">${ic(s.icon,18)}<span>${esc(s.label)}</span></a>`;
+    return `<button class="share-btn" onclick="${s.action}">${ic(s.icon,18)}<span>${esc(s.label)}</span></button>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   BOTTOM NAV LABELS
+═══════════════════════════════════════════════════ */
+function buildBottomNav() {
+  const label = (id, iconName, txt) => {
+    const el = byId(id);
+    if (el) el.innerHTML = `${ic(iconName,20)}<span>${txt}</span>`;
+  };
+  label('bn-home','home','Home');
+  label('bn-search','search','Search');
+  label('bn-share','share','Share');
+  label('bn-settings','settings','Settings');
+}
+
+/* ═══════════════════════════════════════════════════
+   PLACE ICONS IN STATIC ELEMENTS
+═══════════════════════════════════════════════════ */
+function placeStaticIcons() {
+  [['brand-icon','snowflake'],['drawer-brand-icon','snowflake'],['sp-icon','search'],
+   ['nav-settings-btn','settings'],['nav-menu-btn','menu'],['hero-search-icon','search'],
+   ['cookie-icon','cookie'],['search-modal-icon','search'],
+   ['search-close-icon','close'],['about-close','close'],
+   ['priv-close','close'],['disc-close','close'],['share-close','close'],
+   ['drawer-close-btn','close']
+  ].forEach(([id, name]) => {
+    const el = byId(id);
+    if (el) el.innerHTML = IC[name] || IC.close;
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   UNIFIED SEARCH
+═══════════════════════════════════════════════════ */
+let searchIdx = -1;
+
+function openSearch() {
+  byId('search-overlay').classList.add('open');
+  byId('overlay').classList.add('open');
+  renderSearchList('');
+  searchIdx = -1;
+  setTimeout(() => byId('main-search').focus(), 60);
+}
+function closeSearch() {
+  byId('search-overlay').classList.remove('open');
+  byId('overlay').classList.remove('open');
+  byId('main-search').value = '';
+  searchIdx = -1;
+}
+function onSearch(q) { renderSearchList(q); searchIdx = -1; }
+
+function renderSearchList(q) {
+  const box = byId('search-results');
+  const term = q.trim().toLowerCase();
+  const hits = term ? SITE.filter(p=>(p.title+' '+p.sub+' '+p.group).toLowerCase().includes(term)) : SITE;
+
+  if (!hits.length) {
+    box.innerHTML = `<div class="search-empty">${ic('search',22)}<br>No results for "<em>${esc(q)}</em>"</div>`;
+    return;
+  }
+
+  if (!term) {
+    // Grouped view
+    const groups = {};
+    hits.forEach(p => { (groups[p.group]=groups[p.group]||[]).push(p); });
+    box.innerHTML = Object.entries(groups).map(([g, pages]) => `
+      <p class="search-group-label">${esc(g)}</p>
+      ${pages.map(p => sItemHTML(p)).join('')}
+    `).join('');
+  } else {
+    box.innerHTML = `
+      <p class="search-group-label">${hits.length} result${hits.length!==1?'s':''}</p>
+      ${hits.map(p => sItemHTML(p)).join('')}
+    `;
+  }
+}
+
+function sItemHTML(p) {
+  const closeAct = `closeSearch();`;
+  const action   = p.action ? `${closeAct} ${p.action}` : closeAct;
+  if (p.href) {
+    return `<a class="s-item" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''} onclick="${closeAct}">
+      ${ic(p.icon)}<div class="s-item-text"><div class="s-item-name">${esc(p.title)}</div><div class="s-item-sub">${esc(p.sub)} &middot; ${esc(p.group)}</div></div>
+      <span class="s-item-arr">${IC.arrowr}</span></a>`;
+  }
+  return `<button class="s-item" onclick="${action}">
+    ${ic(p.icon)}<div class="s-item-text"><div class="s-item-name">${esc(p.title)}</div><div class="s-item-sub">${esc(p.sub)} &middot; ${esc(p.group)}</div></div>
+    <span class="s-item-arr">${IC.arrowr}</span></button>`;
+}
+
+function onSearchKey(e) {
+  const items = byId('search-results').querySelectorAll('.s-item');
+  if (!items.length) return;
+  if      (e.key==='ArrowDown') { e.preventDefault(); searchIdx=Math.min(searchIdx+1,items.length-1); hilite(items); }
+  else if (e.key==='ArrowUp')   { e.preventDefault(); searchIdx=Math.max(searchIdx-1,0); hilite(items); }
+  else if (e.key==='Enter' && searchIdx>=0) { e.preventDefault(); items[searchIdx].click(); }
+}
+function hilite(items) {
+  items.forEach((el,i)=>el.classList.toggle('hi',i===searchIdx));
+  if(searchIdx>=0) items[searchIdx].scrollIntoView({block:'nearest'});
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL / DRAWER SYSTEM
+═══════════════════════════════════════════════════ */
+function openModal(id) {
+  byId(id).classList.add('open');
+  byId('overlay').classList.add('open');
+}
+function closeModal(id) {
+  byId(id).classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+function switchModal(a,b) { byId(a).classList.remove('open'); byId(b).classList.add('open'); }
+function openDrawer()     { byId('nav-drawer').classList.add('open'); byId('overlay').classList.add('open'); }
+function closeDrawer()    { byId('nav-drawer').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+function closeAll() {
+  document.querySelectorAll('.modal-wrap.open, #search-overlay.open').forEach(el=>el.classList.remove('open'));
+  byId('nav-drawer').classList.remove('open');
+  byId('overlay').classList.remove('open');
+  byId('main-search').value='';
+  searchIdx=-1;
+}
+function anyOpen(){
+  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open')].length;
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeAll();
+  if(!anyOpen() && (e.key==='/'||(e.key==='k'&&(e.metaKey||e.ctrlKey)))){ e.preventDefault(); openSearch(); }
+});
+
+/* ═══════════════════════════════════════════════════
+   COOKIES
+═══════════════════════════════════════════════════ */
+const Ck = {
+  set(n,v,d=365){ const x=new Date(); x.setTime(x.getTime()+d*864e5); document.cookie=`${n}=${v};expires=${x.toUTCString()};path=/;SameSite=Lax`; },
+  get(n){ return decodeURIComponent(document.cookie).split(';').map(c=>c.trim()).find(c=>c.startsWith(n+'='))?.slice(n.length+1)??null; }
+};
+function setCookieConsent(v){ Ck.set('cookieconsent',String(v)); byId('cookie-banner').style.display='none'; }
+
+/* ═══════════════════════════════════════════════════
+   CAPTCHA GUARD
+═══════════════════════════════════════════════════ */
+function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./captcha/'; }
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+(function init(){
+  checkCaptcha();
+  placeStaticIcons();
+  renderCards();
+  buildFooter();
+  buildDrawer();
+  buildShare();
+  buildBottomNav();
+  if(!Ck.get('cookieconsent')){
+    Ck.set('cookieconsent','0');
+    setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
+  }
+})();
+</script>
+</body>
+</html>
