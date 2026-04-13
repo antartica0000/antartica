@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Antartica.Org — Explore the frozen continent">
+  <meta property="og:site_name" content="Antartica.Org">
+  <meta name="theme-color" content="#0a1628">
+  <title>Home / Antartica</title>
+  <link rel="icon" type="image/x-icon" href="images/antartica.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── DESIGN TOKENS ─────────────────────────────── */
+    :root {
+      --bg:        #0a1628;
+      --bg2:       #0e1e38;
+      --bg3:       #112244;
+      --surface:   #152a52;
+      --border:    rgba(100,160,255,0.15);
+      --ice:       #a8d4ff;
+      --ice2:      #cce8ff;
+      --accent:    #3d9bff;
+      --accent2:   #00d4aa;
+      --text:      #ddeeff;
+      --muted:     #7a9cc4;
+      --danger:    #ff5c72;
+      --radius:    12px;
+      --radius-sm: 8px;
+      --shadow:    0 8px 32px rgba(0,0,0,0.5);
+      --nav-h:     56px;
+      --font-mono: 'Space Mono', monospace;
+      --font-body: 'Outfit', sans-serif;
+      --trans:     0.2s ease;
+    }
+
+    /* ── RESET ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--ice); text-decoration: none; transition: color var(--trans); }
+    a:hover { color: var(--accent); }
+    button { cursor: pointer; font-family: var(--font-body); }
+    input { font-family: var(--font-body); }
+
+    /* ── FROST BACKGROUND ─────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(61,155,255,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 90% 80%, rgba(0,212,170,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ── LAYOUT ────────────────────────────────────── */
+    #app-root { position: relative; z-index: 1; }
+
+    /* ── TOP NAV ───────────────────────────────────── */
+    .topnav {
+      position: sticky; top: 0; z-index: 100;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px;
+      background: rgba(10,22,40,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topnav-brand {
+      font-family: var(--font-mono);
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--ice2);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .topnav-brand span { color: var(--accent); }
+    .topnav-actions { display: flex; align-items: center; gap: 4px; }
+    .nav-btn {
+      width: 40px; height: 40px;
+      border: none; background: transparent;
+      color: var(--muted);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--trans), color var(--trans);
+    }
+    .nav-btn:hover { background: var(--surface); color: var(--ice); }
+
+    /* ── MAIN CONTENT ──────────────────────────────── */
+    main { padding: 24px 16px 120px; max-width: 1200px; margin: 0 auto; }
+
+    /* ── HERO ──────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 48px 16px 40px;
+    }
+    .hero-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; letter-spacing: 0.2em;
+      color: var(--accent2); text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: var(--font-mono);
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 700; line-height: 1.1;
+      color: var(--ice2);
+      margin-bottom: 16px;
+    }
+    .hero h1 em { color: var(--accent); font-style: normal; }
+    .hero p {
+      font-size: 1rem; color: var(--muted);
+      max-width: 480px; margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    /* ── SEARCH BAR ────────────────────────────────── */
+    .search-box {
+      position: relative;
+      max-width: 560px; margin: 0 auto;
+    }
+    .search-box i {
+      position: absolute; left: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: 0.9rem;
+      pointer-events: none;
+    }
+    .search-box input {
+      width: 100%; padding: 14px 16px 14px 44px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      color: var(--text); font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+    .search-box input::placeholder { color: var(--muted); }
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(61,155,255,0.15);
+    }
+
+    /* ── CARD GRID ─────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--muted); text-transform: uppercase;
+      margin: 40px 0 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    @media (min-width: 640px)  { .card-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); } }
+    @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform var(--trans), border-color var(--trans), box-shadow var(--trans);
+      animation: fadeUp 0.4s ease both;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(61,155,255,0.35);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .card a {
+      display: flex; flex-direction: column;
+      padding: 20px 16px;
+      gap: 12px; color: var(--text);
+    }
+    .card-icon {
+      width: 40px; height: 40px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: var(--accent);
+    }
+    .card-title {
+      font-size: 0.9rem; font-weight: 500;
+      line-height: 1.3;
+    }
+    .card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .card-empty {
+      grid-column: 1/-1; text-align: center;
+      padding: 48px; color: var(--muted); font-size: 0.9rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── BOTTOM NAV ────────────────────────────────── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-around;
+      background: rgba(10,22,40,0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bottom-nav-btn {
+      flex: 1; height: 100%;
+      border: none; background: transparent;
+      color: var(--muted);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px; font-size: 0.6rem; letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color var(--trans);
+    }
+    .bottom-nav-btn i { font-size: 1.1rem; }
+    .bottom-nav-btn.active { color: var(--accent); }
+    .bottom-nav-btn:hover { color: var(--ice); }
+
+    /* ── COOKIE BANNER ─────────────────────────────── */
+    #cookie-banner {
+      position: fixed; bottom: 72px; left: 12px; right: 12px; z-index: 200;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.35s ease;
+      max-width: 480px; margin: 0 auto;
+    }
+    @media (min-width: 640px) {
+      #cookie-banner { left: auto; right: 20px; bottom: 80px; }
+    }
+    #cookie-banner h3 {
+      font-family: var(--font-mono); font-size: 0.85rem;
+      color: var(--ice2); margin-bottom: 8px;
+    }
+    #cookie-banner p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    #cookie-banner a { color: var(--accent); }
+    .cookie-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .btn {
+      padding: 9px 18px; border: none; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 500;
+      transition: opacity var(--trans), transform var(--trans);
+    }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--ice); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── DRAWER / MODAL SYSTEM ─────────────────────── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(5,12,24,0.75);
+      backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 301;
+      width: min(340px, 100vw);
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 1;
+      background: var(--bg2);
+    }
+    .drawer-header h2 {
+      font-family: var(--font-mono); font-size: 0.9rem; color: var(--ice2);
+    }
+    .close-btn {
+      width: 36px; height: 36px; border: none;
+      background: var(--surface); border-radius: 50%;
+      color: var(--muted); font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--trans), color var(--trans);
+    }
+    .close-btn:hover { background: var(--danger); color: #fff; }
+    .drawer-body { padding: 20px; flex: 1; }
+
+    /* Search drawer */
+    .drawer-search {
+      position: relative; margin-bottom: 20px;
+    }
+    .drawer-search i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: var(--muted); font-size: 0.85rem;
+    }
+    .drawer-search input {
+      width: 100%; padding: 11px 12px 11px 36px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 0.9rem; outline: none;
+    }
+    .drawer-search input:focus { border-color: var(--accent); }
+    .drawer-search input::placeholder { color: var(--muted); }
+
+    .nav-list { list-style: none; }
+    .nav-list li a, .nav-list li button {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 8px;
+      border-radius: var(--radius-sm);
+      color: var(--muted); font-size: 0.9rem;
+      background: transparent; border: none; width: 100%; text-align: left;
+      transition: background var(--trans), color var(--trans);
+    }
+    .nav-list li a:hover, .nav-list li button:hover {
+      background: var(--surface); color: var(--ice);
+    }
+    .nav-list li a i, .nav-list li button i {
+      width: 18px; text-align: center; color: var(--accent); font-size: 0.9rem;
+    }
+
+    /* Modal centered */
+    .modal-centered {
+      position: fixed; inset: 0; z-index: 302;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .modal-centered.open { pointer-events: all; opacity: 1; }
+    .modal-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); max-width: 480px; width: 100%;
+      box-shadow: var(--shadow);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+    .modal-centered.open .modal-box { transform: scale(1); }
+    .modal-box-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px; border-bottom: 1px solid var(--border);
+    }
+    .modal-box-header h2 {
+      font-family: var(--font-mono); font-size: 0.95rem; color: var(--ice2);
+    }
+    .modal-box-body { padding: 20px; }
+    .modal-box-body p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* share grid */
+    .share-grid {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+      margin-top: 16px;
+    }
+    .share-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 14px 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--muted);
+      font-size: 0.7rem; cursor: pointer;
+      transition: background var(--trans), color var(--trans), border-color var(--trans);
+      text-decoration: none;
+    }
+    .share-btn i { font-size: 1.3rem; }
+    .share-btn:hover { background: var(--surface); color: var(--ice); border-color: var(--accent); }
+
+    /* ── FOOTER ────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 16px 100px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    @media (min-width: 640px) {
+      .footer-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .footer-col h4 {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 12px;
+    }
+    .footer-col a, .footer-col button {
+      display: block; margin-bottom: 8px;
+      color: var(--muted); font-size: 0.85rem;
+      background: transparent; border: none; text-align: left; padding: 0;
+      transition: color var(--trans);
+    }
+    .footer-col a:hover, .footer-col button:hover { color: var(--ice); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .footer-copyright {
+      font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted);
+    }
+    .footer-lang {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--accent); border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 50px;
+      transition: border-color var(--trans);
+    }
+    .footer-lang:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── UTILITIES ─────────────────────────────────── */
+    .hidden { display: none !important; }
+    noscript { display: block; text-align: center; padding: 60px 20px; color: var(--muted); }
+  </style>
+</head>
+
+<body>
+<noscript>
+  <h2>JavaScript Required</h2>
+  <p>Please enable JavaScript to use Antartica.Org.</p>
+</noscript>
+
+<div id="app-root">
+
+  <!-- ── TOP NAV ──────────────────────────────────── -->
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <span>❄</span> Antartica<span>.Org</span>
+    </div>
+    <div class="topnav-actions">
+      <button class="nav-btn" title="Search" onclick="openDrawer('menu-drawer')">
+        <i class="fa fa-search"></i>
+      </button>
+      <a href="settings.html" class="nav-btn" title="Settings">
+        <i class="fa fa-gear"></i>
+      </a>
+      <button class="nav-btn" title="Menu" onclick="openDrawer('menu-drawer')">
+        <i class="fa fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── MAIN ─────────────────────────────────────── -->
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <p class="hero-label">Explore the frozen continent</p>
+      <h1>Ant<em>arc</em>tica</h1>
+      <p>Discover resources, facts, and links about the world's southernmost continent.</p>
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input type="text" id="card-search" placeholder="Search topics…" autocomplete="off" spellcheck="true">
+      </div>
+    </div>
+
+    <!-- Card Grid -->
+    <p class="section-label">Explore</p>
+    <div class="card-grid" id="card-grid">
+      <!-- Cards injected by JS -->
+    </div>
+  </main>
+
+  <!-- ── FOOTER ────────────────────────────────────── -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="terms">Terms</a>
+        <button onclick="openModal('privacy-modal')">Privacy Policy</button>
+        <button onclick="openModal('disclaimer-modal')">Disclaimer</button>
+        <a href="cookies">Cookie Policy</a>
+      </div>
+      <div class="footer-col">
+        <h4>Info</h4>
+        <button onclick="openModal('about-modal')">About</button>
+        <a href="settings">Settings</a>
+        <button onclick="openModal('share-modal')">Share</button>
+      </div>
+      <div class="footer-col">
+        <h4>Discover</h4>
+        <a href="#" onclick="openDrawer('menu-drawer')">Sitemap</a>
+        <a href="#">Blog</a>
+        <a href="#">Accessibility</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="https://google.com/search?q=antarctica" target="_blank" rel="noopener">Google</a>
+        <a href="https://en.wikipedia.org/wiki/Antarctica" target="_blank" rel="noopener">Wikipedia</a>
+        <a href="https://reddit.com/search/?q=antartica" target="_blank" rel="noopener">Reddit</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copyright" id="footer-copyright"></span>
+      <a class="footer-lang" href="language/index.html" title="Change Language">en-US</a>
+    </div>
+  </footer>
+
+  <!-- ── BOTTOM NAV ───────────────────────────────── -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-btn active" title="Home">
+      <i class="fa fa-home"></i>
+      <span>Home</span>
+    </button>
+    <button class="bottom-nav-btn" title="Search" onclick="openDrawer('menu-drawer')">
+      <i class="fa fa-search"></i>
+      <span>Search</span>
+    </button>
+    <button class="bottom-nav-btn" title="Share" onclick="openModal('share-modal')">
+      <i class="fa fa-share-alt"></i>
+      <span>Share</span>
+    </button>
+    <a href="settings.html" class="bottom-nav-btn" title="Settings">
+      <i class="fa fa-gear"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <!-- ── COOKIE BANNER ─────────────────────────────── -->
+  <div id="cookie-banner" class="hidden">
+    <h3>🍪 Cookies</h3>
+    <p>Essential cookies keep this site running. Optional analytics cookies help us improve — you choose. <a href="cookies">Learn more.</a></p>
+    <div class="cookie-actions">
+      <button class="btn btn-primary" onclick="acceptCookies()">Accept All</button>
+      <button class="btn btn-ghost" onclick="refuseCookies()">Essential Only</button>
+    </div>
+  </div>
+
+  <!-- ── OVERLAY ───────────────────────────────────── -->
+  <div class="overlay" id="overlay" onclick="closeAll()"></div>
+
+  <!-- ── MENU / SEARCH DRAWER ──────────────────────── -->
+  <aside class="drawer" id="menu-drawer" role="dialog" aria-label="Menu">
+    <div class="drawer-header">
+      <h2>Menu</h2>
+      <button class="close-btn" onclick="closeDrawer('menu-drawer')" aria-label="Close">
+        <i class="fa fa-close"></i>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-search">
+        <i class="fa fa-search"></i>
+        <input type="text" id="nav-search" placeholder="Search pages…" oninput="filterNavSearch(this.value)">
+      </div>
+      <ul class="nav-list" id="nav-list">
+        <li><a href="about"><i class="fa fa-info-circle"></i> About Antartica</a></li>
+        <li><a href="settings.html"><i class="fa fa-gear"></i> Settings</a></li>
+        <li><button onclick="closeDrawer('menu-drawer'); openModal('disclaimer-modal')"><i class="fa fa-exclamation-triangle"></i> Disclaimer</button></li>
+        <li><a href="cookies"><i class="fa fa-cookie"></i> Cookie Policy</a></li>
+        <li><a href="language/index.html"><i class="fa fa-language"></i> Change Language</a></li>
+        <li><a href="terms"><i class="fa fa-file-text"></i> Terms</a></li>
+        <li><button onclick="closeDrawer('menu-drawer'); openModal('privacy-modal')"><i class="fa fa-lock"></i> Privacy Policy</button></li>
+        <li><button onclick="closeDrawer('menu-drawer'); openModal('share-modal')"><i class="fa fa-share-alt"></i> Share</button></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- ── ABOUT MODAL ───────────────────────────────── -->
+  <div class="modal-centered" id="about-modal" role="dialog" aria-label="About">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h2>About</h2>
+        <button class="close-btn" onclick="closeModal('about-modal')"><i class="fa fa-close"></i></button>
+      </div>
+      <div class="modal-box-body">
+        <p>Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and exploration history.</p>
+        <div style="margin-top:16px; display:flex; gap:12px;">
+          <a href="terms" class="btn btn-ghost">Terms</a>
+          <button class="btn btn-ghost" onclick="closeModal('about-modal'); openModal('privacy-modal')">Privacy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRIVACY MODAL ─────────────────────────────── -->
+  <div class="modal-centered" id="privacy-modal" role="dialog" aria-label="Privacy Policy">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h2>Privacy Policy</h2>
+        <button class="close-btn" onclick="closeModal('privacy-modal')"><i class="fa fa-close"></i></button>
+      </div>
+      <div class="modal-box-body">
+        <p>We collect minimal data and use cookies only as described in our Cookie Policy. Your data is never sold to third parties. For full details, please review the linked documentation.</p>
+        <div style="margin-top:16px;">
+          <a href="cookies" class="btn btn-ghost">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DISCLAIMER MODAL ──────────────────────────── -->
+  <div class="modal-centered" id="disclaimer-modal" role="dialog" aria-label="Disclaimer">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h2>Disclaimer</h2>
+        <button class="close-btn" onclick="closeModal('disclaimer-modal')"><i class="fa fa-close"></i></button>
+      </div>
+      <div class="modal-box-body">
+        <p>Content on Antartica.Org is provided for informational purposes only. We make no warranties regarding the accuracy or completeness of any information and accept no liability for any loss arising from reliance on it.</p>
+        <div style="margin-top:16px; display:flex; gap:12px;">
+          <a href="terms" class="btn btn-ghost">Terms</a>
+          <button class="btn btn-ghost" onclick="closeModal('disclaimer-modal'); openModal('privacy-modal')">Privacy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHARE MODAL ───────────────────────────────── -->
+  <div class="modal-centered" id="share-modal" role="dialog" aria-label="Share">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h2>Share</h2>
+        <button class="close-btn" onclick="closeModal('share-modal')"><i class="fa fa-close"></i></button>
+      </div>
+      <div class="modal-box-body">
+        <div class="share-grid">
+          <a class="share-btn" href="https://www.google.com/search?q=antarctica" target="_blank" rel="noopener" title="Google">
+            <i class="fa fa-google"></i><span>Google</span>
+          </a>
+          <a class="share-btn" href="https://en.wikipedia.org/wiki/Antarctica" target="_blank" rel="noopener" title="Wikipedia">
+            <i class="fa fa-wikipedia-w"></i><span>Wiki</span>
+          </a>
+          <a class="share-btn" href="https://www.youtube.com/results?search_query=antarctica" target="_blank" rel="noopener" title="YouTube">
+            <i class="fa fa-youtube"></i><span>YouTube</span>
+          </a>
+          <a class="share-btn" href="https://www.reddit.com/search/?q=antartica" target="_blank" rel="noopener" title="Reddit">
+            <i class="fa fa-reddit"></i><span>Reddit</span>
+          </a>
+          <a class="share-btn" href="https://twitter.com" target="_blank" rel="noopener" title="X / Twitter">
+            <i class="fa fa-twitter"></i><span>X</span>
+          </a>
+          <a class="share-btn" href="https://instagram.com" target="_blank" rel="noopener" title="Instagram">
+            <i class="fa fa-instagram"></i><span>Instagram</span>
+          </a>
+          <a class="share-btn" href="https://facebook.com" target="_blank" rel="noopener" title="Facebook">
+            <i class="fa fa-facebook"></i><span>Facebook</span>
+          </a>
+          <button class="share-btn" onclick="window.print()" title="Print">
+            <i class="fa fa-print"></i><span>Print</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- #app-root -->
+
+<!-- ── SCRIPTS ──────────────────────────────────────── -->
+<script>
+/* ── DATA ─────────────────────────────────── */
+const POSTS = [
+  { title: 'About Antartica', sub: 'Who we are', link: 'about',            icon: 'fa-info-circle' },
+  { title: 'Settings',        sub: 'Preferences',  link: 'settings.html',  icon: 'fa-gear' },
+  { title: 'Cookie Policy',   sub: 'Data & cookies', link: 'cookies',      icon: 'fa-shield' },
+  { title: 'Language',        sub: 'Change locale', link: 'language/index.html', icon: 'fa-language' },
+  { title: 'Terms',           sub: 'Usage rules',  link: 'terms',          icon: 'fa-file-text-o' },
+  { title: 'Accessibility',   sub: 'For everyone',  link: '#',             icon: 'fa-universal-access' },
+  { title: 'Blog',            sub: 'Articles',      link: '#',             icon: 'fa-pencil' },
+  { title: 'Wikipedia',       sub: 'External',      link: 'https://en.wikipedia.org/wiki/Antarctica', icon: 'fa-wikipedia-w' },
+];
+
+/* ── CARD RENDERING ──────────────────────── */
+function renderCards(filter = '') {
+  const grid = document.getElementById('card-grid');
+  const q = filter.trim().toLowerCase();
+  const items = q ? POSTS.filter(p =>
+    p.title.toLowerCase().includes(q) || (p.sub || '').toLowerCase().includes(q)
+  ) : POSTS;
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="card-empty"><i class="fa fa-search" style="font-size:2rem;margin-bottom:12px;display:block;"></i>No results for "' + escHtml(filter) + '"</div>';
+    return;
+  }
+  grid.innerHTML = items.map((p, i) => `
+    <div class="card" style="animation-delay:${i * 0.04}s">
+      <a href="${escHtml(p.link)}">
+        <div class="card-icon"><i class="fa ${escHtml(p.icon)}"></i></div>
+        <div>
+          <div class="card-title">${escHtml(p.title)}</div>
+          ${p.sub ? `<div class="card-sub">${escHtml(p.sub)}</div>` : ''}
+        </div>
+      </a>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ── SEARCH ──────────────────────────────── */
+document.getElementById('card-search').addEventListener('input', e => renderCards(e.target.value));
+
+/* ── NAV SEARCH FILTER ────────────────────── */
+function filterNavSearch(q) {
+  const lis = document.querySelectorAll('#nav-list li');
+  const f = q.trim().toLowerCase();
+  lis.forEach(li => {
+    const text = li.textContent.toLowerCase();
+    li.style.display = (!f || text.includes(f)) ? '' : 'none';
+  });
+}
+
+/* ── MODAL / DRAWER SYSTEM ────────────────── */
+function openOverlay()  { document.getElementById('overlay').classList.add('open'); }
+function closeOverlay() { document.getElementById('overlay').classList.remove('open'); }
+
+function openDrawer(id) {
+  document.getElementById(id).classList.add('open');
+  openOverlay();
+}
+function closeDrawer(id) {
+  document.getElementById(id).classList.remove('open');
+  if (!anyOpen()) closeOverlay();
+}
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  openOverlay();
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  if (!anyOpen()) closeOverlay();
+}
+function closeAll() {
+  document.querySelectorAll('.drawer, .modal-centered').forEach(el => el.classList.remove('open'));
+  closeOverlay();
+}
+function anyOpen() {
+  return [...document.querySelectorAll('.drawer.open, .modal-centered.open')].length > 0;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+
+/* ── COOKIES ──────────────────────────────── */
+const Cookies = {
+  set(name, val, days = 365) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 864e5);
+    document.cookie = `${name}=${val};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+  },
+  get(name) {
+    return decodeURIComponent(document.cookie)
+      .split(';').map(c => c.trim())
+      .find(c => c.startsWith(name + '='))
+      ?.slice(name.length + 1) ?? null;
+  }
+};
+
+function acceptCookies() {
+  Cookies.set('cookieconsent', '1');
+  hideBanner();
+}
+function refuseCookies() {
+  Cookies.set('cookieconsent', '2');
+  hideBanner();
+}
+function hideBanner() {
+  document.getElementById('cookie-banner').classList.add('hidden');
+}
+function initCookies() {
+  const consent = Cookies.get('cookieconsent');
+  if (!consent) {
+    setTimeout(() => document.getElementById('cookie-banner').classList.remove('hidden'), 800);
+    Cookies.set('cookieconsent', '0');
+  }
+}
+
+/* ── CAPTCHA GUARD ────────────────────────── */
+function checkCaptcha() {
+  const val = Cookies.get('captcha');
+  if (val !== '1') {
+    window.location.href = './captcha/';
+  }
+}
+
+/* ── COPYRIGHT ────────────────────────────── */
+function setYear() {
+  const y = new Date().getFullYear();
+  document.getElementById('footer-copyright').textContent = `Copyright © ${y} Antartica.Org`;
+}
+
+/* ── INIT ─────────────────────────────────── */
+(function init() {
+  checkCaptcha();
+  renderCards();
+  initCookies();
+  setYear();
+})();
+</script>
+
+</body>
+</html>
