@@ -517,6 +517,108 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ═══════════════════════════════════════════════
+     SUB-300px — ultra-compact layout
+  ═══════════════════════════════════════════════ */
+  @media (max-width: 299px) {
+    :root {
+      --nav-h:  48px;
+      --bot-h:  52px;
+      --r:      10px;
+      --r-sm:   6px;
+    }
+
+    /* Nav */
+    .topnav { padding: 0 10px; gap: 4px; }
+    .brand-mark { width: 24px; height: 24px; border-radius: 6px; }
+    .brand { font-size: 0.8rem; gap: 6px; }
+    .nav-btn { width: 34px; height: 34px; border-radius: 8px; }
+    .nav-actions { gap: 1px; }
+    .search-pill { padding: 0 10px; height: 30px; font-size: 0.74rem; gap: 5px; }
+
+    /* Main content */
+    main { padding: 0 10px 32px; }
+
+    /* Hero */
+    .hero { padding: 20px 0 20px; gap: 18px; }
+    h1.hero-title { font-size: 1.9rem; margin-bottom: 10px; }
+    .hero-eyebrow { font-size: 0.6rem; margin-bottom: 8px; letter-spacing: 0.16em; }
+    .hero-sub { font-size: 0.8rem; margin-bottom: 18px; line-height: 1.55; }
+    .hero-cta { padding: 9px 14px; font-size: 0.78rem; gap: 7px; }
+
+    /* Cards — single column */
+    .card-grid { grid-template-columns: 1fr !important; gap: 8px; }
+    .card a, .card button { padding: 14px 12px 12px; gap: 7px; }
+    .card-icon { width: 30px; height: 30px; border-radius: 8px; }
+    .card-name { font-size: 0.82rem; }
+    .card-sub  { font-size: 0.68rem; }
+
+    /* Section head */
+    .section-head { margin: 24px 0 12px; gap: 10px; }
+
+    /* Footer */
+    footer { padding: 24px 10px 16px; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 18px 10px; }
+    .footer-col h3 { font-size: 0.56rem; }
+    .footer-link { font-size: 0.74rem; }
+
+    /* Cookie banner */
+    #cookie-banner { padding: 14px 12px; }
+    #cookie-banner p { font-size: 0.74rem; }
+    .cookie-actions { flex-direction: column; gap: 6px; }
+    .btn { padding: 8px 14px; font-size: 0.78rem; width: 100%; justify-content: center; }
+
+    /* Bottom nav */
+    .botnav { padding: 0 4px; }
+    .bn-item { padding: 6px 4px 4px; gap: 2px; font-size: 0.58rem; min-width: 0; }
+    .bn-item .icon svg { width: 18px; height: 18px; }
+
+    /* Panels & drawers — always full width */
+    #settings-panel,
+    #accessibility-panel,
+    #about-panel,
+    #language-panel,
+    #nav-drawer { width: 100vw !important; min-width: 0; }
+
+    /* Settings */
+    .theme-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
+    .theme-name { font-size: 0.62rem; padding: 4px 6px; }
+    .settings-row { padding: 10px 10px; }
+    .settings-row-label { font-size: 0.8rem; }
+    .settings-row-sub   { font-size: 0.66rem; }
+    .settings-row-icon  { width: 28px; height: 28px; border-radius: 6px; }
+    .drawer-head { padding: 12px 14px; }
+    .drawer-title { font-size: 0.84rem; }
+
+    /* Accessibility panel */
+    .font-size-steps { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    .fs-step { padding: 10px 4px 8px; }
+    .font-size-preview { padding: 12px 14px; font-size: 0.86rem !important; }
+
+    /* Search overlay */
+    #search-overlay { padding: 24px 8px 0; }
+    .search-modal { border-radius: 12px; }
+    .search-input-row { padding: 12px 12px; gap: 8px; }
+    #main-search { font-size: 0.9rem; }
+    .search-footer-bar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
+    .s-item { padding: 10px 12px; gap: 9px; }
+    .s-item-name { font-size: 0.82rem; }
+    .s-item-sub  { font-size: 0.68rem; }
+
+    /* Modal */
+    .modal-wrap { padding: 10px; }
+    .modal-box { border-radius: 10px; }
+    .modal-head { padding: 13px 14px; }
+    .modal-head h2 { font-size: 0.84rem; }
+    .modal-body { padding: 14px; }
+    .modal-body p { font-size: 0.8rem; }
+    .share-grid { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+
+    /* Nav drawer */
+    .nav-item { font-size: 0.82rem; padding: 9px 8px; }
+    .grp-label { font-size: 0.54rem; padding: 12px 8px 4px; }
+  }
+
   /* ── OVERLAY ── */
   #overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -727,6 +829,132 @@
   .settings-row-label { font-size: 0.87rem; color: var(--ice); }
   .settings-row-sub   { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
   .settings-row-right { color: var(--muted); }
+
+  /* ── ACCESSIBILITY FEATURE STYLES ── */
+
+  /* High Contrast */
+  [data-high-contrast="on"] {
+    --border:     rgba(255,255,255,0.35) !important;
+    --border-hi:  rgba(255,255,255,0.80) !important;
+    --muted:      var(--text) !important;
+    --text:       #ffffff !important;
+  }
+  [data-theme="blizzard"][data-high-contrast="on"],
+  [data-theme="glacier"][data-high-contrast="on"] {
+    --text:       #000000 !important;
+    --muted:      #222222 !important;
+    --border:     rgba(0,0,0,0.45) !important;
+    --border-hi:  rgba(0,0,0,0.90) !important;
+  }
+
+  /* Reduced Motion */
+  [data-reduce-motion="on"] *,
+  [data-reduce-motion="on"] *::before,
+  [data-reduce-motion="on"] *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  /* Dyslexia-friendly font */
+  [data-dyslexic-font="on"] body,
+  [data-dyslexic-font="on"] input,
+  [data-dyslexic-font="on"] button,
+  [data-dyslexic-font="on"] .card-name,
+  [data-dyslexic-font="on"] .card-sub,
+  [data-dyslexic-font="on"] .nav-item,
+  [data-dyslexic-font="on"] .s-item-name,
+  [data-dyslexic-font="on"] .s-item-sub {
+    font-family: Arial, Helvetica, sans-serif !important;
+    letter-spacing: 0.06em;
+    word-spacing: 0.18em;
+    line-height: 1.75;
+  }
+
+  /* Focus Highlight */
+  [data-focus-highlight="on"] *:focus-visible {
+    outline: 3px solid var(--accent) !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+  }
+
+  /* Line Spacing */
+  [data-line-spacing="relaxed"] { --lh: 1.85; }
+  [data-line-spacing="relaxed"] p,
+  [data-line-spacing="relaxed"] .hero-sub,
+  [data-line-spacing="relaxed"] .about-body,
+  [data-line-spacing="relaxed"] .font-size-preview { line-height: 1.85 !important; }
+
+  [data-line-spacing="loose"] p,
+  [data-line-spacing="loose"] .hero-sub,
+  [data-line-spacing="loose"] .about-body,
+  [data-line-spacing="loose"] .font-size-preview { line-height: 2.2 !important; }
+
+  /* Cursor size */
+  [data-cursor-size="large"]  * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='white' stroke='black' stroke-width='1.5' d='M4 0 L4 20 L8 16 L11 23 L13 22 L10 15 L15 15 Z'/%3E%3C/svg%3E") 4 0, auto !important; }
+
+  /* Accessibility toggle pill */
+  .acc-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 16px; border-radius: 10px; margin: 2px 0;
+    transition: background .12s;
+  }
+  .acc-toggle-row:hover { background: var(--bg2); }
+  .acc-toggle-left { display: flex; align-items: center; gap: 10px; }
+  .acc-toggle-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); flex-shrink: 0; transition: background 0.35s;
+  }
+  .acc-toggle-label { font-size: 0.87rem; color: var(--ice); transition: color 0.35s; }
+  .acc-toggle-sub   { font-size: 0.7rem;  color: var(--muted); margin-top: 1px; transition: color 0.35s; }
+
+  /* Toggle switch */
+  .toggle-switch {
+    position: relative; width: 42px; height: 24px; flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute; inset: 0; border-radius: 50px;
+    background: var(--bg3); border: 1px solid var(--border);
+    cursor: pointer; transition: background .2s, border-color .2s;
+  }
+  .toggle-track::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--muted); transition: transform .2s, background .2s;
+  }
+  .toggle-switch input:checked + .toggle-track { background: var(--accent-dim); border-color: var(--accent); }
+  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); background: var(--accent); }
+
+  /* Line spacing picker */
+  .line-spacing-steps {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    padding: 0 16px 14px;
+  }
+  .ls-step {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 10px 6px 9px;
+    background: var(--bg2); border: 2px solid var(--border);
+    border-radius: 10px; cursor: pointer; font-family: var(--font-b);
+    color: var(--muted); font-size: 0.75rem;
+    transition: border-color .18s, background .15s, color .15s;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .ls-step:hover { border-color: var(--border-hi); background: var(--bg3); color: var(--ice); }
+  .ls-step.active { border-color: var(--accent) !important; color: var(--ice); }
+  .ls-step-icon { display: flex; flex-direction: column; gap: 2px; width: 22px; }
+  .ls-bar { height: 3px; background: currentColor; border-radius: 1px; opacity: 0.7; }
+
+  @media (max-width: 299px) {
+    .line-spacing-steps { padding: 0 10px 12px; gap: 6px; }
+    .ls-step { padding: 8px 4px; font-size: 0.68rem; }
+    .acc-toggle-row { padding: 9px 10px; }
+    .acc-toggle-label { font-size: 0.8rem; }
+    .acc-toggle-sub   { font-size: 0.64rem; }
+    .toggle-switch { width: 36px; height: 20px; }
+    .toggle-track::after { width: 13px; height: 13px; }
+    .toggle-switch input:checked + .toggle-track::after { transform: translateX(15px); }
+  }
 
   /* ── ACCESSIBILITY SUB-PANEL ── */
   #accessibility-panel {
@@ -1060,6 +1288,112 @@
         <button class="fs-step" data-fs="large"   onclick="applyFontSize('large')"  >A<span id="fs-large">Large</span></button>
         <button class="fs-step" data-fs="xlarge"  onclick="applyFontSize('xlarge')" >A<span id="fs-xlarge">X-Large</span></button>
       </div>
+    </div>
+
+    <!-- Line Spacing -->
+    <div class="settings-section" style="padding-top:18px">
+      <p class="settings-section-label">Line Spacing</p>
+    </div>
+    <div class="line-spacing-steps">
+      <button class="ls-step active" data-ls="default" onclick="applyLineSpacing('default')" aria-pressed="true">
+        <div class="ls-step-icon"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
+        Default
+      </button>
+      <button class="ls-step" data-ls="relaxed" onclick="applyLineSpacing('relaxed')" aria-pressed="false">
+        <div class="ls-step-icon" style="gap:4px"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
+        Relaxed
+      </button>
+      <button class="ls-step" data-ls="loose" onclick="applyLineSpacing('loose')" aria-pressed="false">
+        <div class="ls-step-icon" style="gap:6px"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
+        Loose
+      </button>
+    </div>
+
+    <!-- Visual Options -->
+    <div class="settings-section" style="padding-top:10px">
+      <p class="settings-section-label">Visual Options</p>
+    </div>
+
+    <!-- High Contrast -->
+    <div class="acc-toggle-row">
+      <div class="acc-toggle-left">
+        <div class="acc-toggle-icon" id="acc-icon-contrast"></div>
+        <div>
+          <div class="acc-toggle-label">High Contrast</div>
+          <div class="acc-toggle-sub">Strengthen borders &amp; text</div>
+        </div>
+      </div>
+      <label class="toggle-switch" aria-label="Toggle high contrast">
+        <input type="checkbox" id="toggle-contrast" onchange="applyHighContrast(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Reduce Motion -->
+    <div class="acc-toggle-row">
+      <div class="acc-toggle-left">
+        <div class="acc-toggle-icon" id="acc-icon-motion"></div>
+        <div>
+          <div class="acc-toggle-label">Reduce Motion</div>
+          <div class="acc-toggle-sub">Disable animations &amp; transitions</div>
+        </div>
+      </div>
+      <label class="toggle-switch" aria-label="Toggle reduce motion">
+        <input type="checkbox" id="toggle-motion" onchange="applyReduceMotion(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Dyslexia-Friendly Font -->
+    <div class="acc-toggle-row">
+      <div class="acc-toggle-left">
+        <div class="acc-toggle-icon" id="acc-icon-dyslexic"></div>
+        <div>
+          <div class="acc-toggle-label">Dyslexia-Friendly Font</div>
+          <div class="acc-toggle-sub">Switch to a more readable typeface</div>
+        </div>
+      </div>
+      <label class="toggle-switch" aria-label="Toggle dyslexia-friendly font">
+        <input type="checkbox" id="toggle-dyslexic" onchange="applyDyslexicFont(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Focus Highlight -->
+    <div class="acc-toggle-row">
+      <div class="acc-toggle-left">
+        <div class="acc-toggle-icon" id="acc-icon-focus"></div>
+        <div>
+          <div class="acc-toggle-label">Enhanced Focus Ring</div>
+          <div class="acc-toggle-sub">Highlight focused elements for keyboard nav</div>
+        </div>
+      </div>
+      <label class="toggle-switch" aria-label="Toggle enhanced focus ring">
+        <input type="checkbox" id="toggle-focus" onchange="applyFocusHighlight(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Large Cursor -->
+    <div class="acc-toggle-row" style="margin-bottom:8px">
+      <div class="acc-toggle-left">
+        <div class="acc-toggle-icon" id="acc-icon-cursor"></div>
+        <div>
+          <div class="acc-toggle-label">Large Cursor</div>
+          <div class="acc-toggle-sub">Increase pointer size</div>
+        </div>
+      </div>
+      <label class="toggle-switch" aria-label="Toggle large cursor">
+        <input type="checkbox" id="toggle-cursor" onchange="applyLargeCursor(this.checked)">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Reset -->
+    <div class="settings-section" style="padding-top:4px;padding-bottom:4px">
+      <button onclick="resetAccessibility()" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:var(--font-b);font-size:0.82rem;cursor:pointer;transition:background .15s,color .15s" onmouseover="this.style.background='var(--bg3)';this.style.color='var(--ice)'" onmouseout="this.style.background='var(--bg2)';this.style.color='var(--muted)'">
+        Reset All Accessibility Settings
+      </button>
     </div>
 
   </div>
@@ -1631,6 +1965,71 @@ function applyFontSize(size) {
 function initFontSize() {
   const saved = Ck.get('font-size') || 'default';
   applyFontSize(saved);
+}
+
+/* ── ACCESSIBILITY FEATURES ── */
+function applyHighContrast(on) {
+  document.documentElement.setAttribute('data-high-contrast', on ? 'on' : 'off');
+  Ck.set('high-contrast', on ? 'on' : 'off');
+  const el = byId('toggle-contrast'); if (el) el.checked = on;
+}
+function applyReduceMotion(on) {
+  document.documentElement.setAttribute('data-reduce-motion', on ? 'on' : 'off');
+  Ck.set('reduce-motion', on ? 'on' : 'off');
+  const el = byId('toggle-motion'); if (el) el.checked = on;
+}
+function applyDyslexicFont(on) {
+  document.documentElement.setAttribute('data-dyslexic-font', on ? 'on' : 'off');
+  Ck.set('dyslexic-font', on ? 'on' : 'off');
+  const el = byId('toggle-dyslexic'); if (el) el.checked = on;
+}
+function applyFocusHighlight(on) {
+  document.documentElement.setAttribute('data-focus-highlight', on ? 'on' : 'off');
+  Ck.set('focus-highlight', on ? 'on' : 'off');
+  const el = byId('toggle-focus'); if (el) el.checked = on;
+}
+function applyLargeCursor(on) {
+  document.documentElement.setAttribute('data-cursor-size', on ? 'large' : 'normal');
+  Ck.set('cursor-size', on ? 'large' : 'normal');
+  const el = byId('toggle-cursor'); if (el) el.checked = on;
+}
+function applyLineSpacing(mode) {
+  document.documentElement.setAttribute('data-line-spacing', mode);
+  Ck.set('line-spacing', mode);
+  document.querySelectorAll('.ls-step').forEach(btn => {
+    const active = btn.dataset.ls === mode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', String(active));
+  });
+}
+function resetAccessibility() {
+  applyFontSize('default');
+  applyHighContrast(false);
+  applyReduceMotion(false);
+  applyDyslexicFont(false);
+  applyFocusHighlight(false);
+  applyLargeCursor(false);
+  applyLineSpacing('default');
+}
+function initAccessibilityFeatures() {
+  applyHighContrast(Ck.get('high-contrast') === 'on');
+  applyReduceMotion(Ck.get('reduce-motion') === 'on' || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  applyDyslexicFont(Ck.get('dyslexic-font') === 'on');
+  applyFocusHighlight(Ck.get('focus-highlight') === 'on');
+  applyLargeCursor(Ck.get('cursor-size') === 'large');
+  applyLineSpacing(Ck.get('line-spacing') || 'default');
+}
+
+/* ── ACCESSIBILITY ICONS ── */
+function buildAccIcons() {
+  const MAP = {
+    'acc-icon-contrast': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M12 2a10 10 0 0 1 0 20"/></svg>`,
+    'acc-icon-motion':   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>`,
+    'acc-icon-dyslexic': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`,
+    'acc-icon-focus':    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    'acc-icon-cursor':   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 19 3-8 8-3z"/><line x1="14" y1="14" x2="21" y2="21"/></svg>`,
+  };
+  Object.entries(MAP).forEach(([id, svg]) => { const el=byId(id); if(el) el.innerHTML=svg; });
 }
 
 /* ── EXTERNAL LINK WARNING ── */
@@ -2437,9 +2836,11 @@ function setLanguage(lang) {
   }
 
   placeStaticIcons();
+  buildAccIcons();
   buildShare();
   buildThemeGrid();
   initFontSize();
+  initAccessibilityFeatures();
   applyTranslations(); // also calls renderCards, buildFooter, buildDrawer, buildBottomNav
 
   if(!Ck.get('cookieconsent')){
