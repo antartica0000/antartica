@@ -728,6 +728,52 @@
   .settings-row-sub   { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
   .settings-row-right { color: var(--muted); }
 
+  /* ── ACCESSIBILITY SUB-PANEL ── */
+  #accessibility-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #accessibility-panel.open { transform: translateX(0); }
+
+  .acc-back-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: transparent; border: none; cursor: pointer;
+    padding: 4px 6px; border-radius: 8px;
+    color: var(--muted); transition: background .15s, color .15s;
+  }
+  .acc-back-btn:hover { background: var(--bg2); color: var(--ice); }
+
+  .font-size-preview {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    color: var(--text); line-height: 1.6;
+    margin-bottom: 18px;
+    transition: font-size 0.2s var(--ease), background 0.35s, color 0.35s;
+  }
+
+  .font-size-steps {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
+  }
+  .fs-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 6px 12px;
+    background: var(--bg2); border: 2px solid var(--border);
+    border-radius: 12px; cursor: pointer; font-family: var(--font-b);
+    color: var(--muted); transition: border-color .18s, background .15s, color .15s, transform .12s;
+  }
+  .fs-step:hover { border-color: var(--border-hi); background: var(--bg3); color: var(--ice); transform: translateY(-1px); }
+  .fs-step.active { border-color: var(--accent) !important; color: var(--ice); }
+  .fs-step span { font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .fs-step[data-fs="small"]   { font-size: 0.82rem; }
+  .fs-step[data-fs="default"] { font-size: 1rem; }
+  .fs-step[data-fs="large"]   { font-size: 1.2rem; }
+  .fs-step[data-fs="xlarge"]  { font-size: 1.45rem; }
+
   /* ── MODALS ── */
   .modal-wrap {
     position: fixed; inset: 0; z-index: 500;
@@ -893,71 +939,50 @@
 
     <!-- APPEARANCE -->
     <div class="settings-section">
-      <p class="settings-section-label">Appearance</p>
+      <p class="settings-section-label">Theme</p>
       <div class="theme-grid" id="theme-grid"></div>
     </div>
 
-    <!-- SITE -->
-    <div class="settings-section" style="margin-top:8px">
-      <p class="settings-section-label">Site</p>
-      <button class="settings-row" onclick="closeSettings(); openModal('about-modal')" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
+    <!-- ACCESSIBILITY -->
+    <div class="settings-section" style="margin-top:8px;padding-bottom:24px">
+      <p class="settings-section-label">Accessibility</p>
+      <button class="settings-row" onclick="openAccessibility()" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
         <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-info-icon"></div>
-          <div><div class="settings-row-label">About</div><div class="settings-row-sub">What is Antartica.Org</div></div>
+          <div class="settings-row-icon" id="sr-access-icon"></div>
+          <div><div class="settings-row-label">Accessibility</div><div class="settings-row-sub">Font size &amp; display</div></div>
         </div>
-        <span class="settings-row-right" id="sr-arr1"></span>
-      </button>
-      <a href="language/index.html" class="settings-row" style="display:flex">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-globe-icon"></div>
-          <div><div class="settings-row-label">Language</div><div class="settings-row-sub">Currently: English (US)</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr2"></span>
-      </a>
-      <button class="settings-row" onclick="closeSettings(); openModal('share-modal')" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-share-icon"></div>
-          <div><div class="settings-row-label">Share</div><div class="settings-row-sub">Spread the word</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr3"></span>
+        <span class="settings-row-right" id="sr-access-arr"></span>
       </button>
     </div>
 
-    <!-- LEGAL -->
-    <div class="settings-section" style="margin-top:8px">
-      <p class="settings-section-label">Legal</p>
-      <a href="terms" class="settings-row" style="display:flex">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-file-icon"></div>
-          <div><div class="settings-row-label">Terms of Use</div><div class="settings-row-sub">Usage rules</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr4"></span>
-      </a>
-      <button class="settings-row" onclick="closeSettings(); openModal('privacy-modal')" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-lock-icon"></div>
-          <div><div class="settings-row-label">Privacy Policy</div><div class="settings-row-sub">Data protection</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr5"></span>
-      </button>
-      <button class="settings-row" onclick="closeSettings(); openModal('disclaimer-modal')" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-alert-icon"></div>
-          <div><div class="settings-row-label">Disclaimer</div><div class="settings-row-sub">Legal notice</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr6"></span>
-      </button>
-      <a href="cookies" class="settings-row" style="display:flex">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-cookie-icon"></div>
-          <div><div class="settings-row-label">Cookie Policy</div><div class="settings-row-sub">Data & cookies</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-arr7"></span>
-      </a>
+  </div>
+</aside>
+
+<!-- ACCESSIBILITY SUB-PANEL -->
+<aside id="accessibility-panel" role="dialog" aria-modal="true" aria-label="Accessibility settings">
+  <div class="drawer-head">
+    <button class="acc-back-btn" onclick="closeAccessibility()" aria-label="Back to Settings">
+      <span id="acc-back-icon"></span>
+      <span style="font-size:0.92rem;font-weight:500;color:var(--ice)">Accessibility</span>
+    </button>
+    <button class="close-btn" onclick="closeAccessibility(); closeSettings();" aria-label="Close" id="acc-close-btn"></button>
+  </div>
+  <div class="drawer-body">
+
+    <!-- Font Size -->
+    <div class="settings-section" style="padding-top:10px">
+      <p class="settings-section-label">Font Size</p>
+      <div class="font-size-preview" id="font-size-preview">
+        The quick brown fox jumps over the lazy dog.
+      </div>
+      <div class="font-size-steps">
+        <button class="fs-step" data-fs="small"   onclick="applyFontSize('small')"  >A<span>Small</span></button>
+        <button class="fs-step" data-fs="default" onclick="applyFontSize('default')" >A<span>Default</span></button>
+        <button class="fs-step" data-fs="large"   onclick="applyFontSize('large')"  >A<span>Large</span></button>
+        <button class="fs-step" data-fs="xlarge"  onclick="applyFontSize('xlarge')" >A<span>X-Large</span></button>
+      </div>
     </div>
-    <div style="padding:24px 16px 0">
-      <p style="font-size:0.72rem;color:var(--muted);text-align:center" id="settings-footer-copy"></p>
-    </div>
+
   </div>
 </aside>
 
@@ -1055,6 +1080,7 @@ const IC = {
   twitter:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="4" y1="20" x2="20" y2="4"/></svg>`,
   extlink:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
   arrowr:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  arrowl:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
   palette:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
   check:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
 };
@@ -1252,7 +1278,7 @@ function buildFooter() {
     </div>`).join('');
   byId('lang-pill').innerHTML = `${ic('globe',12)} en&#8209;US`;
   byId('footer-copy').innerHTML = `Copyright &copy; ${new Date().getFullYear()} <strong>Antartica.Org</strong>`;
-  byId('settings-footer-copy').innerHTML = `Antartica.Org &copy; ${new Date().getFullYear()}`;
+  // settings footer removed
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1289,14 +1315,12 @@ function placeStaticIcons() {
    ['search-modal-icon','search'],['search-close-icon','close'],
    ['about-close','close'],['priv-close','close'],['disc-close','close'],
    ['share-close','close'],['drawer-close-btn','close'],['settings-close-btn','close'],
-   ['sr-info-icon','info'],['sr-globe-icon','globe'],['sr-share-icon','share'],
-   ['sr-file-icon','file'],['sr-lock-icon','lock'],['sr-alert-icon','alert'],
-   ['sr-cookie-icon','cookie'],
+   ['acc-back-icon','arrowl'],['acc-close-btn','close'],
+   ['sr-access-icon','access'],
   ].forEach(([id,name])=>{ const el=byId(id); if(el) el.innerHTML=IC[name]||IC.close; });
 
-  // Arrow icons for settings rows
-  ['sr-arr1','sr-arr2','sr-arr3','sr-arr4','sr-arr5','sr-arr6','sr-arr7']
-    .forEach(id=>{ const el=byId(id); if(el) el.innerHTML=IC.arrowr; });
+  // Arrow icon for accessibility row
+  const accArr = byId('sr-access-arr'); if(accArr) accArr.innerHTML = IC.arrowr;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1368,11 +1392,35 @@ function switchModal(a,b){ byId(a).classList.remove('open'); byId(b).classList.a
 function openDrawer()    { byId('nav-drawer').classList.add('open');    byId('overlay').classList.add('open'); }
 function closeDrawer()   { byId('nav-drawer').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
 function openSettings()  { byId('settings-panel').classList.add('open'); byId('overlay').classList.add('open'); }
-function closeSettings() { byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+function closeSettings() { closeAccessibility(); byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+
+function openAccessibility() {
+  byId('accessibility-panel').classList.add('open');
+}
+function closeAccessibility() {
+  byId('accessibility-panel').classList.remove('open');
+}
+
+const FONT_SIZES = { small:'0.88rem', default:'1rem', large:'1.13rem', xlarge:'1.28rem' };
+function applyFontSize(size) {
+  document.documentElement.style.fontSize = FONT_SIZES[size] || '1rem';
+  Ck.set('font-size', size, 365);
+  // Update preview text size
+  const preview = byId('font-size-preview');
+  if (preview) preview.style.fontSize = FONT_SIZES[size];
+  // Update active button
+  document.querySelectorAll('.fs-step').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.fs === size);
+  });
+}
+function initFontSize() {
+  const saved = Ck.get('font-size') || 'default';
+  applyFontSize(saved);
+}
 
 function closeAll() {
   document.querySelectorAll('.modal-wrap.open,#search-overlay.open').forEach(el=>el.classList.remove('open'));
-  ['nav-drawer','settings-panel'].forEach(id=>byId(id).classList.remove('open'));
+  ['nav-drawer','settings-panel','accessibility-panel'].forEach(id=>byId(id).classList.remove('open'));
   byId('overlay').classList.remove('open');
   byId('main-search').value=''; searchIdx=-1;
 }
@@ -1419,6 +1467,7 @@ function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./cap
   buildShare();
   buildBottomNav();
   buildThemeGrid();
+  initFontSize();
 
   if(!Ck.get('cookieconsent')){
     Ck.set('cookieconsent','0');
