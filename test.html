@@ -1634,36 +1634,6 @@ function setCookieConsent(v){ Ck.set('cookieconsent',String(v)); byId('cookie-ba
 function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./captcha/'; }
 
 /* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
-(function init(){
-  checkCaptcha();
-
-  // Restore saved theme immediately (before paint)
-  const saved = Ck.get('theme');
-  if (saved && saved !== 'polar-night') {
-    document.documentElement.setAttribute('data-theme', saved);
-    const t = THEMES.find(x=>x.id===saved);
-    if (t) byId('meta-theme').setAttribute('content', t.meta);
-  }
-
-  placeStaticIcons();
-  renderCards();
-  buildFooter();
-  buildDrawer();
-  buildShare();
-  buildBottomNav();
-  buildThemeGrid();
-  initFontSize();
-  applyTranslations();
-
-  if(!Ck.get('cookieconsent')){
-    Ck.set('cookieconsent','0');
-    setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
-  }
-})();
-
-/* ═══════════════════════════════════════════════════
    INTERNATIONALISATION (EN / FR)
 ═══════════════════════════════════════════════════ */
 const I18N = {
@@ -2007,6 +1977,34 @@ function setLanguage(lang) {
   Ck.set('lang', lang, 365);
   applyTranslations();
 }
+
+/* ═══════════════════════════════════════════════════
+   INIT — placed here so I18N, currentLang, t() and
+   applyTranslations() are all fully defined before
+   this runs (const/let have no hoisting).
+═══════════════════════════════════════════════════ */
+(function init(){
+  checkCaptcha();
+
+  // Restore saved theme immediately (before paint)
+  const saved = Ck.get('theme');
+  if (saved && saved !== 'polar-night') {
+    document.documentElement.setAttribute('data-theme', saved);
+    const theme = THEMES.find(x=>x.id===saved);
+    if (theme) byId('meta-theme').setAttribute('content', theme.meta);
+  }
+
+  placeStaticIcons();
+  buildShare();
+  buildThemeGrid();
+  initFontSize();
+  applyTranslations(); // also calls renderCards, buildFooter, buildDrawer, buildBottomNav
+
+  if(!Ck.get('cookieconsent')){
+    Ck.set('cookieconsent','0');
+    setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
+  }
+})();
 
 /* ═══════════════════════════════════════════════════
    PENGUIN PIXEL ART ENGINE
