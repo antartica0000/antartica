@@ -276,7 +276,17 @@
   main { flex: 1; padding: 0 20px 40px; max-width: 1160px; width: 100%; margin: 0 auto; }
 
   /* ── HERO ── */
-  .hero { padding: 52px 0 44px; }
+  .hero {
+    padding: 40px 0 36px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 820px) {
+    .hero { grid-template-columns: 1fr 1fr; gap: 48px; padding: 52px 0 44px; }
+  }
+  .hero-text { display: flex; flex-direction: column; }
   .hero-eyebrow {
     font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--accent); margin-bottom: 14px;
@@ -286,7 +296,7 @@
   .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); transition: background 0.35s; }
   h1.hero-title {
     font-family: var(--font-d);
-    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
     line-height: 1.05; color: var(--ice);
     letter-spacing: -0.02em; margin-bottom: 18px;
     transition: color 0.35s;
@@ -302,6 +312,7 @@
     padding: 12px 22px;
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: 50px; color: var(--muted); font-size: 0.88rem; cursor: pointer;
+    align-self: flex-start;
     transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
   }
   .hero-cta:hover {
@@ -309,6 +320,64 @@
     color: var(--ice); box-shadow: 0 0 28px var(--accent-glow);
   }
   .hero-cta .icon { color: var(--accent); }
+
+  /* ── PIXEL ART ── */
+  .hero-art-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    order: -1; /* art first on mobile */
+  }
+  @media (min-width: 820px) { .hero-art-wrap { order: 1; } }
+
+  .art-frame {
+    position: relative;
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 80px var(--accent-glow);
+    width: min(100%, 440px);
+    transition: box-shadow 0.35s;
+    background: #03080f;
+  }
+  .art-frame::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+    border-radius: 16px;
+  }
+  #antarctica-canvas {
+    display: block;
+    width: 100%; height: auto;
+    aspect-ratio: 1;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .art-hud {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  }
+  .art-badge {
+    position: absolute; top: 10px; left: 10px;
+    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: rgba(255,255,255,0.55);
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    padding: 4px 9px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .art-badge-r {
+    position: absolute; top: 10px; right: 10px;
+    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.4);
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+    padding: 4px 9px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .art-caption {
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); display: flex; align-items: center; gap: 6px;
+    transition: color 0.35s;
+  }
+  .art-caption .icon { color: var(--accent); }
 
   /* ── SECTION HEAD ── */
   .section-head { display: flex; align-items: center; gap: 14px; margin: 38px 0 18px; }
@@ -721,14 +790,31 @@
 <!-- MAIN -->
 <main>
   <div class="hero">
-    <p class="hero-eyebrow">Explore the frozen continent</p>
-    <h1 class="hero-title">Ant<em>arc</em>tica<br>Awaits</h1>
-    <p class="hero-sub">Discover facts, resources, and links about the world's most remote continent.</p>
-    <button class="hero-cta" onclick="openSearch()">
-      <span class="icon" id="hero-search-icon"></span>
-      Search Antartica.Org
-      <span class="kbd-hint">⌘K</span>
-    </button>
+    <!-- text -->
+    <div class="hero-text">
+      <p class="hero-eyebrow">Explore the frozen continent</p>
+      <h1 class="hero-title">Ant<em>arc</em>tica<br>Awaits</h1>
+      <p class="hero-sub">Discover facts, resources, and links about the world's most remote continent — 14 million km² of ancient ice, science, and wonder.</p>
+      <button class="hero-cta" onclick="openSearch()">
+        <span class="icon" id="hero-search-icon"></span>
+        Search Antartica.Org
+        <span class="kbd-hint">⌘K</span>
+      </button>
+    </div>
+    <!-- pixel art -->
+    <div class="hero-art-wrap">
+      <div class="art-frame">
+        <canvas id="antarctica-canvas" width="480" height="480" aria-label="Pixel art map of Antarctica"></canvas>
+        <div class="art-hud">
+          <span class="art-badge">Antarctica</span>
+          <span class="art-badge-r">90°S</span>
+        </div>
+      </div>
+      <p class="art-caption" id="art-caption-el">
+        <span class="icon" id="art-caption-icon"></span>
+        South Polar Projection · Pixel Art
+      </p>
+    </div>
   </div>
   <div class="section-head"><h2>Explore</h2></div>
   <div class="card-grid" id="card-grid"></div>
@@ -1336,6 +1422,313 @@ function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./cap
     Ck.set('cookieconsent','0');
     setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
   }
+})();
+
+/* ═══════════════════════════════════════════════════
+   ANTARCTICA PIXEL ART ENGINE
+═══════════════════════════════════════════════════ */
+(function AntarcticaArt() {
+  const canvas = document.getElementById('antarctica-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const G = 48, SZ = 10;                   // 48×48 grid, 10px per cell → 480×480 canvas
+
+  /* ── CONTINENT SCANLINES ──────────────────────
+     Each entry: [row, x1, x2] fills cols x1–x2
+     Or [row, x1, x2, x3, x4] fills x1–x2 AND x3–x4
+     (Ross Sea bay is the gap between the two segments)
+  ─────────────────────────────────────────────── */
+  const SHAPE = [
+    [ 2,14,16],[ 3,13,17],[ 4,12,17],[ 5,11,17],
+    [ 6,11,17],[ 7,10,17],[ 8,10,17],[ 9, 9,18],
+    [10, 9,18],[11, 8,19],[12, 8,20],[13, 7,22],
+    [14, 6,25],[15, 5,29],[16, 4,32],[17, 4,35],
+    [18, 4,37],[19, 3,38],[20, 3,39],[21, 3,40],
+    [22, 3,41],[23, 3,41],[24, 3,41],[25, 4,41],
+    [26, 4,41],[27, 4,41],[28, 4,40],[29, 5,40],
+    [30, 5,40],[31, 5,40],[32, 5,39],[33, 5,39],
+    [34, 5,14, 28,39],   // ← Ross Sea bay opens
+    [35, 5,11, 29,39],
+    [36, 6, 9, 30,38],
+    [37, 7, 8, 31,38],
+    [38, 8,37],[39,10,36],[40,12,34],[41,14,32],
+    [42,17,29],[43,20,27],[44,22,25],
+  ];
+
+  /* ── BUILD LAND MAP ─────────────────────────── */
+  const land = Array.from({length:G}, ()=>new Uint8Array(G));
+  for (const sl of SHAPE) {
+    const r=sl[0];
+    for (let x=sl[1];x<=sl[2];x++) if(x>=0&&x<G) land[r][x]=1;
+    if (sl.length>4) for (let x=sl[3];x<=sl[4];x++) if(x>=0&&x<G) land[r][x]=1;
+  }
+
+  /* ── DISTANCE FROM COAST (BFS, within same region) ── */
+  const dist = Array.from({length:G},()=>new Float32Array(G).fill(99));
+  const queue=[];
+  for (let y=0;y<G;y++) for (let x=0;x<G;x++) {
+    const t=land[y][x];
+    const coast=[[0,1],[0,-1],[1,0],[-1,0]].some(([dy,dx])=>{
+      const ny=y+dy,nx=x+dx;
+      return ny>=0&&ny<G&&nx>=0&&nx<G&&land[ny][nx]!==t;
+    });
+    if (coast){ dist[y][x]=0; queue.push(y*G+x); }
+  }
+  let qi=0;
+  while(qi<queue.length){
+    const idx=queue[qi++], y=idx/G|0, x=idx%G;
+    [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dy,dx])=>{
+      const ny=y+dy,nx=x+dx;
+      if(ny<0||ny>=G||nx<0||nx>=G||land[ny][nx]!==land[y][x]) return;
+      if(dist[ny][nx]>dist[y][x]+1){dist[ny][nx]=dist[y][x]+1;queue.push(ny*G+nx);}
+    });
+  }
+
+  /* ── TERRAIN TYPES ──────────────────────────────
+     0=deep ocean  1=pack ice  2=ice shelf  3=coast ice
+     4=interior    5=plateau   6=mountain   7=south pole
+  ─────────────────────────────────────────────── */
+  const TER = Array.from({length:G},()=>new Uint8Array(G));
+
+  /* Transantarctic mountain chain — diagonal from Ross Sea to Weddell side */
+  const TMTNS = [
+    [38,9],[37,10],[36,10],[35,11],[34,11],[33,12],[32,12],[31,13],[30,13],
+    [29,14],[28,14],[27,15],[26,15],[25,16],[24,17],[23,17],[22,18],[21,19],
+    [20,19],[19,20],[18,21],[17,21],[16,22],[15,23],[14,23],
+    // width 2
+    [38,10],[37,11],[36,11],[35,12],[33,13],[31,14],[29,15],[27,16],
+    [25,17],[23,18],[21,20],[19,21],[17,22],[15,24],
+  ];
+  const mtSet = new Set(TMTNS.map(([y,x])=>y*G+x));
+
+  /* Ellsworth mountains (extra cluster) */
+  [[30,7],[31,7],[32,7],[31,8],[32,8],[33,8]].forEach(([y,x])=>mtSet.add(y*G+x));
+
+  /* Queen Maud range at Ross Sea entrance */
+  [[38,8],[38,9],[37,8],[39,10],[39,11]].forEach(([y,x])=>mtSet.add(y*G+x));
+
+  /* Scattered nunataks (isolated peaks in interior) */
+  const NUNAK = [[20,10],[22,11],[24,12],[28,9],[26,9],[17,24],[16,25],[28,35],[30,34]];
+  const nukSet = new Set(NUNAK.map(([y,x])=>y*G+x));
+
+  /* Ross Ice Shelf zone (fill bay with shelf type) */
+  const rossSet = new Set();
+  for (let y=34;y<=38;y++) for (let x=8;x<=32;x++) if(!land[y]?.[x]) rossSet.add(y*G+x);
+
+  /* South pole */
+  const POLE = [27,22]; // [row, col]
+
+  for (let y=0;y<G;y++) for (let x=0;x<G;x++) {
+    const key=y*G+x, d=dist[y][x];
+    if (!land[y][x]) {
+      // ocean side
+      TER[y][x] = rossSet.has(key) ? 2 : (d<=2?1:0);
+      continue;
+    }
+    // land side
+    if      (y===POLE[0]&&x===POLE[1]) TER[y][x]=7;
+    else if (mtSet.has(key)||nukSet.has(key)) TER[y][x]=6;
+    else if (d<=2)  TER[y][x]=2;
+    else if (d<=5)  TER[y][x]=3;
+    else if (d<=11) TER[y][x]=4;
+    else            TER[y][x]=5;
+  }
+
+  /* ── PER-CELL RANDOM BRIGHTNESS OFFSET ────────
+     Pre-computed so it doesn't shift per frame
+  ─────────────────────────────────────────────── */
+  const noise = Float32Array.from({length:G*G}, ()=>(Math.random()-.5)*.14);
+
+  /* ── STARS in ocean ─────────────────────────── */
+  const STARS = [];
+  for (let y=0;y<G;y++) for (let x=0;x<G;x++)
+    if (!land[y][x]&&!rossSet.has(y*G+x)&&Math.random()<.065)
+      STARS.push({x,y,ph:Math.random()*Math.PI*2,sp:.4+Math.random()*.9});
+
+  /* ── SHIMMER MAP ────────────────────────────── */
+  const shimmer = new Float32Array(G*G);
+
+  /* ── COLOR PALETTE PER THEME ─────────────────── */
+  function palette() {
+    const th = document.documentElement.getAttribute('data-theme')||'polar-night';
+    const light = th==='blizzard'||th==='glacier';
+    const D = {
+      ocean:   '#030b18', pack: '#081e3a', ross: '#0a2244',
+      shelf:   '#72b4d4', coast:'#9ecce8', inner:'#bcdeff',
+      plat:    '#ddf2ff', mtn:  '#3e5870', pole: '#ffffff',
+      aurA: [[0,210,255],[0,150,220]], aurB: [0.18,0.10],
+      grid:'rgba(0,0,0,0.12)', gridL:'rgba(255,255,255,0.10)',
+    };
+    const L = {
+      ocean:   '#c2ddf0', pack: '#d8eef8', ross: '#eaf6ff',
+      shelf:   '#f8fdff', coast:'#f0f9fe', inner:'#e8f5fe',
+      plat:    '#ffffff', mtn:  '#8cacc4', pole: '#004499',
+      aurA: [[0,90,200],[0,60,180]], aurB: [0.09,0.05],
+      grid:'rgba(0,60,120,0.10)', gridL:'rgba(0,40,100,0.06)',
+    };
+    const themeAur = {
+      'aurora':   { aurA:[[0,240,150],[0,180,100]], aurB:[0.2,0.12] },
+      'volcanic': { aurA:[[255,130,50],[220,70,20]], aurB:[0.18,0.10] },
+      'blizzard': { aurA:[[26,95,255],[80,140,255]], aurB:[0.09,0.05] },
+      'glacier':  { aurA:[[8,145,178],[0,190,220]], aurB:[0.11,0.06] },
+      'obsidian': { aurA:[[168,85,247],[120,50,220]], aurB:[0.20,0.13] },
+    };
+    const base = light ? {...L} : {...D};
+    if (themeAur[th]) Object.assign(base, themeAur[th]);
+    return {base, light};
+  }
+
+  /* ── HELPERS ──────────────────────────────────── */
+  function hexToRgb(h){
+    const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+    return [r,g,b];
+  }
+  function brighten(hex, d){ // d = -1..1
+    const [r,g,b]=hexToRgb(hex);
+    const f=1+d;
+    return `rgb(${Math.min(255,r*f|0)},${Math.min(255,g*f|0)},${Math.min(255,b*f|0)})`;
+  }
+  function rgbStr([r,g,b],a){ return `rgba(${r},${g},${b},${a})`; }
+
+  /* ── ANIMATION LOOP ────────────────────────────── */
+  let t=0, lastFrame=0;
+  const FPS=30, INTERVAL=1000/FPS;
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (now-lastFrame < INTERVAL) return;
+    lastFrame = now;
+    t += 0.012;
+
+    const {base,light} = palette();
+
+    /* Background */
+    ctx.fillStyle = base.ocean;
+    ctx.fillRect(0,0,480,480);
+
+    /* ── Aurora / atmosphere bands ─────────────── */
+    for (let b=0;b<2;b++) {
+      const col = base.aurA[b], alpha = base.aurB[b];
+      const yOff = Math.sin(t*.4+b*1.8)*18;
+      const grd = ctx.createLinearGradient(0,0,0,480);
+      grd.addColorStop(0,   rgbStr(col, alpha));
+      grd.addColorStop(0.45,rgbStr(col, alpha*.3));
+      grd.addColorStop(1,   rgbStr(col, 0));
+      ctx.save();
+      ctx.translate(0, yOff);
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      for (let px=0;px<=480;px+=3) {
+        const wy = Math.sin(px*.016+t*.35+b*2.2)*28 + 200 + b*55;
+        ctx.lineTo(px,wy);
+      }
+      ctx.lineTo(480,0);
+      ctx.closePath();
+      ctx.fillStyle = grd;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* ── Stars ─────────────────────────────────── */
+    if (!light) {
+      for (const s of STARS) {
+        const bri = .25+.55*(0.5+0.5*Math.sin(t*s.sp+s.ph));
+        ctx.fillStyle = `rgba(200,230,255,${bri})`;
+        ctx.fillRect(s.x*SZ+4, s.y*SZ+4, 2, 2);
+      }
+    }
+
+    /* ── Update shimmer ─────────────────────────── */
+    for (let i=0;i<shimmer.length;i++) {
+      if (Math.random()<.0008) shimmer[i]=.8+Math.random()*.2;
+      shimmer[i]*=.88;
+    }
+
+    /* ── Draw terrain pixels ─────────────────────── */
+    const COLORS = [
+      null,           // 0 ocean (already drawn)
+      base.pack,      // 1 pack ice
+      base.shelf,     // 2 ice shelf / ross
+      base.coast,     // 3 coastal ice
+      base.inner,     // 4 interior
+      base.plat,      // 5 plateau
+      base.mtn,       // 6 mountain
+      base.plat,      // 7 south pole (special)
+    ];
+
+    for (let y=0;y<G;y++) for (let x=0;x<G;x++) {
+      const tp = TER[y][x];
+      if (tp===0) continue;
+      const key=y*G+x;
+      const n = noise[key];
+      const base_color = COLORS[tp];
+
+      let col = brighten(base_color, n);
+      ctx.fillStyle = col;
+      ctx.fillRect(x*SZ, y*SZ, SZ, SZ);
+
+      /* Shimmer highlight on ice cells */
+      const sh = shimmer[key];
+      if (sh>0.06 && tp>=2 && tp<=5) {
+        ctx.fillStyle = `rgba(255,255,255,${sh*.5})`;
+        ctx.fillRect(x*SZ, y*SZ, SZ, SZ);
+      }
+
+      /* Pixel grid lines (the "pixel art" look) */
+      if (tp>=2) {
+        ctx.fillStyle = light ? base.gridL : base.grid;
+        ctx.fillRect(x*SZ, y*SZ, SZ, 1);
+        ctx.fillRect(x*SZ, y*SZ, 1, SZ);
+      }
+    }
+
+    /* ── South Pole marker ────────────────────────── */
+    const [py,px] = POLE;
+    const pxX=px*SZ, pxY=py*SZ;
+    const pulse = 0.5+0.5*Math.sin(t*1.8);
+    // glow ring
+    const grd = ctx.createRadialGradient(
+      pxX+SZ/2, pxY+SZ/2, 0,
+      pxX+SZ/2, pxY+SZ/2, SZ*3
+    );
+    const gc = light ? '0,80,200' : '255,255,255';
+    grd.addColorStop(0,   `rgba(${gc},${0.5*pulse})`);
+    grd.addColorStop(0.5, `rgba(${gc},${0.18*pulse})`);
+    grd.addColorStop(1,   `rgba(${gc},0)`);
+    ctx.fillStyle = grd;
+    ctx.fillRect(pxX-SZ*2, pxY-SZ*2, SZ*5, SZ*5);
+    // cross marker (2px cross)
+    ctx.fillStyle = light ? 'rgba(0,60,180,0.9)' : 'rgba(255,255,255,0.95)';
+    ctx.fillRect(pxX+SZ/2-1, pxY-SZ, 2, SZ*3);
+    ctx.fillRect(pxX-SZ, pxY+SZ/2-1, SZ*3, 2);
+    // center dot
+    ctx.fillStyle = light ? '#0040cc' : '#ffffff';
+    ctx.fillRect(pxX+2, pxY+2, SZ-4, SZ-4);
+
+    /* ── Latitude rings ──────────────────────────── */
+    // Draw dotted circles at approx 70°S and 80°S
+    // in our projection, center≈(22,27), r70S≈15cells, r80S≈8cells
+    const cx=22.5*SZ, cy=27.5*SZ;
+    ctx.strokeStyle = light ? 'rgba(0,80,200,0.12)' : 'rgba(150,210,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,5]);
+    [14*SZ, 8*SZ].forEach(r => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI*2);
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+  }
+
+  requestAnimationFrame(draw);
+
+  /* Redraw on theme change */
+  const obs = new MutationObserver(()=>{ /* draw runs every frame */ });
+  obs.observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+  /* Icon for caption */
+  const ci = document.getElementById('art-caption-icon');
+  if (ci) ci.innerHTML = IC.snowflake || '';
 })();
 </script>
 </body>
