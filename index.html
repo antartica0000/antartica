@@ -740,14 +740,6 @@
   }
   #accessibility-panel.open { transform: translateX(0); }
 
-  .acc-back-btn {
-    display: flex; align-items: center; gap: 8px;
-    background: transparent; border: none; cursor: pointer;
-    padding: 4px 6px; border-radius: 8px;
-    color: var(--muted); transition: background .15s, color .15s;
-  }
-  .acc-back-btn:hover { background: var(--bg2); color: var(--ice); }
-
   .font-size-preview {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: 10px; padding: 16px 18px;
@@ -961,11 +953,8 @@
 <!-- ACCESSIBILITY SUB-PANEL -->
 <aside id="accessibility-panel" role="dialog" aria-modal="true" aria-label="Accessibility settings">
   <div class="drawer-head">
-    <button class="acc-back-btn" onclick="closeAccessibility()" aria-label="Back to Settings">
-      <span id="acc-back-icon"></span>
-      <span style="font-size:0.92rem;font-weight:500;color:var(--ice)">Accessibility</span>
-    </button>
-    <button class="close-btn" onclick="closeAccessibility(); closeSettings();" aria-label="Close" id="acc-close-btn"></button>
+    <span class="drawer-title">Accessibility</span>
+    <button class="close-btn" onclick="closeAccessibility()" aria-label="Close accessibility" id="acc-close-btn"></button>
   </div>
   <div class="drawer-body">
 
@@ -1199,7 +1188,7 @@ const SITE = [
   { title:'Settings',        sub:'Preferences',     group:'Site',    icon:'settings',href:null,            action:"openSettings()" },
   { title:'Blog',            sub:'Articles',        group:'Site',    icon:'pen',     href:null,            action:null },
   { title:'Share',           sub:'Spread the word', group:'Site',    icon:'share',   href:null,            action:"openModal('share-modal')" },
-  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:null,            action:"openSettings(); openAccessibility()" },
+  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:null,            action:"openAccessibility()" },
   { title:'Sitemap',         sub:'All pages',       group:'Site',    icon:'grid',    href:'#',             action:null },
   { title:'Terms',           sub:'Usage rules',     group:'Legal',   icon:'file',    href:'terms',         action:null },
   { title:'Privacy Policy',  sub:'Data protection', group:'Legal',   icon:'lock',    href:null,            action:"openModal('privacy-modal')" },
@@ -1315,7 +1304,7 @@ function placeStaticIcons() {
    ['search-modal-icon','search'],['search-close-icon','close'],
    ['about-close','close'],['priv-close','close'],['disc-close','close'],
    ['share-close','close'],['drawer-close-btn','close'],['settings-close-btn','close'],
-   ['acc-back-icon','arrowl'],['acc-close-btn','close'],
+   ['acc-close-btn','close'],
    ['sr-access-icon','access'],
   ].forEach(([id,name])=>{ const el=byId(id); if(el) el.innerHTML=IC[name]||IC.close; });
 
@@ -1392,13 +1381,15 @@ function switchModal(a,b){ byId(a).classList.remove('open'); byId(b).classList.a
 function openDrawer()    { byId('nav-drawer').classList.add('open');    byId('overlay').classList.add('open'); }
 function closeDrawer()   { byId('nav-drawer').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
 function openSettings()  { byId('settings-panel').classList.add('open'); byId('overlay').classList.add('open'); }
-function closeSettings() { closeAccessibility(); byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+function closeSettings() { byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
 
 function openAccessibility() {
   byId('accessibility-panel').classList.add('open');
+  byId('overlay').classList.add('open');
 }
 function closeAccessibility() {
   byId('accessibility-panel').classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
 }
 
 const FONT_SIZES = { small:'0.88rem', default:'1rem', large:'1.13rem', xlarge:'1.28rem' };
@@ -1425,7 +1416,7 @@ function closeAll() {
   byId('main-search').value=''; searchIdx=-1;
 }
 function anyOpen(){
-  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open')].length;
+  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open,#accessibility-panel.open')].length;
 }
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') closeAll();
