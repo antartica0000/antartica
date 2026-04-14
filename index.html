@@ -766,6 +766,61 @@
   .fs-step[data-fs="large"]   { font-size: 1.2rem; }
   .fs-step[data-fs="xlarge"]  { font-size: 1.45rem; }
 
+  /* ── ABOUT SUB-PANEL ── */
+  #about-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #about-panel.open { transform: translateX(0); }
+
+  .about-hero {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0 20px;
+  }
+  .about-logo {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: var(--accent-dim); border: 1px solid var(--border-hi);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 22px;
+    transition: background 0.35s, border-color 0.35s, color 0.35s;
+  }
+  .about-name { font-size: 1.05rem; font-weight: 500; color: var(--ice); transition: color 0.35s; }
+  .about-tagline { font-size: 0.72rem; color: var(--muted); margin-top: 2px; transition: color 0.35s; }
+  .about-body {
+    font-size: 0.86rem; color: var(--muted); line-height: 1.68;
+    transition: color 0.35s;
+  }
+  .about-link {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 10px; border-radius: 10px;
+    font-size: 0.86rem; color: var(--muted); background: transparent;
+    border: none; width: 100%; text-align: left; font-family: var(--font-b); cursor: pointer;
+    text-decoration: none; transition: background .12s, color .12s;
+  }
+  .about-link:hover { background: var(--bg2); color: var(--ice); }
+  .about-link-icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); transition: background 0.35s;
+  }
+
+  /* ── EXTERNAL LINK WARNING ── */
+  .ext-warn-dest {
+    margin-top: 14px; padding: 12px 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 0.82rem;
+    color: var(--muted); word-break: break-all;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ext-warn-dest::before {
+    content: '🔗'; font-size: 0.9rem; flex-shrink: 0;
+  }
+
   /* ── MODALS ── */
   .modal-wrap {
     position: fixed; inset: 0; z-index: 500;
@@ -975,18 +1030,57 @@
   </div>
 </aside>
 
-<!-- ABOUT MODAL -->
-<div class="modal-wrap" id="about-modal" role="dialog" aria-modal="true">
+<!-- ABOUT PANEL -->
+<aside id="about-panel" role="dialog" aria-modal="true" aria-label="About Antartica.Org">
+  <div class="drawer-head">
+    <span class="drawer-title">About Antartica.Org</span>
+    <button class="close-btn" onclick="closeAbout()" aria-label="Close about" id="about-close-btn"></button>
+  </div>
+  <div class="drawer-body">
+    <div class="settings-section" style="padding-top:10px">
+
+      <div class="about-hero">
+        <div class="about-logo" id="about-logo-icon"></div>
+        <div>
+          <div class="about-name">Antartica<span style="color:var(--accent)">.</span>Org</div>
+          <div class="about-tagline">Explore the frozen continent</div>
+        </div>
+      </div>
+
+      <p class="about-body">
+        Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and centuries of exploration history.
+      </p>
+
+      <p class="settings-section-label" style="margin-top:24px">Mission</p>
+      <p class="about-body">
+        We believe knowledge about Antarctica matters — for climate science, biodiversity, and the future of our planet. This site gathers the best resources in one place, freely available to everyone.
+      </p>
+
+      <p class="settings-section-label" style="margin-top:24px">Legal</p>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <a href="terms"   class="about-link" id="about-terms-link"><span class="about-link-icon" id="abl-file"></span>Terms of Use</a>
+        <button class="about-link" onclick="closeAbout(); openModal('privacy-modal')" id="about-priv-link"><span class="about-link-icon" id="abl-lock"></span>Privacy Policy</button>
+        <button class="about-link" onclick="closeAbout(); openModal('disclaimer-modal')" id="about-disc-link"><span class="about-link-icon" id="abl-alert"></span>Disclaimer</button>
+        <a href="cookies" class="about-link" id="about-cookie-link"><span class="about-link-icon" id="abl-cookie"></span>Cookie Policy</a>
+      </div>
+
+    </div>
+  </div>
+</aside>
+
+<!-- EXTERNAL LINK WARNING MODAL -->
+<div class="modal-wrap" id="ext-warn-modal" role="dialog" aria-modal="true">
   <div class="modal-box">
     <div class="modal-head">
-      <h2>About Antartica.Org</h2>
-      <button class="close-btn" onclick="closeModal('about-modal')" id="about-close"></button>
+      <h2 style="display:flex;align-items:center;gap:8px"><span id="ext-warn-icon"></span>Leaving Antartica.Org</h2>
+      <button class="close-btn" onclick="closeModal('ext-warn-modal')" id="ext-warn-close"></button>
     </div>
     <div class="modal-body">
-      <p>Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and exploration history.</p>
+      <p>You're about to visit an external site. Antartica.Org is not responsible for content on third-party sites.</p>
+      <div class="ext-warn-dest" id="ext-warn-dest"></div>
       <div class="modal-actions">
-        <a href="terms" class="btn btn-ghost">Terms</a>
-        <button class="btn btn-ghost" onclick="switchModal('about-modal','privacy-modal')">Privacy Policy</button>
+        <button class="btn btn-accent" id="ext-warn-continue">Continue</button>
+        <button class="btn btn-ghost"  onclick="closeModal('ext-warn-modal')">Cancel</button>
       </div>
     </div>
   </div>
@@ -1184,7 +1278,7 @@ function applyTheme(id) {
    SITE DATA
 ═══════════════════════════════════════════════════ */
 const SITE = [
-  { title:'About Antartica', sub:'Who we are',      group:'Site',    icon:'info',    href:'about',         action:null },
+  { title:'About Antartica', sub:'Who we are',      group:'Site',    icon:'info',    href:null,            action:"openAbout()" },
   { title:'Settings',        sub:'Preferences',     group:'Site',    icon:'settings',href:null,            action:"openSettings()" },
   { title:'Blog',            sub:'Articles',        group:'Site',    icon:'pen',     href:null,            action:null },
   { title:'Share',           sub:'Spread the word', group:'Site',    icon:'share',   href:null,            action:"openModal('share-modal')" },
@@ -1302,11 +1396,16 @@ function placeStaticIcons() {
    ['sp-icon','search'],['nav-settings-btn','settings'],['nav-menu-btn','menu'],
    ['hero-search-icon','search'],['cookie-icon','cookie'],
    ['search-modal-icon','search'],['search-close-icon','close'],
-   ['about-close','close'],['priv-close','close'],['disc-close','close'],
+   ['priv-close','close'],['disc-close','close'],
    ['share-close','close'],['drawer-close-btn','close'],['settings-close-btn','close'],
-   ['acc-close-btn','close'],
-   ['sr-access-icon','access'],
+   ['acc-close-btn','close'],['about-close-btn','close'],
+   ['sr-access-icon','access'],['about-logo-icon','snowflake'],
+   ['ext-warn-icon','alert'],['ext-warn-close','close'],
   ].forEach(([id,name])=>{ const el=byId(id); if(el) el.innerHTML=IC[name]||IC.close; });
+
+  // About panel link icons
+  [['abl-file','file'],['abl-lock','lock'],['abl-alert','alert'],['abl-cookie','cookie']]
+    .forEach(([id,n])=>{ const el=byId(id); if(el) el.innerHTML=IC[n]||''; });
 
   // Arrow icon for accessibility row
   const accArr = byId('sr-access-arr'); if(accArr) accArr.innerHTML = IC.arrowr;
@@ -1383,6 +1482,15 @@ function closeDrawer()   { byId('nav-drawer').classList.remove('open'); if(!anyO
 function openSettings()  { byId('settings-panel').classList.add('open'); byId('overlay').classList.add('open'); }
 function closeSettings() { byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
 
+function openAbout() {
+  byId('about-panel').classList.add('open');
+  byId('overlay').classList.add('open');
+}
+function closeAbout() {
+  byId('about-panel').classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+
 function openAccessibility() {
   byId('accessibility-panel').classList.add('open');
   byId('overlay').classList.add('open');
@@ -1392,14 +1500,23 @@ function closeAccessibility() {
   if(!anyOpen()) byId('overlay').classList.remove('open');
 }
 
+function closeAll() {
+  document.querySelectorAll('.modal-wrap.open,#search-overlay.open').forEach(el=>el.classList.remove('open'));
+  ['nav-drawer','settings-panel','accessibility-panel','about-panel'].forEach(id=>byId(id).classList.remove('open'));
+  byId('overlay').classList.remove('open');
+  byId('main-search').value=''; searchIdx=-1;
+}
+function anyOpen(){
+  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open,#accessibility-panel.open,#about-panel.open')].length;
+}
+
+/* ── FONT SIZE ── */
 const FONT_SIZES = { small:'0.88rem', default:'1rem', large:'1.13rem', xlarge:'1.28rem' };
 function applyFontSize(size) {
   document.documentElement.style.fontSize = FONT_SIZES[size] || '1rem';
   Ck.set('font-size', size, 365);
-  // Update preview text size
   const preview = byId('font-size-preview');
   if (preview) preview.style.fontSize = FONT_SIZES[size];
-  // Update active button
   document.querySelectorAll('.fs-step').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.fs === size);
   });
@@ -1409,15 +1526,27 @@ function initFontSize() {
   applyFontSize(saved);
 }
 
-function closeAll() {
-  document.querySelectorAll('.modal-wrap.open,#search-overlay.open').forEach(el=>el.classList.remove('open'));
-  ['nav-drawer','settings-panel','accessibility-panel'].forEach(id=>byId(id).classList.remove('open'));
-  byId('overlay').classList.remove('open');
-  byId('main-search').value=''; searchIdx=-1;
-}
-function anyOpen(){
-  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open,#accessibility-panel.open')].length;
-}
+/* ── EXTERNAL LINK WARNING ── */
+let pendingExtUrl = null;
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (!href || !href.startsWith('http')) return;
+  // same origin is fine
+  try { if (new URL(href).origin === location.origin) return; } catch(_){}
+  e.preventDefault();
+  pendingExtUrl = href;
+  const dest = byId('ext-warn-dest');
+  if (dest) {
+    try { dest.textContent = new URL(href).hostname; } catch(_) { dest.textContent = href; }
+  }
+  const continueBtn = byId('ext-warn-continue');
+  if (continueBtn) {
+    continueBtn.onclick = () => { closeModal('ext-warn-modal'); window.open(pendingExtUrl, '_blank', 'noopener,noreferrer'); };
+  }
+  openModal('ext-warn-modal');
+});
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') closeAll();
   if(!anyOpen()&&(e.key==='/'||(e.key==='k'&&(e.metaKey||e.ctrlKey)))){ e.preventDefault(); openSearch(); }
