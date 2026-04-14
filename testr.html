@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr" data-theme="polar-night">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Antartica.Org — Explore the frozen continent">
+  <meta name="theme-color" content="#080f1c" id="meta-theme">
+  <title>Home / Antartica.Org</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+  /* ═══════════════════════════════════════════════
+     THEME TOKENS — all themes defined here
+  ═══════════════════════════════════════════════ */
+
+  /* 1 · POLAR NIGHT (default) */
+  [data-theme="polar-night"] {
+    --bg:         #080f1c;
+    --bg1:        #0c1628;
+    --bg2:        #101e35;
+    --bg3:        #152440;
+    --surface:    #1a2d4e;
+    --border:     rgba(120,170,255,0.12);
+    --border-hi:  rgba(0,200,255,0.45);
+    --accent:     #00c8ff;
+    --accent-dim: rgba(0,200,255,0.10);
+    --accent-glow:rgba(0,200,255,0.10);
+    --ice:        #e8f4ff;
+    --text:       #cce0f5;
+    --muted:      #6a90b8;
+    --danger:     #ff4d6a;
+    --nav-bg:     rgba(8,15,28,0.88);
+    --bot-bg:     rgba(8,15,28,0.94);
+    --atm-a:      rgba(0,200,255,0.08);
+    --atm-b:      rgba(0,80,200,0.05);
+    --shadow:     0 24px 64px rgba(0,0,0,0.60);
+    --card-hover-border: rgba(0,200,255,0.25);
+    --meta:       #080f1c;
+  }
+
+  /* 2 · AURORA */
+  [data-theme="aurora"] {
+    --bg:         #080d18;
+    --bg1:        #0b1122;
+    --bg2:        #0e1630;
+    --bg3:        #121d3c;
+    --surface:    #182648;
+    --border:     rgba(80,255,180,0.12);
+    --border-hi:  rgba(0,245,160,0.50);
+    --accent:     #00f5a0;
+    --accent-dim: rgba(0,245,160,0.10);
+    --accent-glow:rgba(0,245,160,0.10);
+    --ice:        #e0fff5;
+    --text:       #b8e8d8;
+    --muted:      #5a8a78;
+    --danger:     #ff4d6a;
+    --nav-bg:     rgba(8,13,24,0.90);
+    --bot-bg:     rgba(8,13,24,0.96);
+    --atm-a:      rgba(0,245,160,0.07);
+    --atm-b:      rgba(100,0,200,0.06);
+    --shadow:     0 24px 64px rgba(0,0,0,0.65);
+    --card-hover-border: rgba(0,245,160,0.28);
+    --meta:       #080d18;
+  }
+
+  /* 3 · VOLCANIC */
+  [data-theme="volcanic"] {
+    --bg:         #0e0804;
+    --bg1:        #160d06;
+    --bg2:        #1e1208;
+    --bg3:        #281a0c;
+    --surface:    #342212;
+    --border:     rgba(255,140,60,0.14);
+    --border-hi:  rgba(255,140,60,0.55);
+    --accent:     #ff8c42;
+    --accent-dim: rgba(255,140,60,0.12);
+    --accent-glow:rgba(255,140,60,0.10);
+    --ice:        #fff0e0;
+    --text:       #f0d5b8;
+    --muted:      #9a7050;
+    --danger:     #ff4d6a;
+    --nav-bg:     rgba(14,8,4,0.90);
+    --bot-bg:     rgba(14,8,4,0.96);
+    --atm-a:      rgba(255,100,20,0.09);
+    --atm-b:      rgba(180,40,0,0.07);
+    --shadow:     0 24px 64px rgba(0,0,0,0.70);
+    --card-hover-border: rgba(255,140,60,0.32);
+    --meta:       #0e0804;
+  }
+
+  /* 4 · BLIZZARD (light) */
+  [data-theme="blizzard"] {
+    --bg:         #f0f5fc;
+    --bg1:        #ffffff;
+    --bg2:        #e8eef8;
+    --bg3:        #dde5f2;
+    --surface:    #cdd8ec;
+    --border:     rgba(30,90,200,0.12);
+    --border-hi:  rgba(26,95,255,0.50);
+    --accent:     #1a5fff;
+    --accent-dim: rgba(26,95,255,0.08);
+    --accent-glow:rgba(26,95,255,0.08);
+    --ice:        #0d1f4a;
+    --text:       #2a3f6a;
+    --muted:      #7a93b8;
+    --danger:     #e53e3e;
+    --nav-bg:     rgba(240,245,252,0.90);
+    --bot-bg:     rgba(240,245,252,0.96);
+    --atm-a:      rgba(26,95,255,0.06);
+    --atm-b:      rgba(100,160,255,0.04);
+    --shadow:     0 24px 64px rgba(0,40,120,0.12);
+    --card-hover-border: rgba(26,95,255,0.28);
+    --meta:       #f0f5fc;
+  }
+
+  /* 5 · GLACIER (light) */
+  [data-theme="glacier"] {
+    --bg:         #eaf3f8;
+    --bg1:        #f6fafd;
+    --bg2:        #dceef8;
+    --bg3:        #cde3f2;
+    --surface:    #b8d8ee;
+    --border:     rgba(8,145,178,0.15);
+    --border-hi:  rgba(8,145,178,0.55);
+    --accent:     #0891b2;
+    --accent-dim: rgba(8,145,178,0.10);
+    --accent-glow:rgba(8,145,178,0.10);
+    --ice:        #0a2a38;
+    --text:       #1e4a5c;
+    --muted:      #6a9ab0;
+    --danger:     #e53e3e;
+    --nav-bg:     rgba(234,243,248,0.90);
+    --bot-bg:     rgba(234,243,248,0.96);
+    --atm-a:      rgba(8,145,178,0.07);
+    --atm-b:      rgba(0,200,230,0.05);
+    --shadow:     0 24px 64px rgba(0,60,100,0.12);
+    --card-hover-border: rgba(8,145,178,0.32);
+    --meta:       #eaf3f8;
+  }
+
+  /* 6 · OBSIDIAN */
+  [data-theme="obsidian"] {
+    --bg:         #06040f;
+    --bg1:        #0a0818;
+    --bg2:        #0f0c22;
+    --bg3:        #14102c;
+    --surface:    #1c1840;
+    --border:     rgba(168,85,247,0.14);
+    --border-hi:  rgba(168,85,247,0.55);
+    --accent:     #a855f7;
+    --accent-dim: rgba(168,85,247,0.10);
+    --accent-glow:rgba(168,85,247,0.10);
+    --ice:        #f0e8ff;
+    --text:       #d4c4f0;
+    --muted:      #7a6a9a;
+    --danger:     #ff4d6a;
+    --nav-bg:     rgba(6,4,15,0.90);
+    --bot-bg:     rgba(6,4,15,0.96);
+    --atm-a:      rgba(168,85,247,0.08);
+    --atm-b:      rgba(80,0,200,0.07);
+    --shadow:     0 24px 64px rgba(0,0,0,0.75);
+    --card-hover-border: rgba(168,85,247,0.30);
+    --meta:       #06040f;
+  }
+
+  /* ═══════════════════════════════════════════════
+     GLOBAL CONSTANTS
+  ═══════════════════════════════════════════════ */
+  :root {
+    --r:      14px;
+    --r-sm:   8px;
+    --nav-h:  58px;
+    --bot-h:  62px;
+    --ease:   cubic-bezier(0.16,1,0.3,1);
+    --font-d: 'DM Serif Display', Georgia, serif;
+    --font-b: 'DM Sans', system-ui, sans-serif;
+  }
+
+  /* ═══════════════════════════════════════════════
+     BASE
+  ═══════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-b);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.35s, color 0.35s;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: var(--font-b); }
+
+  /* Atmosphere layers */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 100% 55% at 50% -5%, var(--atm-a) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, var(--atm-b) 0%, transparent 60%);
+    transition: background 0.35s;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 0%, transparent 70%);
+    opacity: 0.4;
+    transition: background-image 0.35s, opacity 0.35s;
+  }
+
+  #root { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .icon svg { display: block; }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    position: sticky; top: 0; z-index: 90;
+    height: var(--nav-h);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.35s, border-color 0.35s;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 9px;
+    font-weight: 500; font-size: 0.95rem;
+    color: var(--ice); user-select: none;
+    transition: color 0.35s;
+  }
+  .brand-mark {
+    width: 30px; height: 30px;
+    background: var(--accent-dim);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    transition: background 0.35s, border-color 0.35s, color 0.35s;
+  }
+  .brand-dot { color: var(--accent); transition: color 0.35s; }
+  .nav-actions { display: flex; align-items: center; gap: 3px; }
+  .nav-btn {
+    width: 40px; height: 40px; border: none; background: transparent;
+    border-radius: 10px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s;
+    text-decoration: none;
+  }
+  .nav-btn:hover { background: var(--bg3); color: var(--ice); }
+  .search-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 14px; height: 36px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 50px;
+    color: var(--muted); font-size: 0.82rem; cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .search-pill:hover { background: var(--bg3); color: var(--ice); }
+  .pill-icon { color: var(--accent); }
+  .pill-text { display: none; }
+  @media (min-width: 480px) { .pill-text { display: inline; } }
+  .kbd-hint {
+    display: none; font-size: 0.68rem; padding: 1px 5px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--muted); margin-left: 2px;
+  }
+  @media (min-width: 640px) { .kbd-hint { display: inline; } }
+
+  /* ── MAIN ── */
+  main { flex: 1; padding: 0 20px 40px; max-width: 1160px; width: 100%; margin: 0 auto; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 40px 0 36px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 820px) {
+    .hero { grid-template-columns: 1fr 1fr; gap: 48px; padding: 52px 0 44px; }
+  }
+  .hero-text { display: flex; flex-direction: column; }
+  .hero-eyebrow {
+    font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.35s;
+  }
+  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); transition: background 0.35s; }
+  h1.hero-title {
+    font-family: var(--font-d);
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    line-height: 1.05; color: var(--ice);
+    letter-spacing: -0.02em; margin-bottom: 18px;
+    transition: color 0.35s;
+  }
+  h1.hero-title em { font-style: italic; color: var(--accent); transition: color 0.35s; }
+  .hero-sub {
+    font-size: clamp(0.88rem, 2vw, 1rem);
+    color: var(--muted); max-width: 400px; line-height: 1.65; margin-bottom: 30px;
+    transition: color 0.35s;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 22px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 50px; color: var(--muted); font-size: 0.88rem; cursor: pointer;
+    align-self: flex-start;
+    transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
+  }
+  .hero-cta:hover {
+    border-color: var(--border-hi); background: var(--bg3);
+    color: var(--ice); box-shadow: 0 0 28px var(--accent-glow);
+  }
+  .hero-cta .icon { color: var(--accent); }
+
+  /* ── PIXEL ART ── */
+  .hero-art-wrap {
+    display: none; /* hidden on small screens */
+    flex-direction: column; align-items: center; gap: 12px;
+  }
+  @media (min-width: 820px) {
+    .hero-art-wrap { display: flex; order: 1; }
+  }
+
+  .art-frame {
+    position: relative;
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 80px var(--accent-glow);
+    width: min(100%, 440px);
+    transition: box-shadow 0.35s;
+    background: #03080f;
+  }
+  .art-frame::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 2; pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%);
+    border-radius: 16px;
+  }
+  #antarctica-canvas {
+    display: block;
+    width: 100%; height: auto;
+    aspect-ratio: 1;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .art-hud {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  }
+  .art-badge {
+    position: absolute; top: 10px; left: 10px;
+    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: rgba(255,255,255,0.55);
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    padding: 4px 9px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .art-badge-r {
+    position: absolute; top: 10px; right: 10px;
+    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.4);
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+    padding: 4px 9px; border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .art-caption {
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); display: flex; align-items: center; gap: 6px;
+    transition: color 0.35s;
+  }
+  .art-caption .icon { color: var(--accent); }
+
+  /* ── SECTION HEAD ── */
+  .section-head { display: flex; align-items: center; gap: 14px; margin: 38px 0 18px; }
+  .section-head h2 {
+    font-size: 0.63rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--muted); white-space: nowrap;
+  }
+  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; gap: 10px; grid-template-columns: repeat(2,1fr); }
+  @media (min-width: 480px)  { .card-grid { grid-template-columns: repeat(3,1fr); } }
+  @media (min-width: 720px)  { .card-grid { grid-template-columns: repeat(4,1fr); } }
+  @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(5,1fr); } }
+
+  .card {
+    background: var(--bg1); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden;
+    opacity: 0; animation: fadeUp 0.45s var(--ease) forwards;
+    transition: border-color .18s, background 0.35s;
+  }
+  .card:hover { border-color: var(--card-hover-border); }
+  .card a, .card button {
+    display: flex; flex-direction: column;
+    padding: 18px 16px 16px; gap: 10px;
+    width: 100%; text-align: left; background: transparent; border: none;
+    cursor: pointer; transition: background .15s;
+  }
+  .card:hover a, .card:hover button { background: var(--bg2); }
+  .card-icon {
+    width: 36px; height: 36px; background: var(--bg3);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    color: var(--accent); transition: background .15s, color 0.35s;
+  }
+  .card:hover .card-icon { background: var(--accent-dim); }
+  .card-name { font-size: 0.87rem; font-weight: 500; color: var(--ice); line-height: 1.3; transition: color 0.35s; }
+  .card-sub  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; transition: color 0.35s; }
+  .no-results { grid-column: 1/-1; padding: 56px 20px; text-align: center; color: var(--muted); }
+  .no-results p { margin-top: 12px; font-size: 0.88rem; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 20px calc(var(--bot-h) + 20px);
+    max-width: 1160px; margin: 0 auto; width: 100%;
+    transition: border-color 0.35s;
+  }
+  .footer-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 28px 20px; margin-bottom: 30px; }
+  @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(4,1fr); } }
+  .footer-col h4 {
+    font-size: 0.62rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 13px;
+  }
+  .footer-col a, .footer-col button {
+    display: flex; align-items: center; gap: 7px;
+    margin-bottom: 9px; font-size: 0.83rem; color: var(--muted);
+    background: transparent; border: none; padding: 0;
+    text-align: left; font-family: var(--font-b); cursor: pointer;
+    transition: color .15s;
+  }
+  .footer-col a:hover, .footer-col button:hover { color: var(--ice); }
+  .footer-bottom {
+    border-top: 1px solid var(--border); padding-top: 18px;
+    display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: 10px;
+  }
+  .footer-copy { font-size: 0.74rem; color: var(--muted); }
+  .footer-copy strong { color: var(--ice); font-weight: 500; }
+  .lang-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 50px;
+    border: 1px solid var(--border); background: var(--bg2);
+    font-size: 0.74rem; color: var(--accent);
+    transition: border-color .15s, background 0.35s;
+  }
+  .lang-pill:hover { border-color: var(--border-hi); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+    height: var(--bot-h); display: flex;
+    background: var(--bot-bg);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: background 0.35s, border-color 0.35s;
+  }
+  .bot-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--muted); font-size: 0.58rem; letter-spacing: 0.06em;
+    text-transform: uppercase; font-family: var(--font-b);
+    transition: color .15s; text-decoration: none;
+  }
+  .bot-btn.active { color: var(--accent); }
+  .bot-btn:hover  { color: var(--ice); }
+
+  /* ── COOKIE ── */
+  #cookie-banner {
+    display: none;
+    position: fixed;
+    bottom: calc(var(--bot-h) + 12px); left: 12px; right: 12px;
+    z-index: 200; max-width: 420px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 20px;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.4s var(--ease);
+  }
+  @media (min-width: 600px) { #cookie-banner { left: auto; right: 16px; } }
+  #cookie-banner h3 {
+    font-size: 0.85rem; font-weight: 500; color: var(--ice);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
+  }
+  #cookie-banner p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+  #cookie-banner a { color: var(--accent); }
+  .cookie-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 18px; border: none; border-radius: 50px;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+    font-family: var(--font-b); transition: opacity .15s, transform .15s;
+  }
+  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-accent { background: var(--accent); color: var(--bg); }
+  .btn-ghost  { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { color: var(--ice); }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── OVERLAY ── */
+  #overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(5px);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s;
+  }
+  #overlay.open { opacity: 1; pointer-events: all; }
+
+  /* ── UNIFIED SEARCH ── */
+  #search-overlay {
+    position: fixed; inset: 0; z-index: 400;
+    display: flex; flex-direction: column; align-items: center;
+    padding: clamp(40px,8vh,90px) 16px 0;
+    pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  }
+  #search-overlay.open { pointer-events: all; opacity: 1; }
+  .search-modal {
+    width: 100%; max-width: 600px;
+    background: var(--bg2); border: 1px solid var(--border-hi);
+    border-radius: 18px; overflow: hidden;
+    box-shadow: var(--shadow);
+    transform: translateY(-10px) scale(0.98);
+    transition: transform 0.25s var(--ease), background 0.35s;
+  }
+  #search-overlay.open .search-modal { transform: translateY(0) scale(1); }
+  .search-input-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 15px 18px; border-bottom: 1px solid var(--border);
+  }
+  .search-input-row .icon { color: var(--accent); flex-shrink: 0; }
+  #main-search {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 1.05rem; color: var(--ice); font-family: var(--font-b);
+    caret-color: var(--accent);
+  }
+  #main-search::placeholder { color: var(--muted); }
+  .search-close-btn {
+    width: 28px; height: 28px; border: none;
+    background: var(--bg3); border-radius: 7px;
+    color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s;
+  }
+  .search-close-btn:hover { background: var(--danger); color: #fff; }
+  .search-results { max-height: 420px; overflow-y: auto; }
+  .search-results::-webkit-scrollbar { width: 4px; }
+  .search-results::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 2px; }
+  .search-group-label {
+    padding: 10px 18px 5px; font-size: 0.61rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .s-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px; width: 100%; text-align: left;
+    font-family: var(--font-b); background: transparent; border: none;
+    cursor: pointer; color: var(--text); text-decoration: none;
+    transition: background .12s;
+  }
+  .s-item:hover, .s-item.hi { background: var(--bg3); }
+  .s-item .icon { color: var(--accent); }
+  .s-item-text { flex: 1; }
+  .s-item-name { font-size: 0.88rem; color: var(--ice); }
+  .s-item-sub  { font-size: 0.73rem; color: var(--muted); }
+  .s-item-arr  { color: var(--muted); }
+  .search-empty { padding: 40px 18px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+  .search-footer-bar {
+    border-top: 1px solid var(--border); padding: 9px 18px;
+    display: flex; align-items: center; gap: 14px;
+    font-size: 0.68rem; color: var(--muted);
+  }
+  .s-hint { display: flex; align-items: center; gap: 4px; }
+  .kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 18px; padding: 0 4px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 4px; font-size: 0.63rem;
+  }
+
+  /* ── NAV DRAWER ── */
+  #nav-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 310;
+    width: min(290px, 88vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #nav-drawer.open { transform: translateX(0); }
+
+  /* ── SETTINGS PANEL ── */
+  #settings-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 310;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #settings-panel.open { transform: translateX(0); }
+
+  /* shared drawer chrome */
+  .drawer-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 18px; border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 1;
+    background: var(--bg1); transition: background 0.35s, border-color 0.35s;
+  }
+  .drawer-title { font-size: 0.92rem; font-weight: 500; color: var(--ice); }
+  .close-btn {
+    width: 32px; height: 32px; border: none;
+    background: var(--bg2); border-radius: 8px;
+    color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s;
+  }
+  .close-btn:hover { background: var(--danger); color: #fff; }
+  .drawer-body { padding: 10px 10px 32px; }
+  .grp-label {
+    font-size: 0.59rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); padding: 14px 8px 5px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px; border-radius: 10px;
+    font-size: 0.87rem; color: var(--muted);
+    background: transparent; border: none; width: 100%;
+    text-align: left; font-family: var(--font-b); cursor: pointer;
+    transition: background .12s, color .12s; text-decoration: none;
+  }
+  .nav-item .icon { color: var(--muted); transition: color .12s; }
+  .nav-item:hover { background: var(--bg2); color: var(--ice); }
+  .nav-item:hover .icon { color: var(--accent); }
+
+  /* ── SETTINGS PANEL INTERNALS ── */
+  .settings-section {
+    padding: 18px 16px 0;
+  }
+  .settings-section-label {
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .settings-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* Theme grid */
+  .theme-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    margin-bottom: 8px;
+  }
+  .theme-card {
+    position: relative; border: 2px solid var(--border);
+    border-radius: 12px; overflow: hidden; cursor: pointer;
+    padding: 0; background: transparent;
+    transition: border-color .2s, transform .15s;
+    aspect-ratio: 4/3;
+  }
+  .theme-card:hover { transform: scale(1.02); border-color: var(--border-hi); }
+  .theme-card.active { border-color: var(--accent) !important; }
+
+  /* Theme preview swatch */
+  .theme-preview {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; gap: 0;
+    overflow: hidden; border-radius: 10px;
+  }
+  .tp-nav { height: 22%; display: flex; align-items: center; padding: 0 8px; gap: 4px; }
+  .tp-dot { width: 5px; height: 5px; border-radius: 50%; opacity: 0.9; }
+  .tp-body { flex: 1; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; }
+  .tp-line { border-radius: 2px; }
+  .tp-line-lg { height: 8px; width: 80%; }
+  .tp-line-sm { height: 4px; width: 55%; }
+  .tp-cards { display: flex; gap: 4px; margin-top: 4px; }
+  .tp-card { flex: 1; height: 20px; border-radius: 4px; }
+  .tp-bot { height: 18%; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .tp-bot-dot { width: 14px; height: 4px; border-radius: 2px; }
+
+  .theme-name {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
+    padding: 5px 8px;
+    font-size: 0.7rem; font-weight: 500; color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .theme-check {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--accent); display: none;
+    align-items: center; justify-content: center;
+    color: var(--bg); font-size: 9px; font-weight: 700;
+  }
+  .theme-card.active .theme-check { display: flex; }
+
+  /* Settings rows */
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px; border-radius: 10px; margin: 2px 0;
+    transition: background .12s;
+  }
+  .settings-row:hover { background: var(--bg2); }
+  .settings-row-left { display: flex; align-items: center; gap: 10px; }
+  .settings-row-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); flex-shrink: 0;
+  }
+  .settings-row-label { font-size: 0.87rem; color: var(--ice); }
+  .settings-row-sub   { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+  .settings-row-right { color: var(--muted); }
+
+  /* ── ACCESSIBILITY SUB-PANEL ── */
+  #accessibility-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #accessibility-panel.open { transform: translateX(0); }
+
+  .font-size-preview {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    color: var(--text); line-height: 1.6;
+    margin-bottom: 18px;
+    transition: font-size 0.2s var(--ease), background 0.35s, color 0.35s;
+  }
+
+  .font-size-steps {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
+  }
+  .fs-step {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 14px 6px 12px;
+    background: var(--bg2); border: 2px solid var(--border);
+    border-radius: 12px; cursor: pointer; font-family: var(--font-b);
+    color: var(--muted); transition: border-color .18s, background .15s, color .15s, transform .12s;
+  }
+  .fs-step:hover { border-color: var(--border-hi); background: var(--bg3); color: var(--ice); transform: translateY(-1px); }
+  .fs-step.active { border-color: var(--accent) !important; color: var(--ice); }
+  .fs-step span { font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .fs-step[data-fs="small"]   { font-size: 0.82rem; }
+  .fs-step[data-fs="default"] { font-size: 1rem; }
+  .fs-step[data-fs="large"]   { font-size: 1.2rem; }
+  .fs-step[data-fs="xlarge"]  { font-size: 1.45rem; }
+
+  /* ── ABOUT SUB-PANEL ── */
+  #about-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #about-panel.open { transform: translateX(0); }
+
+  .about-hero {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0 20px;
+  }
+  .about-logo {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    background: var(--accent-dim); border: 1px solid var(--border-hi);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent); font-size: 22px;
+    transition: background 0.35s, border-color 0.35s, color 0.35s;
+  }
+  .about-name { font-size: 1.05rem; font-weight: 500; color: var(--ice); transition: color 0.35s; }
+  .about-tagline { font-size: 0.72rem; color: var(--muted); margin-top: 2px; transition: color 0.35s; }
+  .about-body {
+    font-size: 0.86rem; color: var(--muted); line-height: 1.68;
+    transition: color 0.35s;
+  }
+  .about-link {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 10px; border-radius: 10px;
+    font-size: 0.86rem; color: var(--muted); background: transparent;
+    border: none; width: 100%; text-align: left; font-family: var(--font-b); cursor: pointer;
+    text-decoration: none; transition: background .12s, color .12s;
+  }
+  .about-link:hover { background: var(--bg2); color: var(--ice); }
+  .about-link-icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    color: var(--accent); transition: background 0.35s;
+  }
+
+  /* ── EXTERNAL LINK WARNING ── */
+  .ext-warn-dest {
+    margin-top: 14px; padding: 12px 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; font-size: 0.82rem;
+    color: var(--muted); word-break: break-all;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ext-warn-dest::before {
+    content: '🔗'; font-size: 0.9rem; flex-shrink: 0;
+  }
+
+  /* ── MODALS ── */
+  .modal-wrap {
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; pointer-events: none; opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .modal-wrap.open { pointer-events: all; opacity: 1; }
+  .modal-box {
+    width: 100%; max-width: 460px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
+    transform: translateY(10px) scale(0.97);
+    transition: transform 0.22s var(--ease), background 0.35s;
+  }
+  .modal-wrap.open .modal-box { transform: none; }
+  .modal-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 17px 20px; border-bottom: 1px solid var(--border);
+  }
+  .modal-head h2 { font-size: 0.93rem; font-weight: 500; color: var(--ice); }
+  .modal-body { padding: 20px; }
+  .modal-body p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .share-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 4px; }
+  .share-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 14px 6px; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-sm); color: var(--muted); font-size: 0.7rem;
+    font-family: var(--font-b); cursor: pointer; text-decoration: none;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .share-btn .icon { color: var(--muted); transition: color .15s; }
+  .share-btn:hover { background: var(--bg2); color: var(--ice); border-color: var(--border-hi); }
+  .share-btn:hover .icon { color: var(--accent); }
+
+  /* ── LANGUAGE PANEL ── */
+  #language-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
+    width: min(360px, 100vw);
+    background: var(--bg1); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.26s var(--ease), background 0.35s;
+    overflow-y: auto;
+  }
+  #language-panel.open { transform: translateX(0); }
+
+  .lang-option-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 14px; border-radius: 12px;
+    background: var(--bg2); border: 2px solid var(--border);
+    cursor: pointer; font-family: var(--font-b);
+    transition: border-color .18s, background .15s, transform .12s;
+    width: 100%; text-align: left;
+  }
+  .lang-option-btn:hover { border-color: var(--border-hi); background: var(--bg3); transform: translateY(-1px); }
+  .lang-option-btn.active { border-color: var(--accent) !important; }
+  .lang-option-flag { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+  .lang-option-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .lang-option-name { font-size: 0.9rem; font-weight: 500; color: var(--ice); }
+  .lang-option-native { font-size: 0.75rem; color: var(--muted); }
+  .lang-option-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); display: none;
+    align-items: center; justify-content: center;
+    color: var(--bg); font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lang-option-btn.active .lang-option-check { display: flex; }
+
+  noscript { padding: 80px 20px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+<noscript><h2 style="color:#e8f4ff">JavaScript Required</h2><p>Please enable JavaScript to use Antartica.Org.</p></noscript>
+
+<div id="root">
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="/" class="brand">
+    <div class="brand-mark" id="brand-icon"></div>
+    Antartica<span class="brand-dot">.</span>Org
+  </a>
+  <div class="nav-actions">
+    <button class="search-pill" onclick="openSearch()" aria-label="Search Antartica.Org">
+      <span class="icon pill-icon" id="sp-icon"></span>
+      <span class="pill-text" id="search-pill-text">Search</span>
+      <span class="kbd-hint">⌘K</span>
+    </button>
+    <button class="nav-btn" onclick="openSettings()" aria-label="Settings" id="nav-settings-btn"></button>
+    <button class="nav-btn" onclick="openDrawer()" aria-label="Open menu" id="nav-menu-btn"></button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <div class="hero">
+    <!-- text -->
+    <div class="hero-text">
+      <p class="hero-eyebrow" id="hero-eyebrow">Explore the frozen continent</p>
+      <h1 class="hero-title" id="hero-title">Ant<em>arc</em>tica<br>Awaits</h1>
+      <p class="hero-sub" id="hero-sub">Discover facts, resources, and links about the world's most remote continent — 14 million km² of ancient ice, science, and wonder.</p>
+      <button class="hero-cta" onclick="openSearch()">
+        <span class="icon" id="hero-search-icon"></span>
+        <span id="hero-cta-text">Search Antartica.Org</span>
+        <span class="kbd-hint">⌘K</span>
+      </button>
+    </div>
+    <!-- pixel art -->
+    <div class="hero-art-wrap">
+      <div class="art-frame">
+        <canvas id="antarctica-canvas" width="480" height="480" aria-label="Pixel art of an Emperor Penguin"></canvas>
+        <div class="art-hud">
+          <span class="art-badge">Emperor Penguin</span>
+          <span class="art-badge-r">Antarctica</span>
+        </div>
+      </div>
+      <p class="art-caption" id="art-caption-el">
+        <span class="icon" id="art-caption-icon"></span>
+        Aptenodytes forsteri · Pixel Art
+      </p>
+    </div>
+  </div>
+  <div class="section-head"><h2 id="section-explore">Explore</h2></div>
+  <div class="card-grid" id="card-grid"></div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid" id="footer-grid"></div>
+  <div class="footer-bottom">
+    <span class="footer-copy" id="footer-copy"></span>
+    <button class="lang-pill" onclick="openLanguage()" id="lang-pill"></button>
+  </div>
+</footer>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" aria-label="Primary navigation">
+  <button class="bot-btn active" aria-label="Home"     id="bn-home"></button>
+  <button class="bot-btn" onclick="openSearch()"       aria-label="Search"   id="bn-search"></button>
+  <button class="bot-btn" onclick="openModal('share-modal')" aria-label="Share" id="bn-share"></button>
+  <button class="bot-btn" onclick="openSettings()"     aria-label="Settings" id="bn-settings"></button>
+</nav>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <h3><span class="icon" id="cookie-icon"></span> <span id="cookie-title">Cookies on Antartica.Org</span></h3>
+  <p id="cookie-body">Essential cookies keep the site working. Optional analytics are your choice. <a href="cookies" id="cookie-policy-link">Cookie Policy.</a></p>
+  <div class="cookie-actions">
+    <button class="btn btn-accent" onclick="setCookieConsent(1)" id="cookie-accept-btn">Accept All</button>
+    <button class="btn btn-ghost"  onclick="setCookieConsent(2)" id="cookie-essential-btn">Essential Only</button>
+  </div>
+</div>
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeAll()"></div>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-modal">
+    <div class="search-input-row">
+      <span class="icon" id="search-modal-icon"></span>
+      <input id="main-search" type="text" placeholder="Search Antartica.Org…"
+        autocomplete="off" spellcheck="false"
+        oninput="onSearch(this.value)" onkeydown="onSearchKey(event)">
+      <button class="search-close-btn" onclick="closeSearch()" aria-label="Close search" id="search-close-icon"></button>
+    </div>
+    <div class="search-results" id="search-results"></div>
+    <div class="search-footer-bar">
+      <span class="s-hint"><span class="kbd">↑↓</span> <span id="sh-navigate">Navigate</span></span>
+      <span class="s-hint"><span class="kbd">↵</span> <span id="sh-open">Open</span></span>
+      <span class="s-hint"><span class="kbd">Esc</span> <span id="sh-close">Close</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV DRAWER -->
+<aside id="nav-drawer" role="dialog" aria-modal="true" aria-label="Site navigation">
+  <div class="drawer-head">
+    <a href="/" class="brand" style="font-size:.88rem">
+      <div class="brand-mark" id="drawer-brand-icon"></div>
+      Antartica<span class="brand-dot">.</span>Org
+    </a>
+    <button class="close-btn" onclick="closeDrawer()" aria-label="Close menu" id="drawer-close-btn"></button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<!-- SETTINGS PANEL -->
+<aside id="settings-panel" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="drawer-head">
+    <span class="drawer-title" id="settings-title">Settings</span>
+    <button class="close-btn" onclick="closeSettings()" aria-label="Close settings" id="settings-close-btn"></button>
+  </div>
+  <div id="settings-body">
+
+    <!-- APPEARANCE -->
+    <div class="settings-section">
+      <p class="settings-section-label" id="settings-theme-label">Theme</p>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+
+    <!-- ACCESSIBILITY -->
+    <div class="settings-section" style="margin-top:8px;padding-bottom:24px">
+      <p class="settings-section-label" id="settings-access-label">Accessibility</p>
+      <button class="settings-row" onclick="openAccessibility()" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
+        <div class="settings-row-left">
+          <div class="settings-row-icon" id="sr-access-icon"></div>
+          <div><div class="settings-row-label" id="settings-access-row-label">Accessibility</div><div class="settings-row-sub" id="settings-access-row-sub">Font size &amp; display</div></div>
+        </div>
+        <span class="settings-row-right" id="sr-access-arr"></span>
+      </button>
+    </div>
+
+  </div>
+</aside>
+
+<!-- ACCESSIBILITY SUB-PANEL -->
+<aside id="accessibility-panel" role="dialog" aria-modal="true" aria-label="Accessibility settings">
+  <div class="drawer-head">
+    <span class="drawer-title" id="acc-title">Accessibility</span>
+    <button class="close-btn" onclick="closeAccessibility()" aria-label="Close accessibility" id="acc-close-btn"></button>
+  </div>
+  <div class="drawer-body">
+
+    <!-- Font Size -->
+    <div class="settings-section" style="padding-top:10px">
+      <p class="settings-section-label" id="acc-fontsize-label">Font Size</p>
+      <div class="font-size-preview" id="font-size-preview">
+        The quick brown fox jumps over the lazy dog.
+      </div>
+      <div class="font-size-steps">
+        <button class="fs-step" data-fs="small"   onclick="applyFontSize('small')"  >A<span id="fs-small">Small</span></button>
+        <button class="fs-step" data-fs="default" onclick="applyFontSize('default')" >A<span id="fs-default">Default</span></button>
+        <button class="fs-step" data-fs="large"   onclick="applyFontSize('large')"  >A<span id="fs-large">Large</span></button>
+        <button class="fs-step" data-fs="xlarge"  onclick="applyFontSize('xlarge')" >A<span id="fs-xlarge">X-Large</span></button>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+<!-- ABOUT PANEL -->
+<aside id="about-panel" role="dialog" aria-modal="true" aria-label="About Antartica.Org">
+  <div class="drawer-head">
+    <span class="drawer-title" id="about-title">About Antartica.Org</span>
+    <button class="close-btn" onclick="closeAbout()" aria-label="Close about" id="about-close-btn"></button>
+  </div>
+  <div class="drawer-body">
+    <div class="settings-section" style="padding-top:10px">
+
+      <div class="about-hero">
+        <div class="about-logo" id="about-logo-icon"></div>
+        <div>
+          <div class="about-name">Antartica<span style="color:var(--accent)">.</span>Org</div>
+          <div class="about-tagline" id="about-tagline">Explore the frozen continent</div>
+        </div>
+      </div>
+
+      <p class="about-body" id="about-body1">
+        Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and centuries of exploration history.
+      </p>
+
+      <p class="settings-section-label" id="about-mission-label" style="margin-top:24px">Mission</p>
+      <p class="about-body" id="about-mission-body">
+        We believe knowledge about Antarctica matters — for climate science, biodiversity, and the future of our planet. This site gathers the best resources in one place, freely available to everyone.
+      </p>
+
+      <p class="settings-section-label" id="about-legal-label" style="margin-top:24px">Legal</p>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <a href="terms"   class="about-link" id="about-terms-link"><span class="about-link-icon" id="abl-file"></span><span id="about-terms-text">Terms of Use</span></a>
+        <button class="about-link" onclick="closeAbout(); openModal('privacy-modal')" id="about-priv-link"><span class="about-link-icon" id="abl-lock"></span><span id="about-priv-text">Privacy Policy</span></button>
+        <button class="about-link" onclick="closeAbout(); openModal('disclaimer-modal')" id="about-disc-link"><span class="about-link-icon" id="abl-alert"></span><span id="about-disc-text">Disclaimer</span></button>
+        <a href="cookies" class="about-link" id="about-cookie-link"><span class="about-link-icon" id="abl-cookie"></span><span id="about-cookie-text">Cookie Policy</span></a>
+      </div>
+
+    </div>
+  </div>
+</aside>
+
+<!-- EXTERNAL LINK WARNING MODAL -->
+<div class="modal-wrap" id="ext-warn-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 style="display:flex;align-items:center;gap:8px"><span id="ext-warn-icon"></span><span id="ext-warn-title">Leaving Antartica.Org</span></h2>
+      <button class="close-btn" onclick="closeModal('ext-warn-modal')" id="ext-warn-close"></button>
+    </div>
+    <div class="modal-body">
+      <p id="ext-warn-body">You're about to visit an external site. Antartica.Org is not responsible for content on third-party sites.</p>
+      <div class="ext-warn-dest" id="ext-warn-dest"></div>
+      <div class="modal-actions">
+        <button class="btn btn-accent" id="ext-warn-continue">Continue</button>
+        <button class="btn btn-ghost"  onclick="closeModal('ext-warn-modal')" id="ext-cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY MODAL -->
+<div class="modal-wrap" id="privacy-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="priv-title">Privacy Policy</h2>
+      <button class="close-btn" onclick="closeModal('privacy-modal')" id="priv-close"></button>
+    </div>
+    <div class="modal-body">
+      <p id="priv-body">We collect minimal data and only use cookies as described in our Cookie Policy. Your data is never sold to third parties.</p>
+      <div class="modal-actions">
+        <a href="cookies" class="btn btn-ghost" id="priv-cookie-link">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCLAIMER MODAL -->
+<div class="modal-wrap" id="disclaimer-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="disc-title">Disclaimer</h2>
+      <button class="close-btn" onclick="closeModal('disclaimer-modal')" id="disc-close"></button>
+    </div>
+    <div class="modal-body">
+      <p id="disc-body">Content on Antartica.Org is for informational purposes only. We make no warranties regarding accuracy and accept no liability for reliance on this content.</p>
+      <div class="modal-actions">
+        <a href="terms" class="btn btn-ghost" id="disc-terms-link">Terms</a>
+        <button class="btn btn-ghost" onclick="switchModal('disclaimer-modal','privacy-modal')" id="disc-priv-btn">Privacy Policy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-wrap" id="share-modal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="share-title">Share Antartica.Org</h2>
+      <button class="close-btn" onclick="closeModal('share-modal')" id="share-close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="share-grid" id="share-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE SUB-PANEL -->
+<aside id="language-panel" role="dialog" aria-modal="true" aria-label="Language settings">
+  <div class="drawer-head">
+    <span class="drawer-title" id="lang-panel-title">Language</span>
+    <button class="close-btn" onclick="closeLanguage()" aria-label="Close language" id="lang-close-btn"></button>
+  </div>
+  <div class="drawer-body">
+    <div class="settings-section" style="padding-top:10px">
+      <p class="settings-section-label" id="lang-select-label">Select Language</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="lang-option-btn" id="lang-en-btn" onclick="setLanguage('en')">
+          <span class="lang-option-flag">🇺🇸</span>
+          <div class="lang-option-info">
+            <span class="lang-option-name">English</span>
+            <span class="lang-option-native">English</span>
+          </div>
+          <span class="lang-option-check" id="lang-en-check"></span>
+        </button>
+        <button class="lang-option-btn" id="lang-fr-btn" onclick="setLanguage('fr')">
+          <span class="lang-option-flag">🇫🇷</span>
+          <div class="lang-option-info">
+            <span class="lang-option-name">French</span>
+            <span class="lang-option-native">Français</span>
+          </div>
+          <span class="lang-option-check" id="lang-fr-check"></span>
+        </button>
+        <button class="lang-option-btn" id="lang-zh-btn" onclick="setLanguage('zh')">
+          <span class="lang-option-flag">🇨🇳</span>
+          <div class="lang-option-info">
+            <span class="lang-option-name">Chinese</span>
+            <span class="lang-option-native">中文（简体）</span>
+          </div>
+          <span class="lang-option-check" id="lang-zh-check"></span>
+        </button>
+        <button class="lang-option-btn" id="lang-es-btn" onclick="setLanguage('es')">
+          <span class="lang-option-flag">🇪🇸</span>
+          <div class="lang-option-info">
+            <span class="lang-option-name">Spanish</span>
+            <span class="lang-option-native">Español</span>
+          </div>
+          <span class="lang-option-check" id="lang-es-check"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+</div><!-- #root -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   ICONS — inline Lucide-style SVGs
+═══════════════════════════════════════════════════ */
+const IC = {
+  snowflake:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/><circle cx="12" cy="12" r="2.5"/></svg>`,
+  search:   `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  settings: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  menu:     `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  close:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  home:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  share:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+  info:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  cookie:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/></svg>`,
+  globe:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+  file:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
+  lock:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  alert:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  pen:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+  grid:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
+  access:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M12 22v-9"/><path d="M5 8l7-2 7 2"/><path d="M5 8l2 7h10l2-7"/></svg>`,
+  message:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  print:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>`,
+  youtube:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>`,
+  instagram:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
+  facebook: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
+  twitter:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="4" y1="20" x2="20" y2="4"/></svg>`,
+  extlink:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
+  arrowr:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+  arrowl:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
+  palette:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+  check:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+};
+const ic = (n, size) => {
+  let svg = IC[n] || IC.info;
+  if (size) svg = svg.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
+  return `<span class="icon">${svg}</span>`;
+};
+
+/* ═══════════════════════════════════════════════════
+   THEMES
+═══════════════════════════════════════════════════ */
+const THEMES = [
+  {
+    id: 'polar-night', name: 'Polar Night', default: true,
+    meta: '#080f1c',
+    p: { nav:'#0c1628', body:'#080f1c', bg2:'#101e35', bg3:'#152440', card:'#0c1628', accent:'#00c8ff', text:'#cce0f5', muted:'#6a90b8', bot:'#080f1c' }
+  },
+  {
+    id: 'aurora', name: 'Aurora',
+    meta: '#080d18',
+    p: { nav:'#0b1122', body:'#080d18', bg2:'#0e1630', bg3:'#121d3c', card:'#0b1122', accent:'#00f5a0', text:'#b8e8d8', muted:'#5a8a78', bot:'#080d18' }
+  },
+  {
+    id: 'volcanic', name: 'Volcanic',
+    meta: '#0e0804',
+    p: { nav:'#160d06', body:'#0e0804', bg2:'#1e1208', bg3:'#281a0c', card:'#160d06', accent:'#ff8c42', text:'#f0d5b8', muted:'#9a7050', bot:'#0e0804' }
+  },
+  {
+    id: 'blizzard', name: 'Blizzard',
+    meta: '#f0f5fc',
+    p: { nav:'#ffffff', body:'#f0f5fc', bg2:'#e8eef8', bg3:'#dde5f2', card:'#ffffff', accent:'#1a5fff', text:'#2a3f6a', muted:'#7a93b8', bot:'#f0f5fc' }
+  },
+  {
+    id: 'glacier', name: 'Glacier',
+    meta: '#eaf3f8',
+    p: { nav:'#f6fafd', body:'#eaf3f8', bg2:'#dceef8', bg3:'#cde3f2', card:'#f6fafd', accent:'#0891b2', text:'#1e4a5c', muted:'#6a9ab0', bot:'#eaf3f8' }
+  },
+  {
+    id: 'obsidian', name: 'Obsidian',
+    meta: '#06040f',
+    p: { nav:'#0a0818', body:'#06040f', bg2:'#0f0c22', bg3:'#14102c', card:'#0a0818', accent:'#a855f7', text:'#d4c4f0', muted:'#7a6a9a', bot:'#06040f' }
+  },
+];
+
+// Build theme card preview markup using inline styles (no dependency on live CSS vars)
+function themePreviewHTML(t) {
+  const p = t.p;
+  const isLight = t.id === 'blizzard' || t.id === 'glacier';
+  const borderCol = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.07)';
+  return `
+    <div class="theme-preview" style="background:${p.body}">
+      <div class="tp-nav" style="background:${p.nav};border-bottom:1px solid ${borderCol}">
+        <div class="tp-dot" style="background:${p.accent}"></div>
+        <div class="tp-dot" style="background:${p.accent};opacity:0.4;width:22px;height:3px;border-radius:2px;margin-left:3px"></div>
+      </div>
+      <div class="tp-body">
+        <div class="tp-line tp-line-lg" style="background:${p.text};opacity:0.9"></div>
+        <div class="tp-line tp-line-sm" style="background:${p.muted};opacity:0.7"></div>
+        <div class="tp-cards">
+          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
+            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px"></div>
+          </div>
+          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
+            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px;opacity:0.5"></div>
+          </div>
+          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
+            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px;opacity:0.3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tp-bot" style="background:${p.bot};border-top:1px solid ${borderCol}">
+        <div class="tp-bot-dot" style="background:${p.accent}"></div>
+        <div class="tp-bot-dot" style="background:${p.muted};opacity:0.5"></div>
+        <div class="tp-bot-dot" style="background:${p.muted};opacity:0.5"></div>
+      </div>
+    </div>
+    <div class="theme-name">
+      <span>${t.name}</span>
+      <span class="theme-check">${IC.check}</span>
+    </div>`;
+}
+
+function buildThemeGrid() {
+  const grid = byId('theme-grid');
+  const current = Ck.get('theme') || 'polar-night';
+  grid.innerHTML = THEMES.map(t => `
+    <button class="theme-card${t.id===current?' active':''}"
+      data-theme-id="${t.id}"
+      onclick="applyTheme('${t.id}')"
+      aria-label="Apply ${t.name} theme"
+      aria-pressed="${t.id===current}">
+      ${themePreviewHTML(t)}
+    </button>`).join('');
+}
+
+function applyTheme(id) {
+  document.documentElement.setAttribute('data-theme', id);
+  Ck.set('theme', id, 365);
+  // Update meta-theme-color
+  const t = THEMES.find(x => x.id === id);
+  if (t) byId('meta-theme').setAttribute('content', t.meta);
+  // Update active state in grid
+  document.querySelectorAll('.theme-card').forEach(el => {
+    const active = el.dataset.themeId === id;
+    el.classList.toggle('active', active);
+    el.setAttribute('aria-pressed', active);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   SITE DATA
+═══════════════════════════════════════════════════ */
+const SITE = [
+  { title:'About Antartica', sub:'Who we are',      group:'Site',    icon:'info',    href:null,            action:"openAbout()" },
+  { title:'Settings',        sub:'Preferences',     group:'Site',    icon:'settings',href:null,            action:"openSettings()" },
+  { title:'Blog',            sub:'Articles',        group:'Site',    icon:'pen',     href:null,            action:null },
+  { title:'Share',           sub:'Spread the word', group:'Site',    icon:'share',   href:null,            action:"openModal('share-modal')" },
+  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:null,            action:"openAccessibility()" },
+  { title:'Sitemap',         sub:'All pages',       group:'Site',    icon:'grid',    href:'#',             action:null },
+  { title:'Terms',           sub:'Usage rules',     group:'Legal',   icon:'file',    href:'terms',         action:null },
+  { title:'Privacy Policy',  sub:'Data protection', group:'Legal',   icon:'lock',    href:null,            action:"openModal('privacy-modal')" },
+  { title:'Disclaimer',      sub:'Legal notice',    group:'Legal',   icon:'alert',   href:null,            action:"openModal('disclaimer-modal')" },
+  { title:'Cookie Policy',   sub:'Data & cookies',  group:'Legal',   icon:'cookie',  href:'cookies',       action:null },
+  { title:'Language',        sub:'Change locale',   group:'More',    icon:'globe',   href:null,  action:"openLanguage()" },
+  { title:'Wikipedia',       sub:'External resource',group:'Explore',icon:'globe',   href:'https://en.wikipedia.org/wiki/Antarctica', action:null },
+  { title:'Google',          sub:'Search Antarctica',group:'Explore',icon:'search',  href:'https://www.google.com/search?q=antarctica', action:null },
+  { title:'Reddit',          sub:'Community',       group:'Explore', icon:'message', href:'https://www.reddit.com/search/?q=antartica', action:null },
+];
+
+const SHARE_LINKS = [
+  { label:'Google',    icon:'search',    href:'https://www.google.com/search?q=antarctica' },
+  { label:'Wikipedia', icon:'globe',     href:'https://en.wikipedia.org/wiki/Antarctica' },
+  { label:'YouTube',   icon:'youtube',   href:'https://www.youtube.com/results?search_query=antarctica' },
+  { label:'Reddit',    icon:'message',   href:'https://www.reddit.com/search/?q=antartica' },
+  { label:'X',         icon:'twitter',   href:'https://twitter.com' },
+  { label:'Instagram', icon:'instagram', href:'https://instagram.com' },
+  { label:'Facebook',  icon:'facebook',  href:'https://facebook.com' },
+  { label:'Print',     icon:'print',     href:null, action:'window.print()' },
+];
+
+const FOOTER_COLS = [
+  { h:'Legal',   keys:['Terms','Privacy Policy','Disclaimer','Cookie Policy'] },
+  { h:'Site',    keys:['About Antartica','Settings','Blog','Share'] },
+  { h:'Explore', keys:['Wikipedia','Google','Reddit','Language'] },
+  { h:'More',    keys:['Accessibility','Sitemap'] },
+];
+
+/* ═══════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════ */
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function byId(id){ return document.getElementById(id); }
+function isExt(h){ return h && h.startsWith('http'); }
+
+function itemTag(p, cls, extra, content) {
+  if (p.href) return `<a class="${cls}" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''}${extra||''}>${content}</a>`;
+  const oc = p.action ? ` onclick="${p.action}"` : '';
+  return `<button class="${cls}"${oc}${extra||''}>${content}</button>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD GRID
+═══════════════════════════════════════════════════ */
+function renderCards(filter) {
+  const q = (filter||'').trim().toLowerCase();
+  const items = q ? SITE.filter(p=>((p._title||p.title)+' '+(p._sub||p.sub)+' '+p.group).toLowerCase().includes(q)) : SITE;
+  const grid = byId('card-grid');
+  if (!items.length) {
+    grid.innerHTML = `<div class="no-results">${ic('search',24)}<p>${esc(t('noResults'))} "<em>${esc(filter)}</em>"</p></div>`;
+    return;
+  }
+  grid.innerHTML = items.map((p,i) => `
+    <div class="card" style="animation-delay:${i*.032}s">
+      ${itemTag(p,'','',`
+        <div class="card-icon">${ic(p.icon)}</div>
+        <div>
+          <div class="card-name">${esc(p._title||p.title)}</div>
+          <div class="card-sub">${esc(p._sub||p.sub)}</div>
+        </div>
+        ${isExt(p.href)?`<span class="icon" style="margin-left:auto;color:var(--muted)">${IC.extlink}</span>`:''}
+      `)}
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+function buildFooter() {
+  const map = Object.fromEntries(SITE.map(p=>[p._title||p.title,p]));
+  const cols = t('footerCols');
+  byId('footer-grid').innerHTML = cols.map(col=>`
+    <div class="footer-col">
+      <h4>${esc(col.h)}</h4>
+      ${col.keys.map(k=>{ const p=map[k]; return p?itemTag(p,'','',`${ic(p.icon)} ${esc(p._title||p.title)}`):'' }).join('')}
+    </div>`).join('');
+  byId('lang-pill').innerHTML = `${ic('globe',12)} <span id="lang-pill-label">${esc(t('footerLangPill'))}</span>`;
+  byId('footer-copy').innerHTML = `Copyright &copy; ${new Date().getFullYear()} <strong>Antartica.Org</strong>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAV DRAWER
+═══════════════════════════════════════════════════ */
+function buildDrawer() {
+  const groups = {};
+  SITE.forEach(p=>{ (groups[p.group]=groups[p.group]||[]).push(p); });
+  byId('drawer-body').innerHTML = Object.entries(groups).map(([g,pages])=>`
+    <p class="grp-label">${esc(g)}</p>
+    ${pages.map(p=>itemTag(p,'nav-item',` onclick="closeDrawer()${p.action?'; '+p.action:''}"`,
+      `${ic(p.icon)} ${esc(p._title||p.title)}`)).join('')}
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   SHARE MODAL
+═══════════════════════════════════════════════════ */
+function buildShare() {
+  byId('share-grid').innerHTML = SHARE_LINKS.map(s=>
+    s.href
+      ? `<a class="share-btn" href="${esc(s.href)}" target="_blank" rel="noopener">${ic(s.icon,18)}<span>${esc(s.label)}</span></a>`
+      : `<button class="share-btn" onclick="${s.action}">${ic(s.icon,18)}<span>${esc(s.label)}</span></button>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   STATIC ICON PLACEMENT
+═══════════════════════════════════════════════════ */
+function placeStaticIcons() {
+  [['brand-icon','snowflake'],['drawer-brand-icon','snowflake'],
+   ['sp-icon','search'],['nav-settings-btn','settings'],['nav-menu-btn','menu'],
+   ['hero-search-icon','search'],['cookie-icon','cookie'],
+   ['search-modal-icon','search'],['search-close-icon','close'],
+   ['priv-close','close'],['disc-close','close'],
+   ['share-close','close'],['drawer-close-btn','close'],['settings-close-btn','close'],
+   ['acc-close-btn','close'],['about-close-btn','close'],['lang-close-btn','close'],
+   ['sr-access-icon','access'],['about-logo-icon','snowflake'],
+   ['ext-warn-icon','alert'],['ext-warn-close','close'],
+  ].forEach(([id,name])=>{ const el=byId(id); if(el) el.innerHTML=IC[name]||IC.close; });
+
+  // About panel link icons
+  [['abl-file','file'],['abl-lock','lock'],['abl-alert','alert'],['abl-cookie','cookie']]
+    .forEach(([id,n])=>{ const el=byId(id); if(el) el.innerHTML=IC[n]||''; });
+
+  // Arrow icon for accessibility row
+  const accArr = byId('sr-access-arr'); if(accArr) accArr.innerHTML = IC.arrowr;
+}
+
+/* ═══════════════════════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════════════════════ */
+function buildBottomNav() {
+  [['bn-home','home',t('bnHome')],['bn-search','search',t('bnSearch')],
+   ['bn-share','share',t('bnShare')],['bn-settings','palette',t('bnSettings')]]
+    .forEach(([id,ico,txt])=>{ const el=byId(id); if(el) el.innerHTML=`${ic(ico,20)}<span>${txt}</span>`; });
+}
+
+/* ═══════════════════════════════════════════════════
+   UNIFIED SEARCH
+═══════════════════════════════════════════════════ */
+let searchIdx = -1;
+
+function openSearch() {
+  byId('search-overlay').classList.add('open');
+  byId('overlay').classList.add('open');
+  renderSearchList('');
+  searchIdx = -1;
+  setTimeout(()=>byId('main-search').focus(), 60);
+}
+function closeSearch() {
+  byId('search-overlay').classList.remove('open');
+  byId('main-search').value='';
+  searchIdx = -1;
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+function onSearch(q){ renderSearchList(q); searchIdx=-1; }
+
+function renderSearchList(q) {
+  const box=byId('search-results');
+  const term=q.trim().toLowerCase();
+  const hits=term ? SITE.filter(p=>((p._title||p.title)+' '+(p._sub||p.sub)+' '+p.group).toLowerCase().includes(term)) : SITE;
+  if (!hits.length) { box.innerHTML=`<div class="search-empty">${ic('search',22)}<br>${esc(t('noResults'))} "<em>${esc(q)}</em>"</div>`; return; }
+  if (!term) {
+    const groups={};
+    hits.forEach(p=>{ (groups[p.group]=groups[p.group]||[]).push(p); });
+    box.innerHTML=Object.entries(groups).map(([g,pages])=>`<p class="search-group-label">${esc(g)}</p>${pages.map(p=>sItemHTML(p)).join('')}`).join('');
+  } else {
+    const rWord = hits.length !== 1 ? t('results_pl') : t('results');
+    box.innerHTML=`<p class="search-group-label">${hits.length} ${rWord}</p>${hits.map(p=>sItemHTML(p)).join('')}`;
+  }
+}
+
+function sItemHTML(p) {
+  const ca=`closeSearch();`;
+  const act=p.action?`${ca} ${p.action}`:ca;
+  const inner=`${ic(p.icon)}<div class="s-item-text"><div class="s-item-name">${esc(p._title||p.title)}</div><div class="s-item-sub">${esc(p._sub||p.sub)} &middot; ${esc(p.group)}</div></div><span class="s-item-arr">${IC.arrowr}</span>`;
+  if(p.href) return `<a class="s-item" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''} onclick="${ca}">${inner}</a>`;
+  return `<button class="s-item" onclick="${act}">${inner}</button>`;
+}
+
+function onSearchKey(e) {
+  const items=byId('search-results').querySelectorAll('.s-item');
+  if(!items.length) return;
+  if(e.key==='ArrowDown'){e.preventDefault();searchIdx=Math.min(searchIdx+1,items.length-1);hilite(items);}
+  else if(e.key==='ArrowUp'){e.preventDefault();searchIdx=Math.max(searchIdx-1,0);hilite(items);}
+  else if(e.key==='Enter'&&searchIdx>=0){e.preventDefault();items[searchIdx].click();}
+}
+function hilite(items){ items.forEach((el,i)=>el.classList.toggle('hi',i===searchIdx)); if(searchIdx>=0)items[searchIdx].scrollIntoView({block:'nearest'}); }
+
+/* ═══════════════════════════════════════════════════
+   MODAL / DRAWER / SETTINGS SYSTEM
+═══════════════════════════════════════════════════ */
+function openModal(id)   { byId(id).classList.add('open');    byId('overlay').classList.add('open'); }
+function closeModal(id)  { byId(id).classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+function switchModal(a,b){ byId(a).classList.remove('open'); byId(b).classList.add('open'); }
+function openDrawer()    { byId('nav-drawer').classList.add('open');    byId('overlay').classList.add('open'); }
+function closeDrawer()   { byId('nav-drawer').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+function openSettings()  { byId('settings-panel').classList.add('open'); byId('overlay').classList.add('open'); }
+function closeSettings() { byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
+
+function openAbout() {
+  byId('about-panel').classList.add('open');
+  byId('overlay').classList.add('open');
+}
+function closeAbout() {
+  byId('about-panel').classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+
+function openAccessibility() {
+  byId('accessibility-panel').classList.add('open');
+  byId('overlay').classList.add('open');
+}
+function closeAccessibility() {
+  byId('accessibility-panel').classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+
+function closeAll() {
+  document.querySelectorAll('.modal-wrap.open,#search-overlay.open').forEach(el=>el.classList.remove('open'));
+  ['nav-drawer','settings-panel','accessibility-panel','about-panel','language-panel'].forEach(id=>byId(id).classList.remove('open'));
+  byId('overlay').classList.remove('open');
+  byId('main-search').value=''; searchIdx=-1;
+}
+function anyOpen(){
+  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open,#accessibility-panel.open,#about-panel.open,#language-panel.open')].length;
+}
+
+/* ── FONT SIZE ── */
+const FONT_SIZES = { small:'0.88rem', default:'1rem', large:'1.13rem', xlarge:'1.28rem' };
+function applyFontSize(size) {
+  document.documentElement.style.fontSize = FONT_SIZES[size] || '1rem';
+  Ck.set('font-size', size, 365);
+  const preview = byId('font-size-preview');
+  if (preview) preview.style.fontSize = FONT_SIZES[size];
+  document.querySelectorAll('.fs-step').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.fs === size);
+  });
+}
+function initFontSize() {
+  const saved = Ck.get('font-size') || 'default';
+  applyFontSize(saved);
+}
+
+/* ── EXTERNAL LINK WARNING ── */
+let pendingExtUrl = null;
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (!href || !href.startsWith('http')) return;
+  // same origin is fine
+  try { if (new URL(href).origin === location.origin) return; } catch(_){}
+  e.preventDefault();
+  pendingExtUrl = href;
+  const dest = byId('ext-warn-dest');
+  if (dest) {
+    try { dest.textContent = new URL(href).hostname; } catch(_) { dest.textContent = href; }
+  }
+  const continueBtn = byId('ext-warn-continue');
+  if (continueBtn) {
+    continueBtn.onclick = () => { closeModal('ext-warn-modal'); window.open(pendingExtUrl, '_blank', 'noopener,noreferrer'); };
+  }
+  openModal('ext-warn-modal');
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeAll();
+  if(!anyOpen()&&(e.key==='/'||(e.key==='k'&&(e.metaKey||e.ctrlKey)))){ e.preventDefault(); openSearch(); }
+});
+
+/* ═══════════════════════════════════════════════════
+   COOKIES
+═══════════════════════════════════════════════════ */
+const Ck = {
+  set(n,v,d=365){ const x=new Date(); x.setTime(x.getTime()+d*864e5); document.cookie=`${n}=${v};expires=${x.toUTCString()};path=/;SameSite=Lax`; },
+  get(n){ return decodeURIComponent(document.cookie).split(';').map(c=>c.trim()).find(c=>c.startsWith(n+'='))?.slice(n.length+1)??null; }
+};
+function setCookieConsent(v){ Ck.set('cookieconsent',String(v)); byId('cookie-banner').style.display='none'; }
+
+/* ═══════════════════════════════════════════════════
+   CAPTCHA GUARD
+═══════════════════════════════════════════════════ */
+function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./captcha/'; }
+
+/* ═══════════════════════════════════════════════════
+   INTERNATIONALISATION (EN / FR)
+═══════════════════════════════════════════════════ */
+const I18N = {
+  en: {
+    /* Nav */
+    searchPill: 'Search',
+    /* Hero */
+    heroEyebrow: 'Explore the frozen continent',
+    heroTitle: 'Ant<em>arc</em>tica<br>Awaits',
+    heroSub: 'Discover facts, resources, and links about the world\'s most remote continent — 14 million km² of ancient ice, science, and wonder.',
+    heroCta: 'Search Antartica.Org',
+    /* Section */
+    sectionExplore: 'Explore',
+    /* Search hints */
+    shNavigate: 'Navigate', shOpen: 'Open', shClose: 'Close',
+    searchPlaceholder: 'Search Antartica.Org…',
+    /* Settings */
+    settingsTitle: 'Settings',
+    settingsThemeLabel: 'Theme',
+    settingsAccessLabel: 'Accessibility',
+    settingsAccessRowLabel: 'Accessibility',
+    settingsAccessRowSub: 'Font size & display',
+    /* Accessibility panel */
+    accTitle: 'Accessibility',
+    accFontsizeLabel: 'Font Size',
+    fsSmall: 'Small', fsDefault: 'Default', fsLarge: 'Large', fsXlarge: 'X-Large',
+    fontPreview: 'The quick brown fox jumps over the lazy dog.',
+    /* About panel */
+    aboutTitle: 'About Antartica.Org',
+    aboutTagline: 'Explore the frozen continent',
+    aboutBody1: 'Antartica.Org is an informational hub dedicated to the world\'s southernmost continent — its science, ecology, geopolitics, and centuries of exploration history.',
+    aboutMissionLabel: 'Mission',
+    aboutMissionBody: 'We believe knowledge about Antarctica matters — for climate science, biodiversity, and the future of our planet. This site gathers the best resources in one place, freely available to everyone.',
+    aboutLegalLabel: 'Legal',
+    aboutTermsText: 'Terms of Use',
+    aboutPrivText: 'Privacy Policy',
+    aboutDiscText: 'Disclaimer',
+    aboutCookieText: 'Cookie Policy',
+    /* External warning */
+    extWarnTitle: 'Leaving Antartica.Org',
+    extWarnBody: 'You\'re about to visit an external site. Antartica.Org is not responsible for content on third-party sites.',
+    extWarnContinue: 'Continue', extWarnCancel: 'Cancel',
+    /* Privacy */
+    privTitle: 'Privacy Policy',
+    privBody: 'We collect minimal data and only use cookies as described in our Cookie Policy. Your data is never sold to third parties.',
+    privCookieLink: 'Cookie Policy',
+    /* Disclaimer */
+    discTitle: 'Disclaimer',
+    discBody: 'Content on Antartica.Org is for informational purposes only. We make no warranties regarding accuracy and accept no liability for reliance on this content.',
+    discTermsLink: 'Terms', discPrivBtn: 'Privacy Policy',
+    /* Share */
+    shareTitle: 'Share Antartica.Org',
+    /* Cookie */
+    cookieTitle: 'Cookies on Antartica.Org',
+    cookieBody: 'Essential cookies keep the site working. Optional analytics are your choice.',
+    cookiePolicyLink: 'Cookie Policy.',
+    cookieAccept: 'Accept All', cookieEssential: 'Essential Only',
+    /* Language panel */
+    langPanelTitle: 'Language',
+    langSelectLabel: 'Select Language',
+    langEnName: 'English', langFrName: 'French', langZhName: 'Chinese', langEsName: 'Spanish',
+    /* Footer */
+    footerLangPill: 'en\u2011US',
+    /* Bottom nav */
+    bnHome: 'Home', bnSearch: 'Search', bnShare: 'Share', bnSettings: 'Settings',
+    /* Drawer groups */
+    grpSite: 'Site', grpLegal: 'Legal', grpMore: 'More', grpExplore: 'Explore',
+    /* Site items */
+    site: [
+      { title:'About Antartica', sub:'Who we are' },
+      { title:'Settings',        sub:'Preferences' },
+      { title:'Blog',            sub:'Articles' },
+      { title:'Share',           sub:'Spread the word' },
+      { title:'Accessibility',   sub:'For everyone' },
+      { title:'Sitemap',         sub:'All pages' },
+      { title:'Terms',           sub:'Usage rules' },
+      { title:'Privacy Policy',  sub:'Data protection' },
+      { title:'Disclaimer',      sub:'Legal notice' },
+      { title:'Cookie Policy',   sub:'Data & cookies' },
+      { title:'Language',        sub:'Change locale' },
+      { title:'Wikipedia',       sub:'External resource' },
+      { title:'Google',          sub:'Search Antarctica' },
+      { title:'Reddit',          sub:'Community' },
+    ],
+    /* Footer cols */
+    footerCols: [
+      { h:'Legal',   keys:['Terms','Privacy Policy','Disclaimer','Cookie Policy'] },
+      { h:'Site',    keys:['About Antartica','Settings','Blog','Share'] },
+      { h:'Explore', keys:['Wikipedia','Google','Reddit','Language'] },
+      { h:'More',    keys:['Accessibility','Sitemap'] },
+    ],
+    noResults: 'No results for',
+    results: 'result', results_pl: 'results',
+  },
+  fr: {
+    /* Nav */
+    searchPill: 'Rechercher',
+    /* Hero */
+    heroEyebrow: 'Explorez le continent gelé',
+    heroTitle: 'L\'Ant<em>arc</em>tique<br>Vous Attend',
+    heroSub: 'Découvrez des faits, ressources et liens sur le continent le plus reculé du monde — 14 millions de km² de glace ancienne, de science et de merveilles.',
+    heroCta: 'Rechercher sur Antartica.Org',
+    /* Section */
+    sectionExplore: 'Explorer',
+    /* Search hints */
+    shNavigate: 'Naviguer', shOpen: 'Ouvrir', shClose: 'Fermer',
+    searchPlaceholder: 'Rechercher sur Antartica.Org…',
+    /* Settings */
+    settingsTitle: 'Paramètres',
+    settingsThemeLabel: 'Thème',
+    settingsAccessLabel: 'Accessibilité',
+    settingsAccessRowLabel: 'Accessibilité',
+    settingsAccessRowSub: 'Taille de police et affichage',
+    /* Accessibility panel */
+    accTitle: 'Accessibilité',
+    accFontsizeLabel: 'Taille de police',
+    fsSmall: 'Petit', fsDefault: 'Défaut', fsLarge: 'Grand', fsXlarge: 'Très grand',
+    fontPreview: 'Le renard brun rapide saute par-dessus le chien paresseux.',
+    /* About panel */
+    aboutTitle: 'À propos d\'Antartica.Org',
+    aboutTagline: 'Explorez le continent gelé',
+    aboutBody1: 'Antartica.Org est un hub d\'information dédié au continent le plus au sud du monde — sa science, son écologie, sa géopolitique et des siècles d\'histoire d\'exploration.',
+    aboutMissionLabel: 'Mission',
+    aboutMissionBody: 'Nous croyons que la connaissance de l\'Antarctique est importante — pour la science du climat, la biodiversité et l\'avenir de notre planète. Ce site rassemble les meilleures ressources en un seul endroit, librement accessibles à tous.',
+    aboutLegalLabel: 'Juridique',
+    aboutTermsText: 'Conditions d\'utilisation',
+    aboutPrivText: 'Politique de confidentialité',
+    aboutDiscText: 'Avertissement',
+    aboutCookieText: 'Politique des cookies',
+    /* External warning */
+    extWarnTitle: 'Quitter Antartica.Org',
+    extWarnBody: 'Vous êtes sur le point de visiter un site externe. Antartica.Org n\'est pas responsable du contenu des sites tiers.',
+    extWarnContinue: 'Continuer', extWarnCancel: 'Annuler',
+    /* Privacy */
+    privTitle: 'Politique de confidentialité',
+    privBody: 'Nous collectons un minimum de données et n\'utilisons que les cookies décrits dans notre politique des cookies. Vos données ne sont jamais vendues à des tiers.',
+    privCookieLink: 'Politique des cookies',
+    /* Disclaimer */
+    discTitle: 'Avertissement',
+    discBody: 'Le contenu d\'Antartica.Org est fourni à titre informatif uniquement. Nous n\'offrons aucune garantie quant à l\'exactitude et n\'assumons aucune responsabilité pour toute dépendance à ce contenu.',
+    discTermsLink: 'Conditions', discPrivBtn: 'Politique de confidentialité',
+    /* Share */
+    shareTitle: 'Partager Antartica.Org',
+    /* Cookie */
+    cookieTitle: 'Cookies sur Antartica.Org',
+    cookieBody: 'Les cookies essentiels maintiennent le site en fonctionnement. Les analyses facultatives sont votre choix.',
+    cookiePolicyLink: 'Politique des cookies.',
+    cookieAccept: 'Tout accepter', cookieEssential: 'Essentiels seulement',
+    /* Language panel */
+    langPanelTitle: 'Langue',
+    langSelectLabel: 'Choisir la langue',
+    langEnName: 'Anglais', langFrName: 'Français', langZhName: 'Chinois', langEsName: 'Espagnol',
+    /* Footer */
+    footerLangPill: 'fr\u2011FR',
+    /* Bottom nav */
+    bnHome: 'Accueil', bnSearch: 'Rechercher', bnShare: 'Partager', bnSettings: 'Paramètres',
+    /* Drawer groups */
+    grpSite: 'Site', grpLegal: 'Juridique', grpMore: 'Plus', grpExplore: 'Explorer',
+    /* Site items translated */
+    site: [
+      { title:'À propos d\'Antartica', sub:'Qui sommes-nous' },
+      { title:'Paramètres',            sub:'Préférences' },
+      { title:'Blog',                  sub:'Articles' },
+      { title:'Partager',              sub:'Faites passer le mot' },
+      { title:'Accessibilité',         sub:'Pour tous' },
+      { title:'Plan du site',          sub:'Toutes les pages' },
+      { title:'Conditions',            sub:'Règles d\'utilisation' },
+      { title:'Politique de confidentialité', sub:'Protection des données' },
+      { title:'Avertissement',         sub:'Notice légale' },
+      { title:'Politique des cookies', sub:'Données et cookies' },
+      { title:'Langue',                sub:'Changer de locale' },
+      { title:'Wikipédia',             sub:'Ressource externe' },
+      { title:'Google',                sub:'Rechercher l\'Antarctique' },
+      { title:'Reddit',                sub:'Communauté' },
+    ],
+    footerCols: [
+      { h:'Juridique', keys:['Conditions','Politique de confidentialité','Avertissement','Politique des cookies'] },
+      { h:'Site',      keys:['À propos d\'Antartica','Paramètres','Blog','Partager'] },
+      { h:'Explorer',  keys:['Wikipédia','Google','Reddit','Langue'] },
+      { h:'Plus',      keys:['Accessibilité','Plan du site'] },
+    ],
+    noResults: 'Aucun résultat pour',
+    results: 'résultat', results_pl: 'résultats',
+  },
+  zh: {
+    /* Nav */
+    searchPill: '搜索',
+    /* Hero */
+    heroEyebrow: '探索冰封大陆',
+    heroTitle: '南<em>极</em>洲<br>等待您',
+    heroSub: '探索世界最偏远大陆的事实、资源与链接——1400万平方公里的古老冰川、科学与奇迹。',
+    heroCta: '搜索 Antartica.Org',
+    /* Section */
+    sectionExplore: '探索',
+    /* Search hints */
+    shNavigate: '导航', shOpen: '打开', shClose: '关闭',
+    searchPlaceholder: '搜索 Antartica.Org…',
+    /* Settings */
+    settingsTitle: '设置',
+    settingsThemeLabel: '主题',
+    settingsAccessLabel: '无障碍',
+    settingsAccessRowLabel: '无障碍',
+    settingsAccessRowSub: '字体大小与显示',
+    /* Accessibility panel */
+    accTitle: '无障碍',
+    accFontsizeLabel: '字体大小',
+    fsSmall: '小', fsDefault: '默认', fsLarge: '大', fsXlarge: '超大',
+    fontPreview: '敏捷的棕色狐狸跳过了懒狗。',
+    /* About panel */
+    aboutTitle: '关于 Antartica.Org',
+    aboutTagline: '探索冰封大陆',
+    aboutBody1: 'Antartica.Org 是专注于世界最南端大陆的信息中心——涵盖科学、生态、地缘政治及数百年探索历史。',
+    aboutMissionLabel: '使命',
+    aboutMissionBody: '我们相信关于南极洲的知识至关重要——无论是对气候科学、生物多样性还是地球的未来。本站将最优质的资源汇聚一处，向所有人免费开放。',
+    aboutLegalLabel: '法律',
+    aboutTermsText: '使用条款',
+    aboutPrivText: '隐私政策',
+    aboutDiscText: '免责声明',
+    aboutCookieText: 'Cookie 政策',
+    /* External warning */
+    extWarnTitle: '离开 Antartica.Org',
+    extWarnBody: '您即将访问外部网站。Antartica.Org 对第三方网站的内容不承担责任。',
+    extWarnContinue: '继续', extWarnCancel: '取消',
+    /* Privacy */
+    privTitle: '隐私政策',
+    privBody: '我们仅收集最少量的数据，且仅使用 Cookie 政策中描述的 Cookie。您的数据绝不会出售给第三方。',
+    privCookieLink: 'Cookie 政策',
+    /* Disclaimer */
+    discTitle: '免责声明',
+    discBody: 'Antartica.Org 上的内容仅供参考。我们不对准确性作任何保证，也不对依赖本内容承担任何责任。',
+    discTermsLink: '条款', discPrivBtn: '隐私政策',
+    /* Share */
+    shareTitle: '分享 Antartica.Org',
+    /* Cookie */
+    cookieTitle: 'Antartica.Org 上的 Cookie',
+    cookieBody: '必要 Cookie 维持网站正常运行，可选分析 Cookie 由您决定。',
+    cookiePolicyLink: 'Cookie 政策。',
+    cookieAccept: '全部接受', cookieEssential: '仅限必要',
+    /* Language panel */
+    langPanelTitle: '语言',
+    langSelectLabel: '选择语言',
+    langEnName: '英语', langFrName: '法语', langZhName: '中文', langEsName: '西班牙语',
+    /* Footer */
+    footerLangPill: 'zh\u2011CN',
+    /* Bottom nav */
+    bnHome: '首页', bnSearch: '搜索', bnShare: '分享', bnSettings: '设置',
+    /* Drawer groups */
+    grpSite: '网站', grpLegal: '法律', grpMore: '更多', grpExplore: '探索',
+    /* Site items */
+    site: [
+      { title:'关于 Antartica', sub:'我们是谁' },
+      { title:'设置',            sub:'偏好' },
+      { title:'博客',            sub:'文章' },
+      { title:'分享',            sub:'传播消息' },
+      { title:'无障碍',          sub:'面向所有人' },
+      { title:'网站地图',        sub:'所有页面' },
+      { title:'条款',            sub:'使用规则' },
+      { title:'隐私政策',        sub:'数据保护' },
+      { title:'免责声明',        sub:'法律声明' },
+      { title:'Cookie 政策',    sub:'数据与 Cookie' },
+      { title:'语言',            sub:'更改语言' },
+      { title:'维基百科',        sub:'外部资源' },
+      { title:'谷歌',            sub:'搜索南极洲' },
+      { title:'Reddit',          sub:'社区' },
+    ],
+    footerCols: [
+      { h:'法律',   keys:['条款','隐私政策','免责声明','Cookie 政策'] },
+      { h:'网站',   keys:['关于 Antartica','设置','博客','分享'] },
+      { h:'探索',   keys:['维基百科','谷歌','Reddit','语言'] },
+      { h:'更多',   keys:['无障碍','网站地图'] },
+    ],
+    noResults: '未找到结果',
+    results: '个结果', results_pl: '个结果',
+  },
+  es: {
+    /* Nav */
+    searchPill: 'Buscar',
+    /* Hero */
+    heroEyebrow: 'Explora el continente helado',
+    heroTitle: 'La <em>Ant</em>ártida<br>Te Espera',
+    heroSub: 'Descubre hechos, recursos y enlaces sobre el continente más remoto del mundo — 14 millones de km² de hielo antiguo, ciencia y maravillas.',
+    heroCta: 'Buscar en Antartica.Org',
+    /* Section */
+    sectionExplore: 'Explorar',
+    /* Search hints */
+    shNavigate: 'Navegar', shOpen: 'Abrir', shClose: 'Cerrar',
+    searchPlaceholder: 'Buscar en Antartica.Org…',
+    /* Settings */
+    settingsTitle: 'Configuración',
+    settingsThemeLabel: 'Tema',
+    settingsAccessLabel: 'Accesibilidad',
+    settingsAccessRowLabel: 'Accesibilidad',
+    settingsAccessRowSub: 'Tamaño de fuente y pantalla',
+    /* Accessibility panel */
+    accTitle: 'Accesibilidad',
+    accFontsizeLabel: 'Tamaño de fuente',
+    fsSmall: 'Pequeño', fsDefault: 'Predeterminado', fsLarge: 'Grande', fsXlarge: 'Extra grande',
+    fontPreview: 'El veloz zorro marrón salta sobre el perro perezoso.',
+    /* About panel */
+    aboutTitle: 'Acerca de Antartica.Org',
+    aboutTagline: 'Explora el continente helado',
+    aboutBody1: 'Antartica.Org es un centro de información dedicado al continente más austral del mundo — su ciencia, ecología, geopolítica y siglos de historia de exploración.',
+    aboutMissionLabel: 'Misión',
+    aboutMissionBody: 'Creemos que el conocimiento sobre la Antártida es importante — para la ciencia climática, la biodiversidad y el futuro de nuestro planeta. Este sitio reúne los mejores recursos en un solo lugar, disponibles libremente para todos.',
+    aboutLegalLabel: 'Legal',
+    aboutTermsText: 'Términos de uso',
+    aboutPrivText: 'Política de privacidad',
+    aboutDiscText: 'Aviso legal',
+    aboutCookieText: 'Política de cookies',
+    /* External warning */
+    extWarnTitle: 'Salir de Antartica.Org',
+    extWarnBody: 'Estás a punto de visitar un sitio externo. Antartica.Org no es responsable del contenido de sitios de terceros.',
+    extWarnContinue: 'Continuar', extWarnCancel: 'Cancelar',
+    /* Privacy */
+    privTitle: 'Política de privacidad',
+    privBody: 'Recopilamos datos mínimos y solo usamos cookies según lo descrito en nuestra Política de cookies. Tus datos nunca se venden a terceros.',
+    privCookieLink: 'Política de cookies',
+    /* Disclaimer */
+    discTitle: 'Aviso legal',
+    discBody: 'El contenido de Antartica.Org es solo para fines informativos. No ofrecemos garantías sobre la exactitud y no aceptamos responsabilidad por el uso de este contenido.',
+    discTermsLink: 'Términos', discPrivBtn: 'Política de privacidad',
+    /* Share */
+    shareTitle: 'Compartir Antartica.Org',
+    /* Cookie */
+    cookieTitle: 'Cookies en Antartica.Org',
+    cookieBody: 'Las cookies esenciales mantienen el sitio funcionando. Los análisis opcionales son tu elección.',
+    cookiePolicyLink: 'Política de cookies.',
+    cookieAccept: 'Aceptar todo', cookieEssential: 'Solo esenciales',
+    /* Language panel */
+    langPanelTitle: 'Idioma',
+    langSelectLabel: 'Seleccionar idioma',
+    langEnName: 'Inglés', langFrName: 'Francés', langZhName: 'Chino', langEsName: 'Español',
+    /* Footer */
+    footerLangPill: 'es\u2011ES',
+    /* Bottom nav */
+    bnHome: 'Inicio', bnSearch: 'Buscar', bnShare: 'Compartir', bnSettings: 'Configuración',
+    /* Drawer groups */
+    grpSite: 'Sitio', grpLegal: 'Legal', grpMore: 'Más', grpExplore: 'Explorar',
+    /* Site items */
+    site: [
+      { title:'Acerca de Antartica', sub:'Quiénes somos' },
+      { title:'Configuración',       sub:'Preferencias' },
+      { title:'Blog',                sub:'Artículos' },
+      { title:'Compartir',           sub:'Corre la voz' },
+      { title:'Accesibilidad',       sub:'Para todos' },
+      { title:'Mapa del sitio',      sub:'Todas las páginas' },
+      { title:'Términos',            sub:'Reglas de uso' },
+      { title:'Política de privacidad', sub:'Protección de datos' },
+      { title:'Aviso legal',         sub:'Nota legal' },
+      { title:'Política de cookies', sub:'Datos y cookies' },
+      { title:'Idioma',              sub:'Cambiar idioma' },
+      { title:'Wikipedia',           sub:'Recurso externo' },
+      { title:'Google',              sub:'Buscar Antártida' },
+      { title:'Reddit',              sub:'Comunidad' },
+    ],
+    footerCols: [
+      { h:'Legal',    keys:['Términos','Política de privacidad','Aviso legal','Política de cookies'] },
+      { h:'Sitio',    keys:['Acerca de Antartica','Configuración','Blog','Compartir'] },
+      { h:'Explorar', keys:['Wikipedia','Google','Reddit','Idioma'] },
+      { h:'Más',      keys:['Accesibilidad','Mapa del sitio'] },
+    ],
+    noResults: 'Sin resultados para',
+    results: 'resultado', results_pl: 'resultados',
+  }
+};
+
+/* Detect language: saved cookie → browser language → default en */
+let currentLang = (function detectLang() {
+  const saved = Ck.get('lang');
+  if (saved === 'en' || saved === 'fr' || saved === 'zh' || saved === 'es') return saved;
+  const browser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  if (browser.startsWith('fr')) return 'fr';
+  if (browser.startsWith('zh')) return 'zh';
+  if (browser.startsWith('es')) return 'es';
+  return 'en';
+})();
+
+function t(key) { return (I18N[currentLang] || I18N.en)[key] || I18N.en[key] || key; }
+
+/* Apply all translations to DOM */
+function applyTranslations() {
+  const lang = currentLang;
+  const langAttrMap = { en: 'en-US', fr: 'fr-FR', zh: 'zh-CN', es: 'es-ES' };
+  document.documentElement.lang = langAttrMap[lang] || 'en-US';
+
+  /* Nav */
+  const spt = byId('search-pill-text'); if(spt) spt.textContent = t('searchPill');
+
+  /* Hero */
+  const ey = byId('hero-eyebrow'); if(ey) ey.textContent = t('heroEyebrow');
+  const ht = byId('hero-title'); if(ht) ht.innerHTML = t('heroTitle');
+  const hs = byId('hero-sub'); if(hs) hs.textContent = t('heroSub');
+  const hc = byId('hero-cta-text'); if(hc) hc.textContent = t('heroCta');
+
+  /* Section head */
+  const se = byId('section-explore'); if(se) se.textContent = t('sectionExplore');
+
+  /* Search overlay */
+  const si = byId('main-search'); if(si) si.placeholder = t('searchPlaceholder');
+  const shn = byId('sh-navigate'); if(shn) shn.textContent = t('shNavigate');
+  const sho = byId('sh-open'); if(sho) sho.textContent = t('shOpen');
+  const shc = byId('sh-close'); if(shc) shc.textContent = t('shClose');
+
+  /* Settings panel */
+  const stl = byId('settings-title'); if(stl) stl.textContent = t('settingsTitle');
+  const sThL = byId('settings-theme-label'); if(sThL) sThL.textContent = t('settingsThemeLabel');
+  const sAL = byId('settings-access-label'); if(sAL) sAL.textContent = t('settingsAccessLabel');
+  const sARL = byId('settings-access-row-label'); if(sARL) sARL.textContent = t('settingsAccessRowLabel');
+  const sARS = byId('settings-access-row-sub'); if(sARS) sARS.textContent = t('settingsAccessRowSub');
+
+  /* Accessibility panel */
+  const acT = byId('acc-title'); if(acT) acT.textContent = t('accTitle');
+  const acFL = byId('acc-fontsize-label'); if(acFL) acFL.textContent = t('accFontsizeLabel');
+  const fpv = byId('font-size-preview'); if(fpv) fpv.textContent = t('fontPreview');
+  const fsS = byId('fs-small'); if(fsS) fsS.textContent = t('fsSmall');
+  const fsD = byId('fs-default'); if(fsD) fsD.textContent = t('fsDefault');
+  const fsL = byId('fs-large'); if(fsL) fsL.textContent = t('fsLarge');
+  const fsX = byId('fs-xlarge'); if(fsX) fsX.textContent = t('fsXlarge');
+
+  /* About panel */
+  const abT = byId('about-title'); if(abT) abT.textContent = t('aboutTitle');
+  const abTg = byId('about-tagline'); if(abTg) abTg.textContent = t('aboutTagline');
+  const abB1 = byId('about-body1'); if(abB1) abB1.textContent = t('aboutBody1');
+  const abML = byId('about-mission-label'); if(abML) abML.textContent = t('aboutMissionLabel');
+  const abMB = byId('about-mission-body'); if(abMB) abMB.textContent = t('aboutMissionBody');
+  const abLL = byId('about-legal-label'); if(abLL) abLL.textContent = t('aboutLegalLabel');
+  const abTT = byId('about-terms-text'); if(abTT) abTT.textContent = t('aboutTermsText');
+  const abPT = byId('about-priv-text'); if(abPT) abPT.textContent = t('aboutPrivText');
+  const abDT = byId('about-disc-text'); if(abDT) abDT.textContent = t('aboutDiscText');
+  const abCT = byId('about-cookie-text'); if(abCT) abCT.textContent = t('aboutCookieText');
+
+  /* Ext warn */
+  const ewT = byId('ext-warn-title'); if(ewT) ewT.textContent = t('extWarnTitle');
+  const ewB = byId('ext-warn-body'); if(ewB) ewB.textContent = t('extWarnBody');
+  const ewC = byId('ext-warn-continue'); if(ewC) ewC.textContent = t('extWarnContinue');
+  const ewCn = byId('ext-cancel-btn'); if(ewCn) ewCn.textContent = t('extWarnCancel');
+
+  /* Privacy */
+  const pvT = byId('priv-title'); if(pvT) pvT.textContent = t('privTitle');
+  const pvB = byId('priv-body'); if(pvB) pvB.textContent = t('privBody');
+  const pvCL = byId('priv-cookie-link'); if(pvCL) pvCL.textContent = t('privCookieLink');
+
+  /* Disclaimer */
+  const dcT = byId('disc-title'); if(dcT) dcT.textContent = t('discTitle');
+  const dcB = byId('disc-body'); if(dcB) dcB.textContent = t('discBody');
+  const dcTL = byId('disc-terms-link'); if(dcTL) dcTL.textContent = t('discTermsLink');
+  const dcPB = byId('disc-priv-btn'); if(dcPB) dcPB.textContent = t('discPrivBtn');
+
+  /* Share */
+  const shT = byId('share-title'); if(shT) shT.textContent = t('shareTitle');
+
+  /* Cookie */
+  const ckT = byId('cookie-title'); if(ckT) ckT.textContent = t('cookieTitle');
+  const ckB = byId('cookie-body');
+  if(ckB) {
+    ckB.innerHTML = `${esc(t('cookieBody'))} <a href="cookies" id="cookie-policy-link">${esc(t('cookiePolicyLink'))}</a>`;
+  }
+  const ckA = byId('cookie-accept-btn'); if(ckA) ckA.textContent = t('cookieAccept');
+  const ckE = byId('cookie-essential-btn'); if(ckE) ckE.textContent = t('cookieEssential');
+
+  /* Language panel */
+  const lpT = byId('lang-panel-title'); if(lpT) lpT.textContent = t('langPanelTitle');
+  const lpSL = byId('lang-select-label'); if(lpSL) lpSL.textContent = t('langSelectLabel');
+  const lpEnN = byId('lang-en-btn');
+  if(lpEnN) {
+    lpEnN.querySelector('.lang-option-name').textContent = t('langEnName');
+    lpEnN.querySelector('.lang-option-check').innerHTML = IC.check;
+    lpEnN.classList.toggle('active', lang === 'en');
+  }
+  const lpFrN = byId('lang-fr-btn');
+  if(lpFrN) {
+    lpFrN.querySelector('.lang-option-name').textContent = t('langFrName');
+    lpFrN.querySelector('.lang-option-check').innerHTML = IC.check;
+    lpFrN.classList.toggle('active', lang === 'fr');
+  }
+  const lpZhN = byId('lang-zh-btn');
+  if(lpZhN) {
+    lpZhN.querySelector('.lang-option-name').textContent = t('langZhName');
+    lpZhN.querySelector('.lang-option-check').innerHTML = IC.check;
+    lpZhN.classList.toggle('active', lang === 'zh');
+  }
+  const lpEsN = byId('lang-es-btn');
+  if(lpEsN) {
+    lpEsN.querySelector('.lang-option-name').textContent = t('langEsName');
+    lpEsN.querySelector('.lang-option-check').innerHTML = IC.check;
+    lpEsN.classList.toggle('active', lang === 'es');
+  }
+
+  /* Footer lang pill */
+  const lpl = byId('lang-pill-label'); if(lpl) lpl.textContent = t('footerLangPill');
+
+  /* Rebuild dynamic sections with translated SITE data */
+  rebuildWithTranslations();
+}
+
+/* Merge translated titles/subs into SITE array and rebuild dynamic UI */
+function rebuildWithTranslations() {
+  const siteTr = t('site');
+  SITE.forEach((item, i) => {
+    if (siteTr[i]) {
+      item._title = siteTr[i].title;
+      item._sub   = siteTr[i].sub;
+    }
+  });
+
+  /* Cards */
+  const grid = byId('card-grid');
+  if (grid) {
+    const filter = byId('main-search') ? byId('main-search').value : '';
+    renderCards(filter);
+  }
+
+  /* Footer */
+  buildFooter();
+
+  /* Drawer */
+  buildDrawer();
+
+  /* Bottom nav */
+  buildBottomNav();
+}
+
+/* Language panel open/close */
+function openLanguage() {
+  byId('language-panel').classList.add('open');
+  byId('overlay').classList.add('open');
+}
+function closeLanguage() {
+  byId('language-panel').classList.remove('open');
+  if(!anyOpen()) byId('overlay').classList.remove('open');
+}
+
+/* Set language and persist */
+function setLanguage(lang) {
+  if (!['en', 'fr', 'zh', 'es'].includes(lang)) return;
+  currentLang = lang;
+  Ck.set('lang', lang, 365);
+  applyTranslations();
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT — placed here so I18N, currentLang, t() and
+   applyTranslations() are all fully defined before
+   this runs (const/let have no hoisting).
+═══════════════════════════════════════════════════ */
+(function init(){
+  checkCaptcha();
+
+  // Restore saved theme immediately (before paint)
+  const saved = Ck.get('theme');
+  if (saved && saved !== 'polar-night') {
+    document.documentElement.setAttribute('data-theme', saved);
+    const theme = THEMES.find(x=>x.id===saved);
+    if (theme) byId('meta-theme').setAttribute('content', theme.meta);
+  }
+
+  placeStaticIcons();
+  buildShare();
+  buildThemeGrid();
+  initFontSize();
+  applyTranslations(); // also calls renderCards, buildFooter, buildDrawer, buildBottomNav
+
+  if(!Ck.get('cookieconsent')){
+    Ck.set('cookieconsent','0');
+    setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════
+   PENGUIN PIXEL ART ENGINE
+═══════════════════════════════════════════════════ */
+(function AntarcticaArt() {
+  const canvas = document.getElementById('antarctica-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  /* ── PENGUIN PIXEL MAP (32×32 grid, 15px per cell = 480×480) ──
+     0=bg  1=black  2=white/cream  3=orange  5=dark-eye  6=eye-shine  7=snow
+  ─────────────────────────────────────────────────────────────────── */
+  const G = 32, SZ = 15;
+  const P = [
+    // rows 0-2: sky
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    // row 3: head top
+    [0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+    // row 4
+    [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+    // row 5
+    [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],
+    // row 6: face (white oval on head)
+    [0,0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0],
+    // row 7
+    [0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0],
+    // row 8: eyes
+    [0,0,0,0,0,0,0,1,1,2,2,5,5,2,2,2,2,5,5,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 9: eye shine
+    [0,0,0,0,0,0,0,1,1,2,2,5,6,2,2,2,2,5,6,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 10: eyes bottom
+    [0,0,0,0,0,0,0,1,1,2,2,5,5,2,2,2,2,5,5,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 11: beak
+    [0,0,0,0,0,0,0,1,1,2,2,2,2,3,3,3,3,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 12: beak lower
+    [0,0,0,0,0,0,0,1,1,2,2,2,3,3,3,3,3,3,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 13: chin
+    [0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
+    // row 14: shoulders expand
+    [0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0],
+    // row 15: body widens — wings start
+    [0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0],
+    // rows 16-21: main body
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
+    // row 22: body narrows
+    [0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0],
+    // row 23
+    [0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0,0],
+    // row 24
+    [0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0],
+    // row 25: hips
+    [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+    // rows 26-27: legs
+    [0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+    // rows 28-29: feet (orange)
+    [0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0],
+    // rows 30-31: snow ground
+    [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+    [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+  ];
+
+  /* ── THEME PALETTE ─────────────────────────────── */
+  function palette() {
+    const th = document.documentElement.getAttribute('data-theme') || 'polar-night';
+    const light = th === 'blizzard' || th === 'glacier';
+    const themes = {
+      'polar-night': { bg:'#060e1a', snow:'#c8e4ff', snowDeep:'#8ab8dc', aurA:[[0,200,255],[0,130,220]], aurB:[0.16,0.09] },
+      'aurora':      { bg:'#060d16', snow:'#c0f5e0', snowDeep:'#70c8a8', aurA:[[0,240,150],[0,180,100]], aurB:[0.20,0.12] },
+      'volcanic':    { bg:'#100806', snow:'#f0d8b8', snowDeep:'#c8a880', aurA:[[255,130,50],[200,60,10]], aurB:[0.18,0.10] },
+      'blizzard':    { bg:'#dce8f8', snow:'#ffffff', snowDeep:'#c0d8f0', aurA:[[26,95,255],[80,140,255]], aurB:[0.07,0.04] },
+      'glacier':     { bg:'#d0e8f4', snow:'#f0faff', snowDeep:'#a8d0e8', aurA:[[8,145,178],[0,190,220]], aurB:[0.09,0.05] },
+      'obsidian':    { bg:'#060410', snow:'#e8d8ff', snowDeep:'#9060c8', aurA:[[168,85,247],[100,40,210]], aurB:[0.20,0.13] },
+    };
+    const p = themes[th] || themes['polar-night'];
+    return { ...p, light };
+  }
+
+  /* ── PER-PIXEL NOISE (pre-baked) ─────────────── */
+  const noise = Float32Array.from({length: G*G}, () => (Math.random()-0.5)*0.1);
+
+  /* ── STARS ───────────────────────────────────── */
+  const STARS = Array.from({length:60}, () => ({
+    x: Math.random()*480, y: Math.random()*300,
+    ph: Math.random()*Math.PI*2,
+    sp: 0.3+Math.random()*1.0,
+    sz: Math.random()<0.15 ? 2 : 1
+  }));
+
+  /* ── SNOWFLAKES ──────────────────────────────── */
+  const SNOW = Array.from({length:30}, () => ({
+    x: Math.random()*480,
+    y: Math.random()*480,
+    sp: 0.3+Math.random()*0.7,
+    dr: (Math.random()-0.5)*0.4,
+    sz: Math.random()<0.2 ? 2 : 1,
+    op: 0.3+Math.random()*0.5
+  }));
+
+  /* ── BLINK STATE ─────────────────────────────── */
+  let blinkT = 0, blinking = false, nextBlink = 3+Math.random()*4;
+
+  /* ── ANIMATION LOOP ──────────────────────────── */
+  let t = 0, lastFrame = 0;
+  const FPS = 30, INTERVAL = 1000/FPS;
+
+  function draw(now) {
+    requestAnimationFrame(draw);
+    if (now - lastFrame < INTERVAL) return;
+    const dt = (now - lastFrame) / 1000;
+    lastFrame = now;
+    t += 0.018;
+
+    const pal = palette();
+    const W = 480, H = 480;
+
+    /* ── Background ─── */
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    /* ── Aurora bands ─── */
+    for (let b = 0; b < 2; b++) {
+      const [r,g,bl] = pal.aurA[b], al = pal.aurB[b];
+      const yOff = Math.sin(t*0.35 + b*1.9)*20;
+      const grd = ctx.createLinearGradient(0, 0, 0, H);
+      grd.addColorStop(0,    `rgba(${r},${g},${bl},${al})`);
+      grd.addColorStop(0.4,  `rgba(${r},${g},${bl},${al*0.3})`);
+      grd.addColorStop(1,    `rgba(${r},${g},${bl},0)`);
+      ctx.save();
+      ctx.translate(0, yOff);
+      ctx.beginPath(); ctx.moveTo(0,0);
+      for (let px = 0; px <= W; px += 4) {
+        const wy = Math.sin(px*0.014 + t*0.3 + b*2.1)*30 + 180 + b*60;
+        ctx.lineTo(px, wy);
+      }
+      ctx.lineTo(W, 0); ctx.closePath();
+      ctx.fillStyle = grd; ctx.fill();
+      ctx.restore();
+    }
+
+    /* ── Stars ─── */
+    if (!pal.light) {
+      for (const s of STARS) {
+        const bri = 0.2 + 0.6*(0.5 + 0.5*Math.sin(t*s.sp + s.ph));
+        ctx.fillStyle = `rgba(210,230,255,${bri})`;
+        ctx.fillRect(s.x|0, s.y|0, s.sz, s.sz);
+      }
+    }
+
+    /* ── Snow ground hills ─── */
+    const hillY = 30*SZ; // snow starts at row 30
+    ctx.fillStyle = pal.snowDeep;
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for (let px = 0; px <= W; px += 6) {
+      const hy = hillY + Math.sin(px*0.025 + t*0.08)*4 + Math.sin(px*0.05 + t*0.12)*2;
+      ctx.lineTo(px, hy);
+    }
+    ctx.lineTo(W, H); ctx.closePath();
+    ctx.fill();
+
+    /* ── Blink logic ─── */
+    blinkT += dt;
+    if (!blinking && blinkT >= nextBlink) { blinking = true; blinkT = 0; }
+    if (blinking && blinkT >= 0.15) { blinking = false; blinkT = 0; nextBlink = 2+Math.random()*5; }
+
+    /* ── Draw penguin pixels ─── */
+    const COLS = {
+      0: null,          // bg (transparent)
+      1: null,          // black — rendered below
+      2: '#f0f4ff',     // white/cream belly
+      3: '#ff8c3a',     // orange beak/feet
+      5: '#0a0820',     // dark eye
+      6: '#c0e0ff',     // eye shine
+      7: null,          // snow ground — rendered via hill above
+    };
+
+    /* slight breathe offset */
+    const breathe = Math.sin(t*0.8)*0.6;
+    const offY = 480 - G*SZ; // 0 (canvas fits exactly)
+
+    for (let row = 0; row < G; row++) {
+      for (let col = 0; col < G; col++) {
+        const v = P[row][col];
+        if (v === 0 || v === 7) continue;
+
+        const px = col*SZ, py = row*SZ + breathe;
+        const n = noise[row*G+col];
+
+        if (v === 1) {
+          /* Black — slight noise variation */
+          const lv = Math.max(0, Math.min(255, (20 + n*30)|0));
+          ctx.fillStyle = `rgb(${lv},${lv},${lv+8})`;
+        } else if (v === 2) {
+          /* White belly — slight blue tint noise */
+          const lv = Math.max(200, Math.min(255, (240 + n*25)|0));
+          ctx.fillStyle = `rgb(${lv},${lv},255)`;
+        } else if (v === 3) {
+          /* Orange — beak/feet */
+          ctx.fillStyle = `rgb(${(255+n*20)|0},${(140+n*15)|0},${(30+n*10)|0})`;
+        } else if (v === 5) {
+          /* Eye — skip if blinking (rows 8-10 are the eye rows) */
+          if (blinking) { ctx.fillStyle = '#0a0820'; }
+          else { ctx.fillStyle = '#0a0820'; }
+        } else if (v === 6) {
+          /* Eye shine — hide when blinking */
+          if (blinking) continue;
+          ctx.fillStyle = '#d0eaff';
+        } else {
+          const c = COLS[v];
+          if (!c) continue;
+          ctx.fillStyle = c;
+        }
+
+        ctx.fillRect(px, py|0, SZ, SZ);
+
+        /* Pixel grid line (top + left edge) for non-black cells */
+        if (v !== 1 && v !== 5 && v !== 6) {
+          ctx.fillStyle = 'rgba(0,0,0,0.12)';
+          ctx.fillRect(px, py|0, SZ, 1);
+          ctx.fillRect(px, py|0, 1, SZ);
+        }
+      }
+    }
+
+    /* ── Snow ground pixels (rows 30-31) with noise brightness ─── */
+    for (let row = 30; row < G; row++) {
+      for (let col = 0; col < G; col++) {
+        const n = noise[row*G+col];
+        const lv = Math.max(160, Math.min(255, (210 + n*60)|0));
+        const th = document.documentElement.getAttribute('data-theme')||'polar-night';
+        if (th==='blizzard'||th==='glacier') {
+          ctx.fillStyle = `rgb(${lv},${Math.min(255,lv+10)},255)`;
+        } else {
+          ctx.fillStyle = `rgb(${(lv*0.5)|0},${(lv*0.7)|0},${lv})`;
+        }
+        ctx.fillRect(col*SZ, row*SZ, SZ, SZ);
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.fillRect(col*SZ, row*SZ, SZ, 1);
+        ctx.fillRect(col*SZ, row*SZ, 1, SZ);
+      }
+    }
+
+    /* ── Falling snowflakes ─── */
+    if (!pal.light) {
+      for (const s of SNOW) {
+        s.y += s.sp * 0.7;
+        s.x += s.dr;
+        if (s.y > H) { s.y = -4; s.x = Math.random()*W; }
+        if (s.x > W) s.x = 0; if (s.x < 0) s.x = W;
+        ctx.fillStyle = `rgba(220,235,255,${s.op})`;
+        ctx.fillRect(s.x|0, s.y|0, s.sz, s.sz);
+      }
+    }
+
+    /* ── Penguin belly glow (subtle radial) ─── */
+    const cx = 14.5*SZ, cy = 19*SZ;
+    const pulse = 0.5+0.5*Math.sin(t*0.8);
+    const grd2 = ctx.createRadialGradient(cx, cy+breathe, 0, cx, cy+breathe, 80);
+    grd2.addColorStop(0,   `rgba(180,210,255,${0.07*pulse})`);
+    grd2.addColorStop(1,   `rgba(180,210,255,0)`);
+    ctx.fillStyle = grd2;
+    ctx.fillRect(cx-90, cy-90, 180, 180);
+  }
+
+  requestAnimationFrame(draw);
+
+  /* Icon for caption */
+  const ci = document.getElementById('art-caption-icon');
+  if (ci) ci.innerHTML = IC.snowflake || '';
+})();
+</script>
+</body>
+</html>
