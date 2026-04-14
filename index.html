@@ -1199,7 +1199,7 @@ const SITE = [
   { title:'Settings',        sub:'Preferences',     group:'Site',    icon:'settings',href:null,            action:"openSettings()" },
   { title:'Blog',            sub:'Articles',        group:'Site',    icon:'pen',     href:null,            action:null },
   { title:'Share',           sub:'Spread the word', group:'Site',    icon:'share',   href:null,            action:"openModal('share-modal')" },
-  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:'#',             action:null },
+  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:null,            action:"openSettings(); openAccessibility()" },
   { title:'Sitemap',         sub:'All pages',       group:'Site',    icon:'grid',    href:'#',             action:null },
   { title:'Terms',           sub:'Usage rules',     group:'Legal',   icon:'file',    href:'terms',         action:null },
   { title:'Privacy Policy',  sub:'Data protection', group:'Legal',   icon:'lock',    href:null,            action:"openModal('privacy-modal')" },
