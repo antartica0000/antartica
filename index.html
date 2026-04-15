@@ -1,3131 +1,1083 @@
 <!DOCTYPE html>
-<html lang="en-US" dir="ltr" data-theme="polar-night">
+<!-- Language (en-US) -->
+<html dir="ltr" lang="en-US">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="Antartica.Org — Explore the frozen continent">
-  <meta name="theme-color" content="#080f1c" id="meta-theme">
-  <title>Home / Antartica.Org</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <title>Home / Antartica</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+  <meta property="og:site_name" content="Antartica.Org" />
+  <meta name="apple-mobile-web-app-title" content="Antartica.Org" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="theme-color" content="#080e1a" />
+  <meta name="description" content="Antartica.Org" />
+  <link rel="icon" type="image/x-icon" href="images/antartica.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <noscript>
+    <style>body{background:#080e1a;color:#e8f4f8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;}</style>
+    <div><h2>Antartica.Org</h2><p>JavaScript is required to use this site.</p></div>
+  </noscript>
+
   <style>
-  /* ═══════════════════════════════════════════════
-     THEME TOKENS — all themes defined here
-  ═══════════════════════════════════════════════ */
-
-  /* 1 · POLAR NIGHT (default) */
-  [data-theme="polar-night"] {
-    --bg:         #080f1c;
-    --bg1:        #0c1628;
-    --bg2:        #101e35;
-    --bg3:        #152440;
-    --surface:    #1a2d4e;
-    --border:     rgba(120,170,255,0.12);
-    --border-hi:  rgba(0,200,255,0.45);
-    --accent:     #00c8ff;
-    --accent-dim: rgba(0,200,255,0.10);
-    --accent-glow:rgba(0,200,255,0.10);
-    --ice:        #e8f4ff;
-    --text:       #cce0f5;
-    --muted:      #6a90b8;
-    --danger:     #ff4d6a;
-    --nav-bg:     rgba(8,15,28,0.88);
-    --bot-bg:     rgba(8,15,28,0.94);
-    --atm-a:      rgba(0,200,255,0.08);
-    --atm-b:      rgba(0,80,200,0.05);
-    --shadow:     0 24px 64px rgba(0,0,0,0.60);
-    --card-hover-border: rgba(0,200,255,0.25);
-    --meta:       #080f1c;
-  }
-
-  /* 2 · AURORA */
-  [data-theme="aurora"] {
-    --bg:         #080d18;
-    --bg1:        #0b1122;
-    --bg2:        #0e1630;
-    --bg3:        #121d3c;
-    --surface:    #182648;
-    --border:     rgba(80,255,180,0.12);
-    --border-hi:  rgba(0,245,160,0.50);
-    --accent:     #00f5a0;
-    --accent-dim: rgba(0,245,160,0.10);
-    --accent-glow:rgba(0,245,160,0.10);
-    --ice:        #e0fff5;
-    --text:       #b8e8d8;
-    --muted:      #5a8a78;
-    --danger:     #ff4d6a;
-    --nav-bg:     rgba(8,13,24,0.90);
-    --bot-bg:     rgba(8,13,24,0.96);
-    --atm-a:      rgba(0,245,160,0.07);
-    --atm-b:      rgba(100,0,200,0.06);
-    --shadow:     0 24px 64px rgba(0,0,0,0.65);
-    --card-hover-border: rgba(0,245,160,0.28);
-    --meta:       #080d18;
-  }
-
-  /* 3 · VOLCANIC */
-  [data-theme="volcanic"] {
-    --bg:         #0e0804;
-    --bg1:        #160d06;
-    --bg2:        #1e1208;
-    --bg3:        #281a0c;
-    --surface:    #342212;
-    --border:     rgba(255,140,60,0.14);
-    --border-hi:  rgba(255,140,60,0.55);
-    --accent:     #ff8c42;
-    --accent-dim: rgba(255,140,60,0.12);
-    --accent-glow:rgba(255,140,60,0.10);
-    --ice:        #fff0e0;
-    --text:       #f0d5b8;
-    --muted:      #9a7050;
-    --danger:     #ff4d6a;
-    --nav-bg:     rgba(14,8,4,0.90);
-    --bot-bg:     rgba(14,8,4,0.96);
-    --atm-a:      rgba(255,100,20,0.09);
-    --atm-b:      rgba(180,40,0,0.07);
-    --shadow:     0 24px 64px rgba(0,0,0,0.70);
-    --card-hover-border: rgba(255,140,60,0.32);
-    --meta:       #0e0804;
-  }
-
-  /* 4 · BLIZZARD (light) */
-  [data-theme="blizzard"] {
-    --bg:         #f0f5fc;
-    --bg1:        #ffffff;
-    --bg2:        #e8eef8;
-    --bg3:        #dde5f2;
-    --surface:    #cdd8ec;
-    --border:     rgba(30,90,200,0.12);
-    --border-hi:  rgba(26,95,255,0.50);
-    --accent:     #1a5fff;
-    --accent-dim: rgba(26,95,255,0.08);
-    --accent-glow:rgba(26,95,255,0.08);
-    --ice:        #0d1f4a;
-    --text:       #2a3f6a;
-    --muted:      #7a93b8;
-    --danger:     #e53e3e;
-    --nav-bg:     rgba(240,245,252,0.90);
-    --bot-bg:     rgba(240,245,252,0.96);
-    --atm-a:      rgba(26,95,255,0.06);
-    --atm-b:      rgba(100,160,255,0.04);
-    --shadow:     0 24px 64px rgba(0,40,120,0.12);
-    --card-hover-border: rgba(26,95,255,0.28);
-    --meta:       #f0f5fc;
-  }
-
-  /* 5 · GLACIER (light) */
-  [data-theme="glacier"] {
-    --bg:         #eaf3f8;
-    --bg1:        #f6fafd;
-    --bg2:        #dceef8;
-    --bg3:        #cde3f2;
-    --surface:    #b8d8ee;
-    --border:     rgba(8,145,178,0.15);
-    --border-hi:  rgba(8,145,178,0.55);
-    --accent:     #0891b2;
-    --accent-dim: rgba(8,145,178,0.10);
-    --accent-glow:rgba(8,145,178,0.10);
-    --ice:        #0a2a38;
-    --text:       #1e4a5c;
-    --muted:      #6a9ab0;
-    --danger:     #e53e3e;
-    --nav-bg:     rgba(234,243,248,0.90);
-    --bot-bg:     rgba(234,243,248,0.96);
-    --atm-a:      rgba(8,145,178,0.07);
-    --atm-b:      rgba(0,200,230,0.05);
-    --shadow:     0 24px 64px rgba(0,60,100,0.12);
-    --card-hover-border: rgba(8,145,178,0.32);
-    --meta:       #eaf3f8;
-  }
-
-  /* 6 · OBSIDIAN */
-  [data-theme="obsidian"] {
-    --bg:         #06040f;
-    --bg1:        #0a0818;
-    --bg2:        #0f0c22;
-    --bg3:        #14102c;
-    --surface:    #1c1840;
-    --border:     rgba(168,85,247,0.14);
-    --border-hi:  rgba(168,85,247,0.55);
-    --accent:     #a855f7;
-    --accent-dim: rgba(168,85,247,0.10);
-    --accent-glow:rgba(168,85,247,0.10);
-    --ice:        #f0e8ff;
-    --text:       #d4c4f0;
-    --muted:      #7a6a9a;
-    --danger:     #ff4d6a;
-    --nav-bg:     rgba(6,4,15,0.90);
-    --bot-bg:     rgba(6,4,15,0.96);
-    --atm-a:      rgba(168,85,247,0.08);
-    --atm-b:      rgba(80,0,200,0.07);
-    --shadow:     0 24px 64px rgba(0,0,0,0.75);
-    --card-hover-border: rgba(168,85,247,0.30);
-    --meta:       #06040f;
-  }
-
-  /* ═══════════════════════════════════════════════
-     GLOBAL CONSTANTS
-  ═══════════════════════════════════════════════ */
-  :root {
-    --r:      14px;
-    --r-sm:   8px;
-    --nav-h:  58px;
-    --bot-h:  62px;
-    --ease:   cubic-bezier(0.16,1,0.3,1);
-    --font-d: 'DM Serif Display', Georgia, serif;
-    --font-b: 'DM Sans', system-ui, sans-serif;
-  }
-
-  /* ═══════════════════════════════════════════════
-     BASE
-  ═══════════════════════════════════════════════ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: var(--font-b);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-    transition: background 0.35s, color 0.35s;
-  }
-  a { color: inherit; text-decoration: none; }
-  button { cursor: pointer; font-family: var(--font-b); }
-
-  /* Atmosphere layers */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background:
-      radial-gradient(ellipse 100% 55% at 50% -5%, var(--atm-a) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 40% at 90% 100%, var(--atm-b) 0%, transparent 60%);
-    transition: background 0.35s;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0; z-index: 0; pointer-events: none;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 0%, transparent 70%);
-    opacity: 0.4;
-    transition: background-image 0.35s, opacity 0.35s;
-  }
-
-  #root { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
-  .icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .icon svg { display: block; }
-
-  /* ── TOP NAV ── */
-  .topnav {
-    position: sticky; top: 0; z-index: 90;
-    height: var(--nav-h);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px;
-    background: var(--nav-bg);
-    backdrop-filter: blur(16px) saturate(1.4);
-    border-bottom: 1px solid var(--border);
-    transition: background 0.35s, border-color 0.35s;
-  }
-  .brand {
-    display: flex; align-items: center; gap: 9px;
-    font-weight: 500; font-size: 0.95rem;
-    color: var(--ice); user-select: none;
-    transition: color 0.35s;
-  }
-  .brand-mark {
-    width: 30px; height: 30px;
-    background: var(--accent-dim);
-    border: 1px solid var(--border-hi);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent);
-    transition: background 0.35s, border-color 0.35s, color 0.35s;
-  }
-  .brand-dot { color: var(--accent); transition: color 0.35s; }
-  .nav-actions { display: flex; align-items: center; gap: 3px; }
-  .nav-btn {
-    width: 40px; height: 40px; border: none; background: transparent;
-    border-radius: 10px; color: var(--muted);
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s, color .15s;
-    text-decoration: none;
-  }
-  .nav-btn:hover { background: var(--bg3); color: var(--ice); }
-  .search-pill {
-    display: flex; align-items: center; gap: 8px;
-    padding: 0 14px; height: 36px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 50px;
-    color: var(--muted); font-size: 0.82rem; cursor: pointer;
-    transition: background .15s, color .15s, border-color .15s;
-  }
-  .search-pill:hover { background: var(--bg3); color: var(--ice); }
-  .pill-icon { color: var(--accent); }
-  .pill-text { display: none; }
-  @media (min-width: 480px) { .pill-text { display: inline; } }
-  .kbd-hint {
-    display: none; font-size: 0.68rem; padding: 1px 5px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 4px; color: var(--muted); margin-left: 2px;
-  }
-  @media (min-width: 640px) { .kbd-hint { display: inline; } }
-
-  /* ── MAIN ── */
-  main { flex: 1; padding: 0 20px 40px; max-width: 1160px; width: 100%; margin: 0 auto; }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 40px 0 36px;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-    align-items: center;
-  }
-  @media (min-width: 820px) {
-    .hero { grid-template-columns: 1fr 1fr; gap: 48px; padding: 52px 0 44px; }
-  }
-  .hero-text { display: flex; flex-direction: column; }
-  .hero-eyebrow {
-    font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--accent); margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-    transition: color 0.35s;
-  }
-  .hero-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); transition: background 0.35s; }
-  h1.hero-title {
-    font-family: var(--font-d);
-    font-size: clamp(2.4rem, 6vw, 4.4rem);
-    line-height: 1.05; color: var(--ice);
-    letter-spacing: -0.02em; margin-bottom: 18px;
-    transition: color 0.35s;
-  }
-  h1.hero-title em { font-style: italic; color: var(--accent); transition: color 0.35s; }
-  .hero-sub {
-    font-size: clamp(0.88rem, 2vw, 1rem);
-    color: var(--muted); max-width: 400px; line-height: 1.65; margin-bottom: 30px;
-    transition: color 0.35s;
-  }
-  .hero-cta {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 12px 22px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 50px; color: var(--muted); font-size: 0.88rem; cursor: pointer;
-    align-self: flex-start;
-    transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
-  }
-  .hero-cta:hover {
-    border-color: var(--border-hi); background: var(--bg3);
-    color: var(--ice); box-shadow: 0 0 28px var(--accent-glow);
-  }
-  .hero-cta .icon { color: var(--accent); }
-
-  /* ── PIXEL ART ── */
-  .hero-art-wrap {
-    display: none; /* hidden on small screens */
-    flex-direction: column; align-items: center; gap: 12px;
-  }
-  @media (min-width: 820px) {
-    .hero-art-wrap { display: flex; order: 1; }
-  }
-
-  .art-frame {
-    position: relative;
-    border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow:
-      0 0 0 1px var(--border),
-      0 20px 60px rgba(0,0,0,0.5),
-      0 0 80px var(--accent-glow);
-    width: min(100%, 440px);
-    transition: box-shadow 0.35s;
-    background: #03080f;
-  }
-  .art-frame::before {
-    content: '';
-    position: absolute; inset: 0; z-index: 2; pointer-events: none;
-    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%);
-    border-radius: 16px;
-  }
-  #antarctica-canvas {
-    display: block;
-    width: 100%; height: auto;
-    aspect-ratio: 1;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-  }
-  .art-hud {
-    position: absolute; inset: 0; z-index: 3; pointer-events: none;
-  }
-  .art-badge {
-    position: absolute; top: 10px; left: 10px;
-    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.15em;
-    text-transform: uppercase; color: rgba(255,255,255,0.55);
-    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
-    padding: 4px 9px; border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  .art-badge-r {
-    position: absolute; top: 10px; right: 10px;
-    font-family: var(--font-b); font-size: 0.6rem; letter-spacing: 0.12em;
-    color: rgba(255,255,255,0.4);
-    background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
-    padding: 4px 9px; border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .art-caption {
-    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted); display: flex; align-items: center; gap: 6px;
-    transition: color 0.35s;
-  }
-  .art-caption .icon { color: var(--accent); }
-
-  /* ── SECTION HEAD ── */
-  .section-head { display: flex; align-items: center; gap: 14px; margin: 38px 0 18px; }
-  .section-head h2 {
-    font-size: 0.63rem; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--muted); white-space: nowrap;
-  }
-  .section-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* ── CARD GRID ── */
-  .card-grid { display: grid; gap: 10px; grid-template-columns: repeat(2,1fr); }
-  @media (min-width: 480px)  { .card-grid { grid-template-columns: repeat(3,1fr); } }
-  @media (min-width: 720px)  { .card-grid { grid-template-columns: repeat(4,1fr); } }
-  @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(5,1fr); } }
-
-  .card {
-    background: var(--bg1); border: 1px solid var(--border);
-    border-radius: var(--r); overflow: hidden;
-    opacity: 0; animation: fadeUp 0.45s var(--ease) forwards;
-    transition: border-color .18s, background 0.35s;
-  }
-  .card:hover { border-color: var(--card-hover-border); }
-  .card a, .card button {
-    display: flex; flex-direction: column;
-    padding: 18px 16px 16px; gap: 10px;
-    width: 100%; text-align: left; background: transparent; border: none;
-    cursor: pointer; transition: background .15s;
-  }
-  .card:hover a, .card:hover button { background: var(--bg2); }
-  .card-icon {
-    width: 36px; height: 36px; background: var(--bg3);
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    color: var(--accent); transition: background .15s, color 0.35s;
-  }
-  .card:hover .card-icon { background: var(--accent-dim); }
-  .card-name { font-size: 0.87rem; font-weight: 500; color: var(--ice); line-height: 1.3; transition: color 0.35s; }
-  .card-sub  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; transition: color 0.35s; }
-  .no-results { grid-column: 1/-1; padding: 56px 20px; text-align: center; color: var(--muted); }
-  .no-results p { margin-top: 12px; font-size: 0.88rem; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 36px 20px calc(var(--bot-h) + 20px);
-    max-width: 1160px; margin: 0 auto; width: 100%;
-    transition: border-color 0.35s;
-  }
-  .footer-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 28px 20px; margin-bottom: 30px; }
-  @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(4,1fr); } }
-  .footer-col h4 {
-    font-size: 0.62rem; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 13px;
-  }
-  .footer-col a, .footer-col button {
-    display: flex; align-items: center; gap: 7px;
-    margin-bottom: 9px; font-size: 0.83rem; color: var(--muted);
-    background: transparent; border: none; padding: 0;
-    text-align: left; font-family: var(--font-b); cursor: pointer;
-    transition: color .15s;
-  }
-  .footer-col a:hover, .footer-col button:hover { color: var(--ice); }
-  .footer-bottom {
-    border-top: 1px solid var(--border); padding-top: 18px;
-    display: flex; flex-wrap: wrap; align-items: center;
-    justify-content: space-between; gap: 10px;
-  }
-  .footer-copy { font-size: 0.74rem; color: var(--muted); }
-  .footer-copy strong { color: var(--ice); font-weight: 500; }
-  .lang-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 12px; border-radius: 50px;
-    border: 1px solid var(--border); background: var(--bg2);
-    font-size: 0.74rem; color: var(--accent);
-    transition: border-color .15s, background 0.35s;
-  }
-  .lang-pill:hover { border-color: var(--border-hi); }
-
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
-    height: var(--bot-h); display: flex;
-    background: var(--bot-bg);
-    backdrop-filter: blur(16px) saturate(1.4);
-    border-top: 1px solid var(--border);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    transition: background 0.35s, border-color 0.35s;
-  }
-  .bot-btn {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 4px;
-    border: none; background: transparent; cursor: pointer;
-    color: var(--muted); font-size: 0.58rem; letter-spacing: 0.06em;
-    text-transform: uppercase; font-family: var(--font-b);
-    transition: color .15s; text-decoration: none;
-  }
-  .bot-btn.active { color: var(--accent); }
-  .bot-btn:hover  { color: var(--ice); }
-
-  /* ── COOKIE ── */
-  #cookie-banner {
-    display: none;
-    position: fixed;
-    bottom: calc(var(--bot-h) + 12px); left: 12px; right: 12px;
-    z-index: 200; max-width: 420px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--r); padding: 20px;
-    box-shadow: var(--shadow);
-    animation: slideUp 0.4s var(--ease);
-  }
-  @media (min-width: 600px) { #cookie-banner { left: auto; right: 16px; } }
-  #cookie-banner h3 {
-    font-size: 0.85rem; font-weight: 500; color: var(--ice);
-    margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
-  }
-  #cookie-banner p { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
-  #cookie-banner a { color: var(--accent); }
-  .cookie-actions { display: flex; gap: 8px; margin-top: 14px; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 9px 18px; border: none; border-radius: 50px;
-    font-size: 0.82rem; font-weight: 500; cursor: pointer;
-    font-family: var(--font-b); transition: opacity .15s, transform .15s;
-  }
-  .btn:hover { opacity: 0.85; transform: translateY(-1px); }
-  .btn-accent { background: var(--accent); color: var(--bg); }
-  .btn-ghost  { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { color: var(--ice); }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ═══════════════════════════════════════════════
-     SUB-300px — ultra-compact layout
-  ═══════════════════════════════════════════════ */
-  @media (max-width: 299px) {
+    /* ─── Design Tokens ─── */
     :root {
-      --nav-h:  48px;
-      --bot-h:  52px;
-      --r:      10px;
-      --r-sm:   6px;
+      --bg:        #080e1a;
+      --surface:   #0d1726;
+      --surface2:  #112035;
+      --border:    rgba(120,180,220,0.12);
+      --accent:    #4ab3e8;
+      --accent2:   #7dd4f5;
+      --text:      #d8eef8;
+      --text-muted:#6a8fa8;
+      --danger:    #e05c5c;
+      --radius:    16px;
+      --radius-sm: 10px;
+      --nav-h:     60px;
+      --bot-h:     68px;
+      --trans:     0.28s cubic-bezier(.4,0,.2,1);
     }
 
-    /* Nav */
-    .topnav { padding: 0 10px; gap: 4px; }
-    .brand-mark { width: 24px; height: 24px; border-radius: 6px; }
-    .brand { font-size: 0.8rem; gap: 6px; }
-    .nav-btn { width: 34px; height: 34px; border-radius: 8px; }
-    .nav-actions { gap: 1px; }
-    .search-pill { padding: 0 10px; height: 30px; font-size: 0.74rem; gap: 5px; }
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Main content */
-    main { padding: 0 10px 32px; }
+    html { scroll-behavior: smooth; }
 
-    /* Hero */
-    .hero { padding: 20px 0 20px; gap: 18px; }
-    h1.hero-title { font-size: 1.9rem; margin-bottom: 10px; }
-    .hero-eyebrow { font-size: 0.6rem; margin-bottom: 8px; letter-spacing: 0.16em; }
-    .hero-sub { font-size: 0.8rem; margin-bottom: 18px; line-height: 1.55; }
-    .hero-cta { padding: 9px 14px; font-size: 0.78rem; gap: 7px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    /* Cards — single column */
-    .card-grid { grid-template-columns: 1fr !important; gap: 8px; }
-    .card a, .card button { padding: 14px 12px 12px; gap: 7px; }
-    .card-icon { width: 30px; height: 30px; border-radius: 8px; }
-    .card-name { font-size: 0.82rem; }
-    .card-sub  { font-size: 0.68rem; }
+    /* Subtle animated mesh background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(74,179,232,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 80%, rgba(125,212,245,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    /* Section head */
-    .section-head { margin: 24px 0 12px; gap: 10px; }
+    .fixed-con { position: relative; z-index: 1; }
+    #main { position: relative; }
 
-    /* Footer */
-    footer { padding: 24px 10px 16px; }
-    .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 18px 10px; }
-    .footer-col h3 { font-size: 0.56rem; }
-    .footer-link { font-size: 0.74rem; }
+    /* ─── Typography ─── */
+    h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; }
+    h2 { font-size: clamp(1.1rem, 3vw, 1.4rem); font-weight: 600; color: var(--text-muted); margin-top: .4rem; }
+    h3 { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: .75rem; }
 
-    /* Cookie banner */
-    #cookie-banner { padding: 14px 12px; }
-    #cookie-banner p { font-size: 0.74rem; }
-    .cookie-actions { flex-direction: column; gap: 6px; }
-    .btn { padding: 8px 14px; font-size: 0.78rem; width: 100%; justify-content: center; }
+    a { color: var(--accent); text-decoration: none; transition: color var(--trans); }
+    a:hover { color: var(--accent2); }
 
-    /* Bottom nav */
-    .botnav { padding: 0 4px; }
-    .bn-item { padding: 6px 4px 4px; gap: 2px; font-size: 0.58rem; min-width: 0; }
-    .bn-item .icon svg { width: 18px; height: 18px; }
+    /* ─── Top Navigation ─── */
+    .topnav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      height: var(--nav-h);
+      padding: 0 16px;
+      background: rgba(8,14,26,0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
 
-    /* Panels & drawers — always full width */
-    #settings-panel,
-    #accessibility-panel,
-    #about-panel,
-    #language-panel,
-    #nav-drawer { width: 100vw !important; min-width: 0; }
+    /* FIX 1: Title is a plain span — not clickable */
+    .topnav .brand-title {
+      flex: 1;
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: .04em;
+      color: var(--text);
+      cursor: default;
+      user-select: none;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-    /* Settings */
-    .theme-grid { grid-template-columns: 1fr 1fr; gap: 7px; }
-    .theme-name { font-size: 0.62rem; padding: 4px 6px; }
-    .settings-row { padding: 10px 10px; }
-    .settings-row-label { font-size: 0.8rem; }
-    .settings-row-sub   { font-size: 0.66rem; }
-    .settings-row-icon  { width: 28px; height: 28px; border-radius: 6px; }
-    .drawer-head { padding: 12px 14px; }
-    .drawer-title { font-size: 0.84rem; }
+    .nav-icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: background var(--trans), color var(--trans);
+      flex-shrink: 0;
+    }
+    .nav-icon-btn:hover { background: var(--surface2); color: var(--accent); }
 
-    /* Accessibility panel */
-    .font-size-steps { grid-template-columns: repeat(2, 1fr); gap: 7px; }
-    .fs-step { padding: 10px 4px 8px; }
-    .font-size-preview { padding: 12px 14px; font-size: 0.86rem !important; }
+    .topnav .close-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface2);
+      transition: all var(--trans);
+      border: 1px solid var(--border);
+    }
+    .topnav .close-btn:hover { color: var(--text); border-color: var(--accent); background: var(--surface); }
 
-    /* Search overlay */
-    #search-overlay { padding: 24px 8px 0; }
-    .search-modal { border-radius: 12px; }
-    .search-input-row { padding: 12px 12px; gap: 8px; }
-    #main-search { font-size: 0.9rem; }
-    .search-footer-bar { flex-wrap: wrap; gap: 8px; padding: 8px 12px; }
-    .s-item { padding: 10px 12px; gap: 9px; }
-    .s-item-name { font-size: 0.82rem; }
-    .s-item-sub  { font-size: 0.68rem; }
+    /* ─── Modals ─── */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--bg);
+      overflow-y: auto;
+      animation: slideUp .3s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(24px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
 
-    /* Modal */
-    .modal-wrap { padding: 10px; }
-    .modal-box { border-radius: 10px; }
-    .modal-head { padding: 13px 14px; }
-    .modal-head h2 { font-size: 0.84rem; }
-    .modal-body { padding: 14px; }
-    .modal-body p { font-size: 0.8rem; }
-    .share-grid { grid-template-columns: repeat(2, 1fr); gap: 7px; }
+    .modal-content {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 20px 100px;
+    }
+    .modal-content .text-center { text-align: center; padding: 40px 0 24px; }
 
-    /* Nav drawer */
-    .nav-item { font-size: 0.82rem; padding: 9px 8px; }
-    .grp-label { font-size: 0.54rem; padding: 12px 8px 4px; }
-  }
+    /* ─── Bottom Navbar ─── */
+    .navbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 150;
+      height: var(--bot-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(8,14,26,0.9);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
 
-  /* ── OVERLAY ── */
-  #overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(5px);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.22s;
-  }
-  #overlay.open { opacity: 1; pointer-events: all; }
+    .navbar a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: .65rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      padding: 8px 24px;
+      border-radius: var(--radius-sm);
+      transition: color var(--trans);
+    }
+    .navbar a i { font-size: 1.25rem; }
+    .navbar a.highlight-navbar { color: var(--accent); }
+    .navbar a:hover { color: var(--accent2); }
 
-  /* ── UNIFIED SEARCH ── */
-  #search-overlay {
-    position: fixed; inset: 0; z-index: 400;
-    display: flex; flex-direction: column; align-items: center;
-    padding: clamp(40px,8vh,90px) 16px 0;
-    pointer-events: none; opacity: 0; transition: opacity 0.2s;
-  }
-  #search-overlay.open { pointer-events: all; opacity: 1; }
-  .search-modal {
-    width: 100%; max-width: 600px;
-    background: var(--bg2); border: 1px solid var(--border-hi);
-    border-radius: 18px; overflow: hidden;
-    box-shadow: var(--shadow);
-    transform: translateY(-10px) scale(0.98);
-    transition: transform 0.25s var(--ease), background 0.35s;
-  }
-  #search-overlay.open .search-modal { transform: translateY(0) scale(1); }
-  .search-input-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 15px 18px; border-bottom: 1px solid var(--border);
-  }
-  .search-input-row .icon { color: var(--accent); flex-shrink: 0; }
-  #main-search {
-    flex: 1; background: transparent; border: none; outline: none;
-    font-size: 1.05rem; color: var(--ice); font-family: var(--font-b);
-    caret-color: var(--accent);
-  }
-  #main-search::placeholder { color: var(--muted); }
-  .search-close-btn {
-    width: 28px; height: 28px; border: none;
-    background: var(--bg3); border-radius: 7px;
-    color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s, color .15s;
-  }
-  .search-close-btn:hover { background: var(--danger); color: #fff; }
-  .search-results { max-height: 420px; overflow-y: auto; }
-  .search-results::-webkit-scrollbar { width: 4px; }
-  .search-results::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 2px; }
-  .search-group-label {
-    padding: 10px 18px 5px; font-size: 0.61rem; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  .s-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 18px; width: 100%; text-align: left;
-    font-family: var(--font-b); background: transparent; border: none;
-    cursor: pointer; color: var(--text); text-decoration: none;
-    transition: background .12s;
-  }
-  .s-item:hover, .s-item.hi { background: var(--bg3); }
-  .s-item .icon { color: var(--accent); }
-  .s-item-text { flex: 1; }
-  .s-item-name { font-size: 0.88rem; color: var(--ice); }
-  .s-item-sub  { font-size: 0.73rem; color: var(--muted); }
-  .s-item-arr  { color: var(--muted); }
-  .search-empty { padding: 40px 18px; text-align: center; color: var(--muted); font-size: 0.88rem; }
-  .search-footer-bar {
-    border-top: 1px solid var(--border); padding: 9px 18px;
-    display: flex; align-items: center; gap: 14px;
-    font-size: 0.68rem; color: var(--muted);
-  }
-  .s-hint { display: flex; align-items: center; gap: 4px; }
-  .kbd {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 20px; height: 18px; padding: 0 4px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 4px; font-size: 0.63rem;
-  }
+    /* ─── Secondary Division ─── */
+    #secondarydivision {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  /* ── NAV DRAWER ── */
-  #nav-drawer {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 310;
-    width: min(290px, 88vw);
-    background: var(--bg1); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.28s var(--ease), background 0.35s;
-    overflow-y: auto;
-  }
-  #nav-drawer.open { transform: translateX(0); }
+    /* ─── Cookie Consent ─── */
+    #cookieconsenta, #cookieconsentb {
+      display: none;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      animation: slideDown .3s ease both;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-16px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+    #cookieconsenta h2 {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: .5rem;
+    }
+    #cookieconsenta p, #cookieconsentb p {
+      font-size: .85rem;
+      color: var(--text-muted);
+      max-width: 560px;
+    }
+    .cookie-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
 
-  /* ── SETTINGS PANEL ── */
-  #settings-panel {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 310;
-    width: min(360px, 100vw);
-    background: var(--bg1); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.28s var(--ease), background 0.35s;
-    overflow-y: auto;
-  }
-  #settings-panel.open { transform: translateX(0); }
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: .875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all var(--trans);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #080e1a;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
 
-  /* shared drawer chrome */
-  .drawer-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 15px 18px; border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; z-index: 1;
-    background: var(--bg1); transition: background 0.35s, border-color 0.35s;
-  }
-  .drawer-title { font-size: 0.92rem; font-weight: 500; color: var(--ice); }
-  .close-btn {
-    width: 32px; height: 32px; border: none;
-    background: var(--bg2); border-radius: 8px;
-    color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s, color .15s;
-  }
-  .close-btn:hover { background: var(--danger); color: #fff; }
-  .drawer-body { padding: 10px 10px 32px; }
-  .grp-label {
-    font-size: 0.59rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--muted); padding: 14px 8px 5px;
-  }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 10px; border-radius: 10px;
-    font-size: 0.87rem; color: var(--muted);
-    background: transparent; border: none; width: 100%;
-    text-align: left; font-family: var(--font-b); cursor: pointer;
-    transition: background .12s, color .12s; text-decoration: none;
-  }
-  .nav-item .icon { color: var(--muted); transition: color .12s; }
-  .nav-item:hover { background: var(--bg2); color: var(--ice); }
-  .nav-item:hover .icon { color: var(--accent); }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
 
-  /* ── SETTINGS PANEL INTERNALS ── */
-  .settings-section {
-    padding: 18px 16px 0;
-  }
-  .settings-section-label {
-    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-  }
-  .settings-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    /* legacy alias */
+    .button.cookieconsentbutton { /* handled by .btn above via inline classes */ }
 
-  /* Theme grid */
-  .theme-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-    margin-bottom: 8px;
-  }
-  .theme-card {
-    position: relative; border: 2px solid var(--border);
-    border-radius: 12px; overflow: hidden; cursor: pointer;
-    padding: 0; background: transparent;
-    transition: border-color .2s, transform .15s;
-    aspect-ratio: 4/3;
-  }
-  .theme-card:hover { transform: scale(1.02); border-color: var(--border-hi); }
-  .theme-card.active { border-color: var(--accent) !important; }
+    /* ─── Main Content Area ─── */
+    #content {
+      flex: 1;
+      padding: 24px 16px calc(var(--bot-h) + 24px);
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-  /* Theme preview swatch */
-  .theme-preview {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column; gap: 0;
-    overflow: hidden; border-radius: 10px;
-  }
-  .tp-nav { height: 22%; display: flex; align-items: center; padding: 0 8px; gap: 4px; }
-  .tp-dot { width: 5px; height: 5px; border-radius: 50%; opacity: 0.9; }
-  .tp-body { flex: 1; padding: 6px 8px; display: flex; flex-direction: column; gap: 4px; }
-  .tp-line { border-radius: 2px; }
-  .tp-line-lg { height: 8px; width: 80%; }
-  .tp-line-sm { height: 4px; width: 55%; }
-  .tp-cards { display: flex; gap: 4px; margin-top: 4px; }
-  .tp-card { flex: 1; height: 20px; border-radius: 4px; }
-  .tp-bot { height: 18%; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .tp-bot-dot { width: 14px; height: 4px; border-radius: 2px; }
+    /* Vue search wrapper */
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .search-wrapper input {
+      width: 100%;
+      padding: 14px 18px 14px 46px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color var(--trans), box-shadow var(--trans);
+    }
+    .search-wrapper input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(74,179,232,0.15);
+    }
+    .search-wrapper::before {
+      content: '\f002';
+      font-family: FontAwesome;
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: .95rem;
+    }
 
-  .theme-name {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
-    padding: 5px 8px;
-    font-size: 0.7rem; font-weight: 500; color: #fff;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .theme-check {
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--accent); display: none;
-    align-items: center; justify-content: center;
-    color: var(--bg); font-size: 9px; font-weight: 700;
-  }
-  .theme-card.active .theme-check { display: flex; }
+    /* Cards grid */
+    .wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color var(--trans), transform var(--trans), box-shadow var(--trans);
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(74,179,232,0.12);
+    }
+    .card a {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 12px;
+      color: var(--text);
+      gap: 10px;
+      text-decoration: none;
+    }
+    .card img { height: 28px; object-fit: contain; }
+    .sub-card {
+      font-size: .82rem;
+      font-weight: 500;
+      text-align: center;
+      color: var(--text-muted);
+    }
 
-  /* Settings rows */
-  .settings-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 16px; border-radius: 10px; margin: 2px 0;
-    transition: background .12s;
-  }
-  .settings-row:hover { background: var(--bg2); }
-  .settings-row-left { display: flex; align-items: center; gap: 10px; }
-  .settings-row-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: var(--bg3); display: flex; align-items: center; justify-content: center;
-    color: var(--accent); flex-shrink: 0;
-  }
-  .settings-row-label { font-size: 0.87rem; color: var(--ice); }
-  .settings-row-sub   { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
-  .settings-row-right { color: var(--muted); }
+    /* ─── Footer ─── */
+    .footer-links {
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      padding: 28px 20px;
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .footer-links .col { display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: .82rem;
+      color: var(--text-muted);
+      transition: color var(--trans);
+    }
+    .footer-links a:hover { color: var(--accent); }
 
-  /* ── ACCESSIBILITY FEATURE STYLES ── */
+    /* ─── Footer Bar ─── */
+    .footer-bar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 20px 20px 32px;
+      text-align: center;
+    }
+    .footer-bar .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-bar .social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: all var(--trans);
+    }
+    .footer-bar .social-icons a:hover {
+      background: var(--accent);
+      color: #080e1a;
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .footer-bar .footer-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: .78rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .lang-badge {
+      font-size: .75rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--trans);
+    }
+    .lang-badge:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* High Contrast */
-  [data-high-contrast="on"] {
-    --border:     rgba(255,255,255,0.35) !important;
-    --border-hi:  rgba(255,255,255,0.80) !important;
-    --muted:      var(--text) !important;
-    --text:       #ffffff !important;
-  }
-  [data-theme="blizzard"][data-high-contrast="on"],
-  [data-theme="glacier"][data-high-contrast="on"] {
-    --text:       #000000 !important;
-    --muted:      #222222 !important;
-    --border:     rgba(0,0,0,0.45) !important;
-    --border-hi:  rgba(0,0,0,0.90) !important;
-  }
+    /* ─── Sidebar (modal10) ─── */
+    .sidebar-search {
+      position: relative;
+      margin: 20px 0;
+    }
+    .sidebar-search input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color var(--trans);
+    }
+    .sidebar-search input:focus { border-color: var(--accent); }
+    .sidebar-search::before {
+      content: '\f002';
+      font-family: FontAwesome;
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
 
-  /* Reduced Motion */
-  [data-reduce-motion="on"] *,
-  [data-reduce-motion="on"] *::before,
-  [data-reduce-motion="on"] *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
-  }
+    #myUL {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    #myUL li a {
+      display: flex;
+      align-items: center;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-weight: 400;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      transition: all var(--trans);
+    }
+    #myUL li a::before {
+      content: '\f054';
+      font-family: FontAwesome;
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-right: 12px;
+    }
+    #myUL li a:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--surface);
+      transform: translateX(4px);
+    }
 
-  /* Dyslexia-friendly font */
-  [data-dyslexic-font="on"] body,
-  [data-dyslexic-font="on"] input,
-  [data-dyslexic-font="on"] button,
-  [data-dyslexic-font="on"] .card-name,
-  [data-dyslexic-font="on"] .card-sub,
-  [data-dyslexic-font="on"] .nav-item,
-  [data-dyslexic-font="on"] .s-item-name,
-  [data-dyslexic-font="on"] .s-item-sub {
-    font-family: Arial, Helvetica, sans-serif !important;
-    letter-spacing: 0.06em;
-    word-spacing: 0.18em;
-    line-height: 1.75;
-  }
+    /* ─── Share Modal (FIX 2) ─── */
+    /* The share modal uses z-index:200 (from .modal) so links open above everything */
+    #myModal9 .modal-content { padding-bottom: 40px; }
 
-  /* Focus Highlight */
-  [data-focus-highlight="on"] *:focus-visible {
-    outline: 3px solid var(--accent) !important;
-    outline-offset: 3px !important;
-    border-radius: 4px;
-  }
+    .share-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+      margin: 28px 0;
+    }
+    .share-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 8px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: .78rem;
+      font-weight: 500;
+      transition: all var(--trans);
+      /* FIX 2: ensure links are above all layers */
+      position: relative;
+      z-index: 1;
+    }
+    .share-item i { font-size: 1.4rem; color: var(--accent); }
+    .share-item:hover {
+      border-color: var(--accent);
+      background: var(--surface);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(74,179,232,0.15);
+    }
+    .share-item span { color: var(--text-muted); }
 
-  /* Line Spacing */
-  [data-line-spacing="relaxed"] { --lh: 1.85; }
-  [data-line-spacing="relaxed"] p,
-  [data-line-spacing="relaxed"] .hero-sub,
-  [data-line-spacing="relaxed"] .about-body,
-  [data-line-spacing="relaxed"] .font-size-preview { line-height: 1.85 !important; }
+    .other-links-section {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+    .other-links-section .link-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .other-links-section a {
+      padding: 8px 18px;
+      border-radius: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: .85rem;
+      transition: all var(--trans);
+    }
+    .other-links-section a:hover { border-color: var(--accent); color: var(--accent); }
 
-  [data-line-spacing="loose"] p,
-  [data-line-spacing="loose"] .hero-sub,
-  [data-line-spacing="loose"] .about-body,
-  [data-line-spacing="loose"] .font-size-preview { line-height: 2.2 !important; }
+    /* ─── Divider ─── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
 
-  /* Cursor size */
-  [data-cursor-size="large"]  * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath fill='white' stroke='black' stroke-width='1.5' d='M4 0 L4 20 L8 16 L11 23 L13 22 L10 15 L15 15 Z'/%3E%3C/svg%3E") 4 0, auto !important; }
+    /* ─── Grey container (footer of modals) ─── */
+    .grey1-container {
+      border-top: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .78rem;
+    }
 
-  /* Accessibility toggle pill */
-  .acc-toggle-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 11px 16px; border-radius: 10px; margin: 2px 0;
-    transition: background .12s;
-  }
-  .acc-toggle-row:hover { background: var(--bg2); }
-  .acc-toggle-left { display: flex; align-items: center; gap: 10px; }
-  .acc-toggle-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: var(--bg3); display: flex; align-items: center; justify-content: center;
-    color: var(--accent); flex-shrink: 0; transition: background 0.35s;
-  }
-  .acc-toggle-label { font-size: 0.87rem; color: var(--ice); transition: color 0.35s; }
-  .acc-toggle-sub   { font-size: 0.7rem;  color: var(--muted); margin-top: 1px; transition: color 0.35s; }
+    /* ─── Misc ─── */
+    .text-center { text-align: center; }
+    .text-muted  { color: var(--text-muted); }
 
-  /* Toggle switch */
-  .toggle-switch {
-    position: relative; width: 42px; height: 24px; flex-shrink: 0;
-  }
-  .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
-  .toggle-track {
-    position: absolute; inset: 0; border-radius: 50px;
-    background: var(--bg3); border: 1px solid var(--border);
-    cursor: pointer; transition: background .2s, border-color .2s;
-  }
-  .toggle-track::after {
-    content: ''; position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: var(--muted); transition: transform .2s, background .2s;
-  }
-  .toggle-switch input:checked + .toggle-track { background: var(--accent-dim); border-color: var(--accent); }
-  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); background: var(--accent); }
+    #blankspace1, #blankspace2 { display: none; height: 80px; }
 
-  /* Line spacing picker */
-  .line-spacing-steps {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    padding: 0 16px 14px;
-  }
-  .ls-step {
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-    padding: 10px 6px 9px;
-    background: var(--bg2); border: 2px solid var(--border);
-    border-radius: 10px; cursor: pointer; font-family: var(--font-b);
-    color: var(--muted); font-size: 0.75rem;
-    transition: border-color .18s, background .15s, color .15s;
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
-  .ls-step:hover { border-color: var(--border-hi); background: var(--bg3); color: var(--ice); }
-  .ls-step.active { border-color: var(--accent) !important; color: var(--ice); }
-  .ls-step-icon { display: flex; flex-direction: column; gap: 2px; width: 22px; }
-  .ls-bar { height: 3px; background: currentColor; border-radius: 1px; opacity: 0.7; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-  @media (max-width: 299px) {
-    .line-spacing-steps { padding: 0 10px 12px; gap: 6px; }
-    .ls-step { padding: 8px 4px; font-size: 0.68rem; }
-    .acc-toggle-row { padding: 9px 10px; }
-    .acc-toggle-label { font-size: 0.8rem; }
-    .acc-toggle-sub   { font-size: 0.64rem; }
-    .toggle-switch { width: 36px; height: 20px; }
-    .toggle-track::after { width: 13px; height: 13px; }
-    .toggle-switch input:checked + .toggle-track::after { transform: translateX(15px); }
-  }
-
-  /* ── ACCESSIBILITY SUB-PANEL ── */
-  #accessibility-panel {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
-    width: min(360px, 100vw);
-    background: var(--bg1); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.26s var(--ease), background 0.35s;
-    overflow-y: auto;
-  }
-  #accessibility-panel.open { transform: translateX(0); }
-
-  .font-size-preview {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px 18px;
-    color: var(--text); line-height: 1.6;
-    margin-bottom: 18px;
-    transition: font-size 0.2s var(--ease), background 0.35s, color 0.35s;
-  }
-
-  .font-size-steps {
-    display: grid; grid-template-columns: repeat(4,1fr); gap: 8px;
-  }
-  .fs-step {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    padding: 14px 6px 12px;
-    background: var(--bg2); border: 2px solid var(--border);
-    border-radius: 12px; cursor: pointer; font-family: var(--font-b);
-    color: var(--muted); transition: border-color .18s, background .15s, color .15s, transform .12s;
-  }
-  .fs-step:hover { border-color: var(--border-hi); background: var(--bg3); color: var(--ice); transform: translateY(-1px); }
-  .fs-step.active { border-color: var(--accent) !important; color: var(--ice); }
-  .fs-step span { font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  .fs-step[data-fs="small"]   { font-size: 0.82rem; }
-  .fs-step[data-fs="default"] { font-size: 1rem; }
-  .fs-step[data-fs="large"]   { font-size: 1.2rem; }
-  .fs-step[data-fs="xlarge"]  { font-size: 1.45rem; }
-
-  /* ── ABOUT SUB-PANEL ── */
-  #about-panel {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
-    width: min(360px, 100vw);
-    background: var(--bg1); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.26s var(--ease), background 0.35s;
-    overflow-y: auto;
-  }
-  #about-panel.open { transform: translateX(0); }
-
-  .about-hero {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 0 20px;
-  }
-  .about-logo {
-    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
-    background: var(--accent-dim); border: 1px solid var(--border-hi);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent); font-size: 22px;
-    transition: background 0.35s, border-color 0.35s, color 0.35s;
-  }
-  .about-name { font-size: 1.05rem; font-weight: 500; color: var(--ice); transition: color 0.35s; }
-  .about-tagline { font-size: 0.72rem; color: var(--muted); margin-top: 2px; transition: color 0.35s; }
-  .about-body {
-    font-size: 0.86rem; color: var(--muted); line-height: 1.68;
-    transition: color 0.35s;
-  }
-  .about-link {
-    display: flex; align-items: center; gap: 9px;
-    padding: 10px 10px; border-radius: 10px;
-    font-size: 0.86rem; color: var(--muted); background: transparent;
-    border: none; width: 100%; text-align: left; font-family: var(--font-b); cursor: pointer;
-    text-decoration: none; transition: background .12s, color .12s;
-  }
-  .about-link:hover { background: var(--bg2); color: var(--ice); }
-  .about-link-icon {
-    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-    background: var(--bg3); display: flex; align-items: center; justify-content: center;
-    color: var(--accent); transition: background 0.35s;
-  }
-
-  /* ── EXTERNAL LINK WARNING ── */
-  .ext-warn-dest {
-    margin-top: 14px; padding: 12px 16px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 0.82rem;
-    color: var(--muted); word-break: break-all;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .ext-warn-dest::before {
-    content: '🔗'; font-size: 0.9rem; flex-shrink: 0;
-  }
-
-  /* ── MODALS ── */
-  .modal-wrap {
-    position: fixed; inset: 0; z-index: 500;
-    display: flex; align-items: center; justify-content: center;
-    padding: 16px; pointer-events: none; opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .modal-wrap.open { pointer-events: all; opacity: 1; }
-  .modal-box {
-    width: 100%; max-width: 460px;
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow);
-    transform: translateY(10px) scale(0.97);
-    transition: transform 0.22s var(--ease), background 0.35s;
-  }
-  .modal-wrap.open .modal-box { transform: none; }
-  .modal-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 17px 20px; border-bottom: 1px solid var(--border);
-  }
-  .modal-head h2 { font-size: 0.93rem; font-weight: 500; color: var(--ice); }
-  .modal-body { padding: 20px; }
-  .modal-body p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
-  .modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-  .share-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-top: 4px; }
-  .share-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 7px;
-    padding: 14px 6px; background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--r-sm); color: var(--muted); font-size: 0.7rem;
-    font-family: var(--font-b); cursor: pointer; text-decoration: none;
-    transition: background .15s, color .15s, border-color .15s;
-  }
-  .share-btn .icon { color: var(--muted); transition: color .15s; }
-  .share-btn:hover { background: var(--bg2); color: var(--ice); border-color: var(--border-hi); }
-  .share-btn:hover .icon { color: var(--accent); }
-
-  /* ── LANGUAGE PANEL ── */
-  #language-panel {
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 320;
-    width: min(360px, 100vw);
-    background: var(--bg1); border-left: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    transform: translateX(100%);
-    transition: transform 0.26s var(--ease), background 0.35s;
-    overflow-y: auto;
-  }
-  #language-panel.open { transform: translateX(0); }
-
-  .lang-option-btn {
-    display: flex; align-items: center; gap: 12px;
-    padding: 14px 14px; border-radius: 12px;
-    background: var(--bg2); border: 2px solid var(--border);
-    cursor: pointer; font-family: var(--font-b);
-    transition: border-color .18s, background .15s, transform .12s;
-    width: 100%; text-align: left;
-  }
-  .lang-option-btn:hover { border-color: var(--border-hi); background: var(--bg3); transform: translateY(-1px); }
-  .lang-option-btn.active { border-color: var(--accent) !important; }
-  .lang-option-flag { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
-  .lang-option-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-  .lang-option-name { font-size: 0.9rem; font-weight: 500; color: var(--ice); }
-  .lang-option-native { font-size: 0.75rem; color: var(--muted); }
-  .lang-option-check {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: var(--accent); display: none;
-    align-items: center; justify-content: center;
-    color: var(--bg); font-size: 11px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .lang-option-btn.active .lang-option-check { display: flex; }
-
-  noscript { padding: 80px 20px; text-align: center; color: var(--muted); }
+    /* ─── Responsive ─── */
+    @media (max-width: 480px) {
+      .footer-links { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .share-grid { grid-template-columns: repeat(3, 1fr); }
+    }
   </style>
 </head>
-<body>
-<noscript><h2 style="color:#e8f4ff">JavaScript Required</h2><p>Please enable JavaScript to use Antartica.Org.</p></noscript>
 
-<div id="root">
+<body onload="startFunction();">
+<div class="fixed-con">
+<div id="main">
 
-<!-- TOP NAV -->
-<nav class="topnav">
-  <a href="/" class="brand">
-    <div class="brand-mark" id="brand-icon"></div>
-    Antartica<span class="brand-dot">.</span>Org
-  </a>
-  <div class="nav-actions">
-    <button class="search-pill" onclick="openSearch()" aria-label="Search Antartica.Org">
-      <span class="icon pill-icon" id="sp-icon"></span>
-      <span class="pill-text" id="search-pill-text">Search</span>
-      <span class="kbd-hint">⌘K</span>
-    </button>
-    <button class="nav-btn" onclick="openSettings()" aria-label="Settings" id="nav-settings-btn"></button>
-    <button class="nav-btn" onclick="openDrawer()" aria-label="Open menu" id="nav-menu-btn"></button>
-  </div>
-</nav>
-
-<!-- MAIN -->
-<main>
-  <div class="hero">
-    <!-- text -->
-    <div class="hero-text">
-      <p class="hero-eyebrow" id="hero-eyebrow">Explore the frozen continent</p>
-      <h1 class="hero-title" id="hero-title">Ant<em>arc</em>tica<br>Awaits</h1>
-      <p class="hero-sub" id="hero-sub">Discover facts, resources, and links about the world's most remote continent — 14 million km² of ancient ice, science, and wonder.</p>
-      <button class="hero-cta" onclick="openSearch()">
-        <span class="icon" id="hero-search-icon"></span>
-        <span id="hero-cta-text">Search Antartica.Org</span>
-        <span class="kbd-hint">⌘K</span>
-      </button>
-    </div>
-    <!-- pixel art -->
-    <div class="hero-art-wrap">
-      <div class="art-frame">
-        <canvas id="antarctica-canvas" width="480" height="480" aria-label="Pixel art of an Emperor Penguin"></canvas>
-        <div class="art-hud">
-          <span class="art-badge">Emperor Penguin</span>
-          <span class="art-badge-r">Antarctica</span>
-        </div>
-      </div>
-      <p class="art-caption" id="art-caption-el">
-        <span class="icon" id="art-caption-icon"></span>
-        Aptenodytes forsteri · Pixel Art
-      </p>
-    </div>
-  </div>
-  <div class="section-head"><h2 id="section-explore">Explore</h2></div>
-  <div class="card-grid" id="card-grid"></div>
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-grid" id="footer-grid"></div>
-  <div class="footer-bottom">
-    <span class="footer-copy" id="footer-copy"></span>
-    <button class="lang-pill" onclick="openLanguage()" id="lang-pill"></button>
-  </div>
-</footer>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav" aria-label="Primary navigation">
-  <button class="bot-btn active" aria-label="Home"     id="bn-home"></button>
-  <button class="bot-btn" onclick="openSearch()"       aria-label="Search"   id="bn-search"></button>
-  <button class="bot-btn" onclick="openModal('share-modal')" aria-label="Share" id="bn-share"></button>
-  <button class="bot-btn" onclick="openSettings()"     aria-label="Settings" id="bn-settings"></button>
-</nav>
-
-<!-- COOKIE BANNER -->
-<div id="cookie-banner">
-  <h3><span class="icon" id="cookie-icon"></span> <span id="cookie-title">Cookies on Antartica.Org</span></h3>
-  <p id="cookie-body">Essential cookies keep the site working. Optional analytics are your choice. <a href="cookies" id="cookie-policy-link">Cookie Policy.</a></p>
-  <div class="cookie-actions">
-    <button class="btn btn-accent" onclick="setCookieConsent(1)" id="cookie-accept-btn">Accept All</button>
-    <button class="btn btn-ghost"  onclick="setCookieConsent(2)" id="cookie-essential-btn">Essential Only</button>
-  </div>
-</div>
-
-<!-- OVERLAY -->
-<div id="overlay" onclick="closeAll()"></div>
-
-<!-- SEARCH OVERLAY -->
-<div id="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
-  <div class="search-modal">
-    <div class="search-input-row">
-      <span class="icon" id="search-modal-icon"></span>
-      <input id="main-search" type="text" placeholder="Search Antartica.Org…"
-        autocomplete="off" spellcheck="false"
-        oninput="onSearch(this.value)" onkeydown="onSearchKey(event)">
-      <button class="search-close-btn" onclick="closeSearch()" aria-label="Close search" id="search-close-icon"></button>
-    </div>
-    <div class="search-results" id="search-results"></div>
-    <div class="search-footer-bar">
-      <span class="s-hint"><span class="kbd">↑↓</span> <span id="sh-navigate">Navigate</span></span>
-      <span class="s-hint"><span class="kbd">↵</span> <span id="sh-open">Open</span></span>
-      <span class="s-hint"><span class="kbd">Esc</span> <span id="sh-close">Close</span></span>
-    </div>
-  </div>
-</div>
-
-<!-- NAV DRAWER -->
-<aside id="nav-drawer" role="dialog" aria-modal="true" aria-label="Site navigation">
-  <div class="drawer-head">
-    <a href="/" class="brand" style="font-size:.88rem">
-      <div class="brand-mark" id="drawer-brand-icon"></div>
-      Antartica<span class="brand-dot">.</span>Org
+<!-- ══════════════════════════════════════
+     MODAL 1 – Error 404 / Blog
+══════════════════════════════════════ -->
+<div id="myModal" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal1()">
+      <i class="fa fa-close"></i> Close
     </a>
-    <button class="close-btn" onclick="closeDrawer()" aria-label="Close menu" id="drawer-close-btn"></button>
+    <span class="brand-title">Antartica.Org</span>
+    <a href="javascript:void(0)" class="nav-icon-btn" title="Languages" onclick="transiterror404language()">
+      <i class="fa fa-language"></i>
+    </a>
   </div>
-  <div class="drawer-body" id="drawer-body"></div>
-</aside>
-
-<!-- SETTINGS PANEL -->
-<aside id="settings-panel" role="dialog" aria-modal="true" aria-label="Settings">
-  <div class="drawer-head">
-    <span class="drawer-title" id="settings-title">Settings</span>
-    <button class="close-btn" onclick="closeSettings()" aria-label="Close settings" id="settings-close-btn"></button>
-  </div>
-  <div id="settings-body">
-
-    <!-- APPEARANCE -->
-    <div class="settings-section">
-      <p class="settings-section-label" id="settings-theme-label">Theme</p>
-      <div class="theme-grid" id="theme-grid"></div>
-    </div>
-
-    <!-- ACCESSIBILITY -->
-    <div class="settings-section" style="margin-top:8px;padding-bottom:24px">
-      <p class="settings-section-label" id="settings-access-label">Accessibility</p>
-      <button class="settings-row" onclick="openAccessibility()" style="width:100%;border:none;background:transparent;font-family:var(--font-b)">
-        <div class="settings-row-left">
-          <div class="settings-row-icon" id="sr-access-icon"></div>
-          <div><div class="settings-row-label" id="settings-access-row-label">Accessibility</div><div class="settings-row-sub" id="settings-access-row-sub">Font size &amp; display</div></div>
-        </div>
-        <span class="settings-row-right" id="sr-access-arr"></span>
-      </button>
-    </div>
-
-  </div>
-</aside>
-
-<!-- ACCESSIBILITY SUB-PANEL -->
-<aside id="accessibility-panel" role="dialog" aria-modal="true" aria-label="Accessibility settings">
-  <div class="drawer-head">
-    <span class="drawer-title" id="acc-title">Accessibility</span>
-    <button class="close-btn" onclick="closeAccessibility()" aria-label="Close accessibility" id="acc-close-btn"></button>
-  </div>
-  <div class="drawer-body">
-
-    <!-- Font Size -->
-    <div class="settings-section" style="padding-top:10px">
-      <p class="settings-section-label" id="acc-fontsize-label">Font Size</p>
-      <div class="font-size-preview" id="font-size-preview">
-        The quick brown fox jumps over the lazy dog.
-      </div>
-      <div class="font-size-steps">
-        <button class="fs-step" data-fs="small"   onclick="applyFontSize('small')"  >A<span id="fs-small">Small</span></button>
-        <button class="fs-step" data-fs="default" onclick="applyFontSize('default')" >A<span id="fs-default">Default</span></button>
-        <button class="fs-step" data-fs="large"   onclick="applyFontSize('large')"  >A<span id="fs-large">Large</span></button>
-        <button class="fs-step" data-fs="xlarge"  onclick="applyFontSize('xlarge')" >A<span id="fs-xlarge">X-Large</span></button>
-      </div>
-    </div>
-
-    <!-- Line Spacing -->
-    <div class="settings-section" style="padding-top:18px">
-      <p class="settings-section-label">Line Spacing</p>
-    </div>
-    <div class="line-spacing-steps">
-      <button class="ls-step active" data-ls="default" onclick="applyLineSpacing('default')" aria-pressed="true">
-        <div class="ls-step-icon"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
-        Default
-      </button>
-      <button class="ls-step" data-ls="relaxed" onclick="applyLineSpacing('relaxed')" aria-pressed="false">
-        <div class="ls-step-icon" style="gap:4px"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
-        Relaxed
-      </button>
-      <button class="ls-step" data-ls="loose" onclick="applyLineSpacing('loose')" aria-pressed="false">
-        <div class="ls-step-icon" style="gap:6px"><div class="ls-bar" style="width:100%"></div><div class="ls-bar" style="width:75%"></div><div class="ls-bar" style="width:88%"></div></div>
-        Loose
-      </button>
-    </div>
-
-    <!-- Visual Options -->
-    <div class="settings-section" style="padding-top:10px">
-      <p class="settings-section-label">Visual Options</p>
-    </div>
-
-    <!-- High Contrast -->
-    <div class="acc-toggle-row">
-      <div class="acc-toggle-left">
-        <div class="acc-toggle-icon" id="acc-icon-contrast"></div>
-        <div>
-          <div class="acc-toggle-label">High Contrast</div>
-          <div class="acc-toggle-sub">Strengthen borders &amp; text</div>
-        </div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle high contrast">
-        <input type="checkbox" id="toggle-contrast" onchange="applyHighContrast(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-
-    <!-- Reduce Motion -->
-    <div class="acc-toggle-row">
-      <div class="acc-toggle-left">
-        <div class="acc-toggle-icon" id="acc-icon-motion"></div>
-        <div>
-          <div class="acc-toggle-label">Reduce Motion</div>
-          <div class="acc-toggle-sub">Disable animations &amp; transitions</div>
-        </div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle reduce motion">
-        <input type="checkbox" id="toggle-motion" onchange="applyReduceMotion(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-
-    <!-- Dyslexia-Friendly Font -->
-    <div class="acc-toggle-row">
-      <div class="acc-toggle-left">
-        <div class="acc-toggle-icon" id="acc-icon-dyslexic"></div>
-        <div>
-          <div class="acc-toggle-label">Dyslexia-Friendly Font</div>
-          <div class="acc-toggle-sub">Switch to a more readable typeface</div>
-        </div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle dyslexia-friendly font">
-        <input type="checkbox" id="toggle-dyslexic" onchange="applyDyslexicFont(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-
-    <!-- Focus Highlight -->
-    <div class="acc-toggle-row">
-      <div class="acc-toggle-left">
-        <div class="acc-toggle-icon" id="acc-icon-focus"></div>
-        <div>
-          <div class="acc-toggle-label">Enhanced Focus Ring</div>
-          <div class="acc-toggle-sub">Highlight focused elements for keyboard nav</div>
-        </div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle enhanced focus ring">
-        <input type="checkbox" id="toggle-focus" onchange="applyFocusHighlight(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-
-    <!-- Large Cursor -->
-    <div class="acc-toggle-row" style="margin-bottom:8px">
-      <div class="acc-toggle-left">
-        <div class="acc-toggle-icon" id="acc-icon-cursor"></div>
-        <div>
-          <div class="acc-toggle-label">Large Cursor</div>
-          <div class="acc-toggle-sub">Increase pointer size</div>
-        </div>
-      </div>
-      <label class="toggle-switch" aria-label="Toggle large cursor">
-        <input type="checkbox" id="toggle-cursor" onchange="applyLargeCursor(this.checked)">
-        <span class="toggle-track"></span>
-      </label>
-    </div>
-
-    <!-- Reset -->
-    <div class="settings-section" style="padding-top:4px;padding-bottom:4px">
-      <button onclick="resetAccessibility()" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:var(--font-b);font-size:0.82rem;cursor:pointer;transition:background .15s,color .15s" onmouseover="this.style.background='var(--bg3)';this.style.color='var(--ice)'" onmouseout="this.style.background='var(--bg2)';this.style.color='var(--muted)'">
-        Reset All Accessibility Settings
-      </button>
-    </div>
-
-  </div>
-</aside>
-
-<!-- ABOUT PANEL -->
-<aside id="about-panel" role="dialog" aria-modal="true" aria-label="About Antartica.Org">
-  <div class="drawer-head">
-    <span class="drawer-title" id="about-title">About Antartica.Org</span>
-    <button class="close-btn" onclick="closeAbout()" aria-label="Close about" id="about-close-btn"></button>
-  </div>
-  <div class="drawer-body">
-    <div class="settings-section" style="padding-top:10px">
-
-      <div class="about-hero">
-        <div class="about-logo" id="about-logo-icon"></div>
-        <div>
-          <div class="about-name">Antartica<span style="color:var(--accent)">.</span>Org</div>
-          <div class="about-tagline" id="about-tagline">Explore the frozen continent</div>
-        </div>
-      </div>
-
-      <p class="about-body" id="about-body1">
-        Antartica.Org is an informational hub dedicated to the world's southernmost continent — its science, ecology, geopolitics, and centuries of exploration history.
-      </p>
-
-      <p class="settings-section-label" id="about-mission-label" style="margin-top:24px">Mission</p>
-      <p class="about-body" id="about-mission-body">
-        We believe knowledge about Antarctica matters — for climate science, biodiversity, and the future of our planet. This site gathers the best resources in one place, freely available to everyone.
-      </p>
-
-      <p class="settings-section-label" id="about-legal-label" style="margin-top:24px">Legal</p>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <a href="terms"   class="about-link" id="about-terms-link"><span class="about-link-icon" id="abl-file"></span><span id="about-terms-text">Terms of Use</span></a>
-        <button class="about-link" onclick="closeAbout(); openModal('privacy-modal')" id="about-priv-link"><span class="about-link-icon" id="abl-lock"></span><span id="about-priv-text">Privacy Policy</span></button>
-        <button class="about-link" onclick="closeAbout(); openModal('disclaimer-modal')" id="about-disc-link"><span class="about-link-icon" id="abl-alert"></span><span id="about-disc-text">Disclaimer</span></button>
-        <a href="cookies" class="about-link" id="about-cookie-link"><span class="about-link-icon" id="abl-cookie"></span><span id="about-cookie-text">Cookie Policy</span></a>
-      </div>
-
+  <div class="modal-content">
+    <div class="text-center">
+      <h1>Error 404</h1>
+      <h2>Content Not Found 😕</h2>
     </div>
   </div>
-</aside>
-
-<!-- EXTERNAL LINK WARNING MODAL -->
-<div class="modal-wrap" id="ext-warn-modal" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 style="display:flex;align-items:center;gap:8px"><span id="ext-warn-icon"></span><span id="ext-warn-title">Leaving Antartica.Org</span></h2>
-      <button class="close-btn" onclick="closeModal('ext-warn-modal')" id="ext-warn-close"></button>
-    </div>
-    <div class="modal-body">
-      <p id="ext-warn-body">You're about to visit an external site. Antartica.Org is not responsible for content on third-party sites.</p>
-      <div class="ext-warn-dest" id="ext-warn-dest"></div>
-      <div class="modal-actions">
-        <button class="btn btn-accent" id="ext-warn-continue">Continue</button>
-        <button class="btn btn-ghost"  onclick="closeModal('ext-warn-modal')" id="ext-cancel-btn">Cancel</button>
-      </div>
-    </div>
+  <div class="grey1-container">
+    <p id="copyright9"></p>
   </div>
 </div>
 
-<!-- PRIVACY MODAL -->
-<div class="modal-wrap" id="privacy-modal" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="priv-title">Privacy Policy</h2>
-      <button class="close-btn" onclick="closeModal('privacy-modal')" id="priv-close"></button>
-    </div>
-    <div class="modal-body">
-      <p id="priv-body">We collect minimal data and only use cookies as described in our Cookie Policy. Your data is never sold to third parties.</p>
-      <div class="modal-actions">
-        <a href="cookies" class="btn btn-ghost" id="priv-cookie-link">Cookie Policy</a>
+<!-- ══════════════════════════════════════
+     MODAL 3 – About
+══════════════════════════════════════ -->
+<div id="myModal3" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal3()">
+      <i class="fa fa-close"></i> Close
+    </a>
+    <span class="brand-title">Antartica.Org</span>
+    <a href="javascript:void(0)" class="nav-icon-btn" title="Languages" onclick="transitaboutlanguage()">
+      <i class="fa fa-language"></i>
+    </a>
+  </div>
+  <div class="modal-content">
+    <div class="text-center">
+      <h1>About</h1>
+      <p class="text-muted" style="margin-top:8px;">Antartica.Org/About</p>
+      <div class="divider"></div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <a href="javascript:void(0);" onclick="transitsidebarterms()" class="btn btn-ghost">Terms</a>
+        <a href="javascript:void(0);" onclick="transitsidebarprivacypolicy()" class="btn btn-ghost">Privacy</a>
       </div>
     </div>
   </div>
+  <div class="grey1-container">
+    <p id="copyright7"></p>
+  </div>
 </div>
 
-<!-- DISCLAIMER MODAL -->
-<div class="modal-wrap" id="disclaimer-modal" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="disc-title">Disclaimer</h2>
-      <button class="close-btn" onclick="closeModal('disclaimer-modal')" id="disc-close"></button>
-    </div>
-    <div class="modal-body">
-      <p id="disc-body">Content on Antartica.Org is for informational purposes only. We make no warranties regarding accuracy and accept no liability for reliance on this content.</p>
-      <div class="modal-actions">
-        <a href="terms" class="btn btn-ghost" id="disc-terms-link">Terms</a>
-        <button class="btn btn-ghost" onclick="switchModal('disclaimer-modal','privacy-modal')" id="disc-priv-btn">Privacy Policy</button>
+<!-- ══════════════════════════════════════
+     MODAL 5 – Disclaimer
+══════════════════════════════════════ -->
+<div id="myModal5" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal5()">
+      <i class="fa fa-close"></i> Close
+    </a>
+    <span class="brand-title">Antartica.Org</span>
+  </div>
+  <div class="modal-content">
+    <div class="text-center">
+      <h1>Disclaimer</h1>
+      <h2>Content Not Found 😕</h2>
+      <div class="divider"></div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <a href="javascript:void(0);" onclick="transitsidebarterms()" class="btn btn-ghost">Terms</a>
+        <a href="javascript:void(0);" onclick="transitsidebarprivacypolicy()" class="btn btn-ghost">Privacy</a>
       </div>
     </div>
   </div>
-</div>
-
-<!-- SHARE MODAL -->
-<div class="modal-wrap" id="share-modal" role="dialog" aria-modal="true">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="share-title">Share Antartica.Org</h2>
-      <button class="close-btn" onclick="closeModal('share-modal')" id="share-close"></button>
-    </div>
-    <div class="modal-body">
-      <div class="share-grid" id="share-grid"></div>
-    </div>
+  <div class="grey1-container">
+    <p id="copyright8"></p>
   </div>
 </div>
 
-<!-- LANGUAGE SUB-PANEL -->
-<aside id="language-panel" role="dialog" aria-modal="true" aria-label="Language settings">
-  <div class="drawer-head">
-    <span class="drawer-title" id="lang-panel-title">Language</span>
-    <button class="close-btn" onclick="closeLanguage()" aria-label="Close language" id="lang-close-btn"></button>
+<!-- ══════════════════════════════════════
+     MODAL 6 – Terms
+══════════════════════════════════════ -->
+<div id="myModal6" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal6()">
+      <i class="fa fa-close"></i> Close
+    </a>
+    <span class="brand-title">Antartica.Org</span>
   </div>
-  <div class="drawer-body">
-    <div class="settings-section" style="padding-top:10px">
-      <p class="settings-section-label" id="lang-select-label">Select Language</p>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <button class="lang-option-btn" id="lang-en-btn" onclick="setLanguage('en')">
-          <span class="lang-option-flag">🇺🇸</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">English</span>
-            <span class="lang-option-native">English</span>
-          </div>
-          <span class="lang-option-check" id="lang-en-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-fr-btn" onclick="setLanguage('fr')">
-          <span class="lang-option-flag">🇫🇷</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">French</span>
-            <span class="lang-option-native">Français</span>
-          </div>
-          <span class="lang-option-check" id="lang-fr-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-hi-btn" onclick="setLanguage('hi')">
-          <span class="lang-option-flag">🇮🇳</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">Hindi</span>
-            <span class="lang-option-native">हिन्दी</span>
-          </div>
-          <span class="lang-option-check" id="lang-hi-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-ja-btn" onclick="setLanguage('ja')">
-          <span class="lang-option-flag">🇯🇵</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">Japanese</span>
-            <span class="lang-option-native">日本語</span>
-          </div>
-          <span class="lang-option-check" id="lang-ja-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-ko-btn" onclick="setLanguage('ko')">
-          <span class="lang-option-flag">🇰🇷</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">Korean</span>
-            <span class="lang-option-native">한국어</span>
-          </div>
-          <span class="lang-option-check" id="lang-ko-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-de-btn" onclick="setLanguage('de')">
-          <span class="lang-option-flag">🇩🇪</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">German</span>
-            <span class="lang-option-native">Deutsch</span>
-          </div>
-          <span class="lang-option-check" id="lang-de-check"></span>
-        </button>
-        <button class="lang-option-btn" id="lang-it-btn" onclick="setLanguage('it')">
-          <span class="lang-option-flag">🇮🇹</span>
-          <div class="lang-option-info">
-            <span class="lang-option-name">Italian</span>
-            <span class="lang-option-native">Italiano</span>
-          </div>
-          <span class="lang-option-check" id="lang-it-check"></span>
-        </button>
+  <div class="modal-content">
+    <div class="text-center">
+      <h1>Terms</h1>
+      <h2>Content Not Found 😕</h2>
+    </div>
+  </div>
+  <div class="grey1-container">
+    <p id="copyright12"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL 7 – Privacy Policy
+══════════════════════════════════════ -->
+<div id="myModal7" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal7()">
+      <i class="fa fa-close"></i> Close
+    </a>
+    <span class="brand-title">Antartica.Org</span>
+  </div>
+  <div class="modal-content">
+    <div class="text-center">
+      <h1>Privacy Policy</h1>
+      <h2>Content Not Found 😕</h2>
+    </div>
+  </div>
+  <div class="grey1-container">
+    <p id="copyright11"></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL 10 – Search / Sidebar
+══════════════════════════════════════ -->
+<div id="myModal10" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="nav-icon-btn" title="Close Menu" onclick="closemodal10()">
+      <i class="fa fa-bars"></i>
+    </a>
+    <!-- FIX 1: plain span, no href, no onclick -->
+    <span class="brand-title">Antartica.Org</span>
+    <div style="width:40px;"></div>
+  </div>
+  <div class="modal-content">
+    <h1>Search</h1>
+    <div class="sidebar-search">
+      <input type="text" id="myInput" onkeyup="searchFunction()" placeholder="Search for a page…" title="Search" spellcheck="true">
+    </div>
+    <ul id="myUL">
+      <li><a href="about" title="About Antartica">About Antartica</a></li>
+      <li><a href="settings.html" title="Settings">Settings</a></li>
+      <li><a href="javascript:void(0);" onclick="transitsidebardisclaimer()" title="Disclaimer">Disclaimer</a></li>
+      <li><a href="cookies" title="Cookie Policy">Cookie Policy</a></li>
+      <li><a href="language/index.html" title="Change Language">Change Language</a></li>
+      <li><a href="terms" title="Terms">Terms</a></li>
+      <li><a href="javascript:void(0);" onclick="transitsidebarprivacypolicy()" title="Privacy Policy">Privacy Policy</a></li>
+      <li><a href="javascript:void(0);" onclick="transitsidebarblog()" title="Blog">Blog</a></li>
+      <li><a href="javascript:void(0);" onclick="transitsidebarshare()" title="Share">Share</a></li>
+    </ul>
+  </div>
+
+  <div class="navbar" id="myNavbar2" style="display:none;">
+    <a href="javascript:void(0);" onclick="closemodal10()" title="Home">
+      <i class="fa fa-home"></i><span>Home</span>
+    </a>
+    <a href="javascript:void(0);" onclick="showmodal10()" title="Search" class="highlight-navbar">
+      <i class="fa fa-search"></i><span>Search</span>
+    </a>
+    <a href="settings.html" title="Settings">
+      <i class="fa fa-gear"></i><span>Settings</span>
+    </a>
+  </div>
+
+  <div class="footer-bar" style="margin-top:32px;">
+    <div class="social-icons">
+      <a href="javascript:void(0);" title="Google"><i class="fa fa-google"></i></a>
+      <a href="javascript:void(0);" title="Wikipedia"><i class="fa fa-wikipedia-w"></i></a>
+      <a href="javascript:void(0);" title="Reddit"><i class="fa fa-reddit"></i></a>
+      <a href="javascript:void(0);" title="YouTube"><i class="fa fa-youtube"></i></a>
+      <a href="javascript:void(0);" title="Instagram"><i class="fa fa-instagram"></i></a>
+      <a href="javascript:void(0);" onclick="transitsidebarshare()" title="Share"><i class="fa fa-share-alt"></i></a>
+    </div>
+    <div class="footer-meta">
+      <span id="copyright5"></span>
+      <a href="language/index.html" class="lang-badge" title="Change Language">en-US</a>
+      <span id="footerdateandtime2"></span>
+    </div>
+  </div>
+  <div id="blankspace2"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MODAL 9 – Share
+     FIX 2: links use target="_blank" + rel="noopener noreferrer"
+     so they open above the modal layer without interference
+══════════════════════════════════════ -->
+<div id="myModal9" class="modal">
+  <div class="topnav">
+    <a href="javascript:void(0);" class="close-btn" onclick="closemodal9()">
+      <i class="fa fa-close"></i> Close
+    </a>
+    <span class="brand-title">Antartica.Org</span>
+  </div>
+  <div class="modal-content">
+    <h1 style="margin-bottom:4px;">Share</h1>
+    <p class="text-muted" style="font-size:.85rem;">Open Antartica.Org on another platform</p>
+
+    <div class="share-grid">
+      <a class="share-item" href="https://www.google.com/search?q=antarctica" target="_blank" rel="noopener noreferrer" title="Google">
+        <i class="fa fa-google"></i><span>Google</span>
+      </a>
+      <a class="share-item" href="https://en.wikipedia.org/wiki/Antarctica" target="_blank" rel="noopener noreferrer" title="Wikipedia">
+        <i class="fa fa-wikipedia-w"></i><span>Wikipedia</span>
+      </a>
+      <a class="share-item" href="https://www.youtube.com/results?search_query=antartica" target="_blank" rel="noopener noreferrer" title="YouTube">
+        <i class="fa fa-youtube"></i><span>YouTube</span>
+      </a>
+      <a class="share-item" href="https://www.reddit.com/search/?q=antartica" target="_blank" rel="noopener noreferrer" title="Reddit">
+        <i class="fa fa-reddit"></i><span>Reddit</span>
+      </a>
+      <a class="share-item" href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="X (Twitter)">
+        <i class="fa fa-twitter"></i><span>X</span>
+      </a>
+      <a class="share-item" href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">
+        <i class="fa fa-instagram"></i><span>Instagram</span>
+      </a>
+      <a class="share-item" href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">
+        <i class="fa fa-facebook"></i><span>Facebook</span>
+      </a>
+      <a class="share-item" href="https://twitch.tv" target="_blank" rel="noopener noreferrer" title="Twitch">
+        <i class="fa fa-twitch"></i><span>Twitch</span>
+      </a>
+      <a class="share-item" href="javascript:void(0);" onclick="window.print()" title="Print">
+        <i class="fa fa-print"></i><span>Print</span>
+      </a>
+    </div>
+
+    <div class="other-links-section">
+      <h3>Other Links</h3>
+      <div class="link-row">
+        <a href="https://bing.com" target="_blank" rel="noopener noreferrer" title="Bing">Bing</a>
+        <a href="https://duckduckgo.com/" target="_blank" rel="noopener noreferrer" title="DuckDuckGo">DuckDuckGo</a>
       </div>
     </div>
   </div>
-</aside>
+  <div class="grey1-container">
+    <p id="copyright10"></p>
+  </div>
+</div>
 
-</div><!-- #root -->
+<!-- ══════════════════════════════════════
+     SECONDARY DIVISION (main page)
+══════════════════════════════════════ -->
+<div id="secondarydivision">
+
+  <!-- Cookie Consent Banner -->
+  <div id="cookieconsenta" style="display:none;">
+    <h2>🍪 Cookies on Antartica.Org</h2>
+    <p>Essential and functional cookies keep the site running. Optional analytics cookies are only placed with your consent. <a href="cookies">Learn more.</a></p>
+    <div id="cookieconsentbutton">
+      <div class="cookie-actions">
+        <button class="btn btn-primary" onclick="cookieconsenttype1Function()">Accept optional cookies</button>
+        <button class="btn btn-ghost" onclick="cookieconsenttype2Function()">Refuse optional cookies</button>
+      </div>
+    </div>
+    <div id="testcookiebb" style="display:none;margin-top:12px;">
+      <p id="testcookieab" style="color:var(--danger);font-size:.8rem;"></p>
+      <p id="testcookie" style="color:var(--danger);font-size:.8rem;font-weight:600;"></p>
+    </div>
+  </div>
+
+  <div id="cookieconsentb" style="display:none;">
+    <p>✅ Your cookie preferences have been saved. <a href="cookies">Cookie policy</a></p>
+    <div class="cookie-actions" style="margin-top:12px;">
+      <button class="btn btn-ghost" onclick="bbcookieconsenttype1Function()">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- Top Nav -->
+  <div class="topnav" id="myTopnav">
+    <a href="javascript:void(0);" class="nav-icon-btn" title="Open Menu" onclick="showmodal10()">
+      <i class="fa fa-bars"></i>
+    </a>
+    <!-- FIX 1: span instead of <a> — clicking the title does nothing -->
+    <span class="brand-title">Antartica.Org</span>
+    <a href="settings.html" class="nav-icon-btn" title="Settings">
+      <i class="fa fa-gear"></i>
+    </a>
+    <a href="javascript:void(0)" class="nav-icon-btn" title="Search" onclick="showmodal10()">
+      <i class="fa fa-search"></i>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div id="content">
+    <div id="app">
+      <div class="search-wrapper">
+        <input type="text" v-model="keyword" placeholder="Search Antartica…" title="Search"/>
+      </div>
+      <div class="wrapper">
+        <div class="card" v-for="post in filteredList">
+          <a :href="post.link">
+            <img :src="post.img" style="height:28px;"/>
+            <div class="sub-card">{{ post.title }}</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navbar -->
+  <div class="navbar" id="myNavbar">
+    <a href="javascript:void(0);" title="Home" class="highlight-navbar">
+      <i class="fa fa-home"></i><span>Home</span>
+    </a>
+    <a href="javascript:void(0);" onclick="showmodal10()" title="Search">
+      <i class="fa fa-search"></i><span>Search</span>
+    </a>
+    <a href="settings.html" title="Settings">
+      <i class="fa fa-gear"></i><span>Settings</span>
+    </a>
+  </div>
+
+  <!-- Footer Links -->
+  <div class="footer-links">
+    <div class="col">
+      <a href="settings" title="Settings">Settings</a>
+      <a href="javascript:void(0);" onclick="showmodal5()" title="Disclaimer">Disclaimer</a>
+      <a href="cookies" title="Cookie Policy">Cookie Policy</a>
+    </div>
+    <div class="col">
+      <a href="terms" title="Terms">Terms</a>
+      <a href="javascript:void(0);" onclick="showmodal7()" title="Privacy">Privacy</a>
+      <a href="about" title="About">About</a>
+    </div>
+    <div class="col">
+      <a href="javascript:void(0);" title="Site Map">Sitemap</a>
+      <a href="javascript:void(0);" title="Blog">Blog</a>
+      <a href="javascript:void(0);" onclick="window.print()" title="Print">Print</a>
+    </div>
+    <div class="col">
+      <a href="javascript:void(0);" onclick="showmodal9();" title="Share">Share</a>
+      <a href="javascript:void(0);" title="Accessibility">Accessibility</a>
+    </div>
+  </div>
+
+  <!-- Footer Bar -->
+  <div class="footer-bar" style="padding-bottom:calc(var(--bot-h) + 16px);">
+    <div class="social-icons">
+      <a href="javascript:void(0);" title="Google"><i class="fa fa-google"></i></a>
+      <a href="javascript:void(0);" title="Wikipedia"><i class="fa fa-wikipedia-w"></i></a>
+      <a href="javascript:void(0);" title="Reddit"><i class="fa fa-reddit"></i></a>
+      <a href="javascript:void(0);" title="YouTube"><i class="fa fa-youtube"></i></a>
+      <a href="javascript:void(0);" title="Instagram"><i class="fa fa-instagram"></i></a>
+      <a href="javascript:void(0);" onclick="showmodal9();" title="Share"><i class="fa fa-share-alt"></i></a>
+    </div>
+    <div class="footer-meta">
+      <span id="copyright"></span>
+      <a href="language/index.html" class="lang-badge" title="Change Language" id="rightab">en-US</a>
+      <span id="footerdateandtime"></span>
+    </div>
+  </div>
+
+  <div id="blankspace1"></div>
+</div><!-- end #secondarydivision -->
+
+</div><!-- end #main -->
+</div><!-- end .fixed-con -->
+
+<!-- ══════════════════════════════════════
+     EXTERNAL SCRIPTS
+══════════════════════════════════════ -->
+<script src='script/scripta1.js'></script>
+<script src="script/script.js"></script>
+<script src="script/location.js"></script>
+<script src="script/cookieconsent.js"></script>
 
 <script>
-/* ═══════════════════════════════════════════════════
-   ICONS — inline Lucide-style SVGs
-═══════════════════════════════════════════════════ */
-const IC = {
-  snowflake:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/><circle cx="12" cy="12" r="2.5"/></svg>`,
-  search:   `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
-  settings: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
-  menu:     `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
-  close:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-  home:     `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  share:    `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  info:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  cookie:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/></svg>`,
-  globe:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
-  file:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`,
-  lock:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
-  alert:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  pen:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  grid:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`,
-  access:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><path d="M12 22v-9"/><path d="M5 8l7-2 7 2"/><path d="M5 8l2 7h10l2-7"/></svg>`,
-  message:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-  print:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>`,
-  youtube:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>`,
-  instagram:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
-  facebook: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`,
-  twitter:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="4" y1="20" x2="20" y2="4"/></svg>`,
-  extlink:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`,
-  arrowr:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
-  arrowl:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,
-  palette:  `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
-  check:    `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-};
-const ic = (n, size) => {
-  let svg = IC[n] || IC.info;
-  if (size) svg = svg.replace(/width="\d+"/, `width="${size}"`).replace(/height="\d+"/, `height="${size}"`);
-  return `<span class="icon">${svg}</span>`;
-};
+/* ── Cookie helpers ─────────────────────────────────────── */
+function setCookie(cname,cvalue,exdays){const d=new Date();d.setTime(d.getTime()+(exdays*24*60*60*1000));let expires="expires="+d.toUTCString();document.cookie=cname+"="+cvalue+";"+expires+";path=/";}
+function getCookie(cname){let name=cname+"=";let decodedCookie=decodeURIComponent(document.cookie);let ca=decodedCookie.split(';');for(let i=0;i<ca.length;i++){let c=ca[i];while(c.charAt(0)==' '){c=c.substring(1);}if(c.indexOf(name)==0){return c.substring(name.length,c.length);}}return "";}
 
-/* ═══════════════════════════════════════════════════
-   THEMES
-═══════════════════════════════════════════════════ */
-const THEMES = [
-  {
-    id: 'polar-night', name: 'Polar Night', default: true,
-    meta: '#080f1c',
-    p: { nav:'#0c1628', body:'#080f1c', bg2:'#101e35', bg3:'#152440', card:'#0c1628', accent:'#00c8ff', text:'#cce0f5', muted:'#6a90b8', bot:'#080f1c' }
-  },
-  {
-    id: 'aurora', name: 'Aurora',
-    meta: '#080d18',
-    p: { nav:'#0b1122', body:'#080d18', bg2:'#0e1630', bg3:'#121d3c', card:'#0b1122', accent:'#00f5a0', text:'#b8e8d8', muted:'#5a8a78', bot:'#080d18' }
-  },
-  {
-    id: 'volcanic', name: 'Volcanic',
-    meta: '#0e0804',
-    p: { nav:'#160d06', body:'#0e0804', bg2:'#1e1208', bg3:'#281a0c', card:'#160d06', accent:'#ff8c42', text:'#f0d5b8', muted:'#9a7050', bot:'#0e0804' }
-  },
-  {
-    id: 'blizzard', name: 'Blizzard',
-    meta: '#f0f5fc',
-    p: { nav:'#ffffff', body:'#f0f5fc', bg2:'#e8eef8', bg3:'#dde5f2', card:'#ffffff', accent:'#1a5fff', text:'#2a3f6a', muted:'#7a93b8', bot:'#f0f5fc' }
-  },
-  {
-    id: 'glacier', name: 'Glacier',
-    meta: '#eaf3f8',
-    p: { nav:'#f6fafd', body:'#eaf3f8', bg2:'#dceef8', bg3:'#cde3f2', card:'#f6fafd', accent:'#0891b2', text:'#1e4a5c', muted:'#6a9ab0', bot:'#eaf3f8' }
-  },
-  {
-    id: 'obsidian', name: 'Obsidian',
-    meta: '#06040f',
-    p: { nav:'#0a0818', body:'#06040f', bg2:'#0f0c22', bg3:'#14102c', card:'#0a0818', accent:'#a855f7', text:'#d4c4f0', muted:'#7a6a9a', bot:'#06040f' }
-  },
-];
-
-// Build theme card preview markup using inline styles (no dependency on live CSS vars)
-function themePreviewHTML(t) {
-  const p = t.p;
-  const isLight = t.id === 'blizzard' || t.id === 'glacier';
-  const borderCol = isLight ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.07)';
-  return `
-    <div class="theme-preview" style="background:${p.body}">
-      <div class="tp-nav" style="background:${p.nav};border-bottom:1px solid ${borderCol}">
-        <div class="tp-dot" style="background:${p.accent}"></div>
-        <div class="tp-dot" style="background:${p.accent};opacity:0.4;width:22px;height:3px;border-radius:2px;margin-left:3px"></div>
-      </div>
-      <div class="tp-body">
-        <div class="tp-line tp-line-lg" style="background:${p.text};opacity:0.9"></div>
-        <div class="tp-line tp-line-sm" style="background:${p.muted};opacity:0.7"></div>
-        <div class="tp-cards">
-          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
-            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px"></div>
-          </div>
-          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
-            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px;opacity:0.5"></div>
-          </div>
-          <div class="tp-card" style="background:${p.bg2};border:1px solid ${borderCol}">
-            <div style="width:12px;height:5px;background:${p.accent};border-radius:2px;margin:4px 5px;opacity:0.3"></div>
-          </div>
-        </div>
-      </div>
-      <div class="tp-bot" style="background:${p.bot};border-top:1px solid ${borderCol}">
-        <div class="tp-bot-dot" style="background:${p.accent}"></div>
-        <div class="tp-bot-dot" style="background:${p.muted};opacity:0.5"></div>
-        <div class="tp-bot-dot" style="background:${p.muted};opacity:0.5"></div>
-      </div>
-    </div>
-    <div class="theme-name">
-      <span>${t.name}</span>
-      <span class="theme-check">${IC.check}</span>
-    </div>`;
+/* ── Consent init ───────────────────────────────────────── */
+let cookieconsent = getCookie("cookieconsent");
+if(cookieconsent=="1"){
+  let ae=getCookie("ae");
+  document.getElementById("cookieconsentb").style.display=ae=="1"?'none':'block';
+  try{document.getElementById("currentcookieconsentstatus").innerHTML="Optional cookies accepted (1)";}catch(e){}
+}else if(cookieconsent=="2"){
+  let ae=getCookie("ae");
+  document.getElementById("cookieconsentb").style.display=ae=="1"?'none':'block';
+  try{document.getElementById("currentcookieconsentstatus").innerHTML="Optional cookies refused (2)";}catch(e){}
+}else{
+  document.getElementById("cookieconsenta").style.display='block';
+  setCookie("cookieconsent","0",30);setCookie("ae","0",30);
+  try{document.getElementById("currentcookieconsentstatus").innerHTML="(default) Only essential cookies are enabled (3)";}catch(e){}
 }
 
-function buildThemeGrid() {
-  const grid = byId('theme-grid');
-  const current = Ck.get('theme') || 'polar-night';
-  grid.innerHTML = THEMES.map(t => `
-    <button class="theme-card${t.id===current?' active':''}"
-      data-theme-id="${t.id}"
-      onclick="applyTheme('${t.id}')"
-      aria-label="Apply ${t.name} theme"
-      aria-pressed="${t.id===current}">
-      ${themePreviewHTML(t)}
-    </button>`).join('');
-}
-
-function applyTheme(id) {
-  document.documentElement.setAttribute('data-theme', id);
-  Ck.set('theme', id, 365);
-  // Update meta-theme-color
-  const t = THEMES.find(x => x.id === id);
-  if (t) byId('meta-theme').setAttribute('content', t.meta);
-  // Update active state in grid
-  document.querySelectorAll('.theme-card').forEach(el => {
-    const active = el.dataset.themeId === id;
-    el.classList.toggle('active', active);
-    el.setAttribute('aria-pressed', active);
-  });
-}
-
-/* ═══════════════════════════════════════════════════
-   SITE DATA
-═══════════════════════════════════════════════════ */
-const SITE = [
-  { title:'About Antartica', sub:'Who we are',      group:'Site',    icon:'info',    href:null,            action:"openAbout()" },
-  { title:'Settings',        sub:'Preferences',     group:'Site',    icon:'settings',href:null,            action:"openSettings()" },
-  { title:'Blog',            sub:'Articles',        group:'Site',    icon:'pen',     href:null,            action:null },
-  { title:'Share',           sub:'Spread the word', group:'Site',    icon:'share',   href:null,            action:"openModal('share-modal')" },
-  { title:'Accessibility',   sub:'For everyone',    group:'Site',    icon:'access',  href:null,            action:"openAccessibility()" },
-  { title:'Sitemap',         sub:'All pages',       group:'Site',    icon:'grid',    href:'#',             action:null },
-  { title:'Terms',           sub:'Usage rules',     group:'Legal',   icon:'file',    href:'terms',         action:null },
-  { title:'Privacy Policy',  sub:'Data protection', group:'Legal',   icon:'lock',    href:null,            action:"openModal('privacy-modal')" },
-  { title:'Disclaimer',      sub:'Legal notice',    group:'Legal',   icon:'alert',   href:null,            action:"openModal('disclaimer-modal')" },
-  { title:'Cookie Policy',   sub:'Data & cookies',  group:'Legal',   icon:'cookie',  href:'cookies',       action:null },
-  { title:'Language',        sub:'Change locale',   group:'More',    icon:'globe',   href:null,  action:"openLanguage()" },
-  { title:'Wikipedia',       sub:'External resource',group:'Explore',icon:'globe',   href:'https://en.wikipedia.org/wiki/Antarctica', action:null },
-  { title:'Google',          sub:'Search Antarctica',group:'Explore',icon:'search',  href:'https://www.google.com/search?q=antarctica', action:null },
-  { title:'Reddit',          sub:'Community',       group:'Explore', icon:'message', href:'https://www.reddit.com/search/?q=antartica', action:null },
-];
-
-const SHARE_LINKS = [
-  { label:'Google',    icon:'search',    href:'https://www.google.com/search?q=antarctica' },
-  { label:'Wikipedia', icon:'globe',     href:'https://en.wikipedia.org/wiki/Antarctica' },
-  { label:'YouTube',   icon:'youtube',   href:'https://www.youtube.com/results?search_query=antarctica' },
-  { label:'Reddit',    icon:'message',   href:'https://www.reddit.com/search/?q=antartica' },
-  { label:'X',         icon:'twitter',   href:'https://twitter.com' },
-  { label:'Instagram', icon:'instagram', href:'https://instagram.com' },
-  { label:'Facebook',  icon:'facebook',  href:'https://facebook.com' },
-  { label:'Print',     icon:'print',     href:null, action:'window.print()' },
-];
-
-const FOOTER_COLS = [
-  { h:'Legal',   keys:['Terms','Privacy Policy','Disclaimer','Cookie Policy'] },
-  { h:'Site',    keys:['About Antartica','Settings','Blog','Share'] },
-  { h:'Explore', keys:['Wikipedia','Google','Reddit','Language'] },
-  { h:'More',    keys:['Accessibility','Sitemap'] },
-];
-
-/* ═══════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════ */
-function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function byId(id){ return document.getElementById(id); }
-function isExt(h){ return h && h.startsWith('http'); }
-
-function itemTag(p, cls, extra, content) {
-  if (p.href) return `<a class="${cls}" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''}${extra||''}>${content}</a>`;
-  const oc = p.action ? ` onclick="${p.action}"` : '';
-  return `<button class="${cls}"${oc}${extra||''}>${content}</button>`;
-}
-
-/* ═══════════════════════════════════════════════════
-   CARD GRID
-═══════════════════════════════════════════════════ */
-function renderCards(filter) {
-  const q = (filter||'').trim().toLowerCase();
-  const items = q ? SITE.filter(p=>((p._title||p.title)+' '+(p._sub||p.sub)+' '+p.group).toLowerCase().includes(q)) : SITE;
-  const grid = byId('card-grid');
-  if (!items.length) {
-    grid.innerHTML = `<div class="no-results">${ic('search',24)}<p>${esc(t('noResults'))} "<em>${esc(filter)}</em>"</p></div>`;
-    return;
-  }
-  grid.innerHTML = items.map((p,i) => `
-    <div class="card" style="animation-delay:${i*.032}s">
-      ${itemTag(p,'','',`
-        <div class="card-icon">${ic(p.icon)}</div>
-        <div>
-          <div class="card-name">${esc(p._title||p.title)}</div>
-          <div class="card-sub">${esc(p._sub||p.sub)}</div>
-        </div>
-        ${isExt(p.href)?`<span class="icon" style="margin-left:auto;color:var(--muted)">${IC.extlink}</span>`:''}
-      `)}
-    </div>`).join('');
-}
-
-/* ═══════════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════════ */
-function buildFooter() {
-  const map = Object.fromEntries(SITE.map(p=>[p._title||p.title,p]));
-  const cols = t('footerCols');
-  byId('footer-grid').innerHTML = cols.map(col=>`
-    <div class="footer-col">
-      <h4>${esc(col.h)}</h4>
-      ${col.keys.map(k=>{ const p=map[k]; return p?itemTag(p,'','',`${ic(p.icon)} ${esc(p._title||p.title)}`):'' }).join('')}
-    </div>`).join('');
-  byId('lang-pill').innerHTML = `${ic('globe',12)} <span id="lang-pill-label">${esc(t('footerLangPill'))}</span>`;
-  byId('footer-copy').innerHTML = `Copyright &copy; ${new Date().getFullYear()} <strong>Antartica.Org</strong>`;
-}
-
-/* ═══════════════════════════════════════════════════
-   NAV DRAWER
-═══════════════════════════════════════════════════ */
-function buildDrawer() {
-  const groups = {};
-  SITE.forEach(p=>{ (groups[p.group]=groups[p.group]||[]).push(p); });
-  byId('drawer-body').innerHTML = Object.entries(groups).map(([g,pages])=>`
-    <p class="grp-label">${esc(g)}</p>
-    ${pages.map(p=>itemTag(p,'nav-item',` onclick="closeDrawer()${p.action?'; '+p.action:''}"`,
-      `${ic(p.icon)} ${esc(p._title||p.title)}`)).join('')}
-  `).join('');
-}
-
-/* ═══════════════════════════════════════════════════
-   SHARE MODAL
-═══════════════════════════════════════════════════ */
-function buildShare() {
-  byId('share-grid').innerHTML = SHARE_LINKS.map(s=>
-    s.href
-      ? `<a class="share-btn" href="${esc(s.href)}" target="_blank" rel="noopener">${ic(s.icon,18)}<span>${esc(s.label)}</span></a>`
-      : `<button class="share-btn" onclick="${s.action}">${ic(s.icon,18)}<span>${esc(s.label)}</span></button>`
-  ).join('');
-}
-
-/* ═══════════════════════════════════════════════════
-   STATIC ICON PLACEMENT
-═══════════════════════════════════════════════════ */
-function placeStaticIcons() {
-  [['brand-icon','snowflake'],['drawer-brand-icon','snowflake'],
-   ['sp-icon','search'],['nav-settings-btn','settings'],['nav-menu-btn','menu'],
-   ['hero-search-icon','search'],['cookie-icon','cookie'],
-   ['search-modal-icon','search'],['search-close-icon','close'],
-   ['priv-close','close'],['disc-close','close'],
-   ['share-close','close'],['drawer-close-btn','close'],['settings-close-btn','close'],
-   ['acc-close-btn','close'],['about-close-btn','close'],['lang-close-btn','close'],
-   ['sr-access-icon','access'],['about-logo-icon','snowflake'],
-   ['ext-warn-icon','alert'],['ext-warn-close','close'],
-  ].forEach(([id,name])=>{ const el=byId(id); if(el) el.innerHTML=IC[name]||IC.close; });
-
-  // About panel link icons
-  [['abl-file','file'],['abl-lock','lock'],['abl-alert','alert'],['abl-cookie','cookie']]
-    .forEach(([id,n])=>{ const el=byId(id); if(el) el.innerHTML=IC[n]||''; });
-
-  // Arrow icon for accessibility row
-  const accArr = byId('sr-access-arr'); if(accArr) accArr.innerHTML = IC.arrowr;
-}
-
-/* ═══════════════════════════════════════════════════
-   BOTTOM NAV
-═══════════════════════════════════════════════════ */
-function buildBottomNav() {
-  [['bn-home','home',t('bnHome')],['bn-search','search',t('bnSearch')],
-   ['bn-share','share',t('bnShare')],['bn-settings','palette',t('bnSettings')]]
-    .forEach(([id,ico,txt])=>{ const el=byId(id); if(el) el.innerHTML=`${ic(ico,20)}<span>${txt}</span>`; });
-}
-
-/* ═══════════════════════════════════════════════════
-   UNIFIED SEARCH
-═══════════════════════════════════════════════════ */
-let searchIdx = -1;
-
-function openSearch() {
-  byId('search-overlay').classList.add('open');
-  byId('overlay').classList.add('open');
-  renderSearchList('');
-  searchIdx = -1;
-  setTimeout(()=>byId('main-search').focus(), 60);
-}
-function closeSearch() {
-  byId('search-overlay').classList.remove('open');
-  byId('main-search').value='';
-  searchIdx = -1;
-  if(!anyOpen()) byId('overlay').classList.remove('open');
-}
-function onSearch(q){ renderSearchList(q); searchIdx=-1; }
-
-function renderSearchList(q) {
-  const box=byId('search-results');
-  const term=q.trim().toLowerCase();
-  const hits=term ? SITE.filter(p=>((p._title||p.title)+' '+(p._sub||p.sub)+' '+p.group).toLowerCase().includes(term)) : SITE;
-  if (!hits.length) { box.innerHTML=`<div class="search-empty">${ic('search',22)}<br>${esc(t('noResults'))} "<em>${esc(q)}</em>"</div>`; return; }
-  if (!term) {
-    const groups={};
-    hits.forEach(p=>{ (groups[p.group]=groups[p.group]||[]).push(p); });
-    box.innerHTML=Object.entries(groups).map(([g,pages])=>`<p class="search-group-label">${esc(g)}</p>${pages.map(p=>sItemHTML(p)).join('')}`).join('');
-  } else {
-    const rWord = hits.length !== 1 ? t('results_pl') : t('results');
-    box.innerHTML=`<p class="search-group-label">${hits.length} ${rWord}</p>${hits.map(p=>sItemHTML(p)).join('')}`;
-  }
-}
-
-function sItemHTML(p) {
-  const ca=`closeSearch();`;
-  const act=p.action?`${ca} ${p.action}`:ca;
-  const inner=`${ic(p.icon)}<div class="s-item-text"><div class="s-item-name">${esc(p._title||p.title)}</div><div class="s-item-sub">${esc(p._sub||p.sub)} &middot; ${esc(p.group)}</div></div><span class="s-item-arr">${IC.arrowr}</span>`;
-  if(p.href) return `<a class="s-item" href="${esc(p.href)}"${isExt(p.href)?' target="_blank" rel="noopener"':''} onclick="${ca}">${inner}</a>`;
-  return `<button class="s-item" onclick="${act}">${inner}</button>`;
-}
-
-function onSearchKey(e) {
-  const items=byId('search-results').querySelectorAll('.s-item');
-  if(!items.length) return;
-  if(e.key==='ArrowDown'){e.preventDefault();searchIdx=Math.min(searchIdx+1,items.length-1);hilite(items);}
-  else if(e.key==='ArrowUp'){e.preventDefault();searchIdx=Math.max(searchIdx-1,0);hilite(items);}
-  else if(e.key==='Enter'&&searchIdx>=0){e.preventDefault();items[searchIdx].click();}
-}
-function hilite(items){ items.forEach((el,i)=>el.classList.toggle('hi',i===searchIdx)); if(searchIdx>=0)items[searchIdx].scrollIntoView({block:'nearest'}); }
-
-/* ═══════════════════════════════════════════════════
-   MODAL / DRAWER / SETTINGS SYSTEM
-═══════════════════════════════════════════════════ */
-function openModal(id)   { byId(id).classList.add('open');    byId('overlay').classList.add('open'); }
-function closeModal(id)  { byId(id).classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
-function switchModal(a,b){ byId(a).classList.remove('open'); byId(b).classList.add('open'); }
-function openDrawer()    { byId('nav-drawer').classList.add('open');    byId('overlay').classList.add('open'); }
-function closeDrawer()   { byId('nav-drawer').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
-function openSettings()  { byId('settings-panel').classList.add('open'); byId('overlay').classList.add('open'); }
-function closeSettings() { byId('settings-panel').classList.remove('open'); if(!anyOpen()) byId('overlay').classList.remove('open'); }
-
-function openAbout() {
-  byId('about-panel').classList.add('open');
-  byId('overlay').classList.add('open');
-}
-function closeAbout() {
-  byId('about-panel').classList.remove('open');
-  if(!anyOpen()) byId('overlay').classList.remove('open');
-}
-
-function openAccessibility() {
-  byId('accessibility-panel').classList.add('open');
-  byId('overlay').classList.add('open');
-}
-function closeAccessibility() {
-  byId('accessibility-panel').classList.remove('open');
-  if(!anyOpen()) byId('overlay').classList.remove('open');
-}
-
-function closeAll() {
-  document.querySelectorAll('.modal-wrap.open,#search-overlay.open').forEach(el=>el.classList.remove('open'));
-  ['nav-drawer','settings-panel','accessibility-panel','about-panel','language-panel'].forEach(id=>byId(id).classList.remove('open'));
-  byId('overlay').classList.remove('open');
-  byId('main-search').value=''; searchIdx=-1;
-}
-function anyOpen(){
-  return !![...document.querySelectorAll('.modal-wrap.open,#search-overlay.open,#nav-drawer.open,#settings-panel.open,#accessibility-panel.open,#about-panel.open,#language-panel.open')].length;
-}
-
-/* ── FONT SIZE ── */
-const FONT_SIZES = { small:'0.88rem', default:'1rem', large:'1.13rem', xlarge:'1.28rem' };
-function applyFontSize(size) {
-  document.documentElement.style.fontSize = FONT_SIZES[size] || '1rem';
-  Ck.set('font-size', size, 365);
-  const preview = byId('font-size-preview');
-  if (preview) preview.style.fontSize = FONT_SIZES[size];
-  document.querySelectorAll('.fs-step').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.fs === size);
-  });
-}
-function initFontSize() {
-  const saved = Ck.get('font-size') || 'default';
-  applyFontSize(saved);
-}
-
-/* ── ACCESSIBILITY FEATURES ── */
-function applyHighContrast(on) {
-  document.documentElement.setAttribute('data-high-contrast', on ? 'on' : 'off');
-  Ck.set('high-contrast', on ? 'on' : 'off');
-  const el = byId('toggle-contrast'); if (el) el.checked = on;
-}
-function applyReduceMotion(on) {
-  document.documentElement.setAttribute('data-reduce-motion', on ? 'on' : 'off');
-  Ck.set('reduce-motion', on ? 'on' : 'off');
-  const el = byId('toggle-motion'); if (el) el.checked = on;
-}
-function applyDyslexicFont(on) {
-  document.documentElement.setAttribute('data-dyslexic-font', on ? 'on' : 'off');
-  Ck.set('dyslexic-font', on ? 'on' : 'off');
-  const el = byId('toggle-dyslexic'); if (el) el.checked = on;
-}
-function applyFocusHighlight(on) {
-  document.documentElement.setAttribute('data-focus-highlight', on ? 'on' : 'off');
-  Ck.set('focus-highlight', on ? 'on' : 'off');
-  const el = byId('toggle-focus'); if (el) el.checked = on;
-}
-function applyLargeCursor(on) {
-  document.documentElement.setAttribute('data-cursor-size', on ? 'large' : 'normal');
-  Ck.set('cursor-size', on ? 'large' : 'normal');
-  const el = byId('toggle-cursor'); if (el) el.checked = on;
-}
-function applyLineSpacing(mode) {
-  document.documentElement.setAttribute('data-line-spacing', mode);
-  Ck.set('line-spacing', mode);
-  document.querySelectorAll('.ls-step').forEach(btn => {
-    const active = btn.dataset.ls === mode;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', String(active));
-  });
-}
-function resetAccessibility() {
-  applyFontSize('default');
-  applyHighContrast(false);
-  applyReduceMotion(false);
-  applyDyslexicFont(false);
-  applyFocusHighlight(false);
-  applyLargeCursor(false);
-  applyLineSpacing('default');
-}
-function initAccessibilityFeatures() {
-  applyHighContrast(Ck.get('high-contrast') === 'on');
-  applyReduceMotion(Ck.get('reduce-motion') === 'on' || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  applyDyslexicFont(Ck.get('dyslexic-font') === 'on');
-  applyFocusHighlight(Ck.get('focus-highlight') === 'on');
-  applyLargeCursor(Ck.get('cursor-size') === 'large');
-  applyLineSpacing(Ck.get('line-spacing') || 'default');
-}
-
-/* ── ACCESSIBILITY ICONS ── */
-function buildAccIcons() {
-  const MAP = {
-    'acc-icon-contrast': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M12 2a10 10 0 0 1 0 20"/></svg>`,
-    'acc-icon-motion':   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>`,
-    'acc-icon-dyslexic': `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`,
-    'acc-icon-focus':    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
-    'acc-icon-cursor':   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l7 19 3-8 8-3z"/><line x1="14" y1="14" x2="21" y2="21"/></svg>`,
-  };
-  Object.entries(MAP).forEach(([id, svg]) => { const el=byId(id); if(el) el.innerHTML=svg; });
-}
-
-/* ── EXTERNAL LINK WARNING ── */
-let pendingExtUrl = null;
-document.addEventListener('click', e => {
-  const a = e.target.closest('a[href]');
-  if (!a) return;
-  const href = a.getAttribute('href');
-  if (!href || !href.startsWith('http')) return;
-  // same origin is fine
-  try { if (new URL(href).origin === location.origin) return; } catch(_){}
-  e.preventDefault();
-  pendingExtUrl = href;
-  const dest = byId('ext-warn-dest');
-  if (dest) {
-    try { dest.textContent = new URL(href).hostname; } catch(_) { dest.textContent = href; }
-  }
-  const continueBtn = byId('ext-warn-continue');
-  if (continueBtn) {
-    continueBtn.onclick = () => { closeModal('ext-warn-modal'); window.open(pendingExtUrl, '_blank', 'noopener,noreferrer'); };
-  }
-  openModal('ext-warn-modal');
-});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape') closeAll();
-  if(!anyOpen()&&(e.key==='/'||(e.key==='k'&&(e.metaKey||e.ctrlKey)))){ e.preventDefault(); openSearch(); }
-});
-
-/* ═══════════════════════════════════════════════════
-   COOKIES
-═══════════════════════════════════════════════════ */
-const Ck = {
-  set(n,v,d=365){ const x=new Date(); x.setTime(x.getTime()+d*864e5); document.cookie=`${n}=${v};expires=${x.toUTCString()};path=/;SameSite=Lax`; },
-  get(n){ return decodeURIComponent(document.cookie).split(';').map(c=>c.trim()).find(c=>c.startsWith(n+'='))?.slice(n.length+1)??null; }
-};
-function setCookieConsent(v){ Ck.set('cookieconsent',String(v)); byId('cookie-banner').style.display='none'; }
-
-/* ═══════════════════════════════════════════════════
-   CAPTCHA GUARD
-═══════════════════════════════════════════════════ */
-function checkCaptcha(){ if(Ck.get('captcha')!=='1') window.location.href='./captcha/'; }
-
-/* ═══════════════════════════════════════════════════
-   INTERNATIONALISATION (EN / FR)
-═══════════════════════════════════════════════════ */
-const I18N = {
-  en: {
-    /* Nav */
-    searchPill: 'Search',
-    /* Hero */
-    heroEyebrow: 'Explore the frozen continent',
-    heroTitle: 'Ant<em>arc</em>tica<br>Awaits',
-    heroSub: 'Discover facts, resources, and links about the world\'s most remote continent — 14 million km² of ancient ice, science, and wonder.',
-    heroCta: 'Search Antartica.Org',
-    /* Section */
-    sectionExplore: 'Explore',
-    /* Search hints */
-    shNavigate: 'Navigate', shOpen: 'Open', shClose: 'Close',
-    searchPlaceholder: 'Search Antartica.Org…',
-    /* Settings */
-    settingsTitle: 'Settings',
-    settingsThemeLabel: 'Theme',
-    settingsAccessLabel: 'Accessibility',
-    settingsAccessRowLabel: 'Accessibility',
-    settingsAccessRowSub: 'Font size & display',
-    /* Accessibility panel */
-    accTitle: 'Accessibility',
-    accFontsizeLabel: 'Font Size',
-    fsSmall: 'Small', fsDefault: 'Default', fsLarge: 'Large', fsXlarge: 'X-Large',
-    fontPreview: 'The quick brown fox jumps over the lazy dog.',
-    /* About panel */
-    aboutTitle: 'About Antartica.Org',
-    aboutTagline: 'Explore the frozen continent',
-    aboutBody1: 'Antartica.Org is an informational hub dedicated to the world\'s southernmost continent — its science, ecology, geopolitics, and centuries of exploration history.',
-    aboutMissionLabel: 'Mission',
-    aboutMissionBody: 'We believe knowledge about Antarctica matters — for climate science, biodiversity, and the future of our planet. This site gathers the best resources in one place, freely available to everyone.',
-    aboutLegalLabel: 'Legal',
-    aboutTermsText: 'Terms of Use',
-    aboutPrivText: 'Privacy Policy',
-    aboutDiscText: 'Disclaimer',
-    aboutCookieText: 'Cookie Policy',
-    /* External warning */
-    extWarnTitle: 'Leaving Antartica.Org',
-    extWarnBody: 'You\'re about to visit an external site. Antartica.Org is not responsible for content on third-party sites.',
-    extWarnContinue: 'Continue', extWarnCancel: 'Cancel',
-    /* Privacy */
-    privTitle: 'Privacy Policy',
-    privBody: 'We collect minimal data and only use cookies as described in our Cookie Policy. Your data is never sold to third parties.',
-    privCookieLink: 'Cookie Policy',
-    /* Disclaimer */
-    discTitle: 'Disclaimer',
-    discBody: 'Content on Antartica.Org is for informational purposes only. We make no warranties regarding accuracy and accept no liability for reliance on this content.',
-    discTermsLink: 'Terms', discPrivBtn: 'Privacy Policy',
-    /* Share */
-    shareTitle: 'Share Antartica.Org',
-    /* Cookie */
-    cookieTitle: 'Cookies on Antartica.Org',
-    cookieBody: 'Essential cookies keep the site working. Optional analytics are your choice.',
-    cookiePolicyLink: 'Cookie Policy.',
-    cookieAccept: 'Accept All', cookieEssential: 'Essential Only',
-    /* Language panel */
-    langPanelTitle: 'Language',
-    langSelectLabel: 'Select Language',
-    langEnName: 'English', langFrName: 'French', langHiName: 'Hindi', langJaName: 'Japanese', langKoName: 'Korean', langDeName: 'German', langItName: 'Italian',
-    /* Footer */
-    footerLangPill: 'en\u2011US',
-    /* Bottom nav */
-    bnHome: 'Home', bnSearch: 'Search', bnShare: 'Share', bnSettings: 'Settings',
-    /* Drawer groups */
-    grpSite: 'Site', grpLegal: 'Legal', grpMore: 'More', grpExplore: 'Explore',
-    /* Site items */
-    site: [
-      { title:'About Antartica', sub:'Who we are' },
-      { title:'Settings',        sub:'Preferences' },
-      { title:'Blog',            sub:'Articles' },
-      { title:'Share',           sub:'Spread the word' },
-      { title:'Accessibility',   sub:'For everyone' },
-      { title:'Sitemap',         sub:'All pages' },
-      { title:'Terms',           sub:'Usage rules' },
-      { title:'Privacy Policy',  sub:'Data protection' },
-      { title:'Disclaimer',      sub:'Legal notice' },
-      { title:'Cookie Policy',   sub:'Data & cookies' },
-      { title:'Language',        sub:'Change locale' },
-      { title:'Wikipedia',       sub:'External resource' },
-      { title:'Google',          sub:'Search Antarctica' },
-      { title:'Reddit',          sub:'Community' },
-    ],
-    /* Footer cols */
-    footerCols: [
-      { h:'Legal',   keys:['Terms','Privacy Policy','Disclaimer','Cookie Policy'] },
-      { h:'Site',    keys:['About Antartica','Settings','Blog','Share'] },
-      { h:'Explore', keys:['Wikipedia','Google','Reddit','Language'] },
-      { h:'More',    keys:['Accessibility','Sitemap'] },
-    ],
-    noResults: 'No results for',
-    results: 'result', results_pl: 'results',
-  },
-  fr: {
-    /* Nav */
-    searchPill: 'Rechercher',
-    /* Hero */
-    heroEyebrow: 'Explorez le continent gelé',
-    heroTitle: 'L\'Ant<em>arc</em>tique<br>Vous Attend',
-    heroSub: 'Découvrez des faits, ressources et liens sur le continent le plus reculé du monde — 14 millions de km² de glace ancienne, de science et de merveilles.',
-    heroCta: 'Rechercher sur Antartica.Org',
-    /* Section */
-    sectionExplore: 'Explorer',
-    /* Search hints */
-    shNavigate: 'Naviguer', shOpen: 'Ouvrir', shClose: 'Fermer',
-    searchPlaceholder: 'Rechercher sur Antartica.Org…',
-    /* Settings */
-    settingsTitle: 'Paramètres',
-    settingsThemeLabel: 'Thème',
-    settingsAccessLabel: 'Accessibilité',
-    settingsAccessRowLabel: 'Accessibilité',
-    settingsAccessRowSub: 'Taille de police et affichage',
-    /* Accessibility panel */
-    accTitle: 'Accessibilité',
-    accFontsizeLabel: 'Taille de police',
-    fsSmall: 'Petit', fsDefault: 'Défaut', fsLarge: 'Grand', fsXlarge: 'Très grand',
-    fontPreview: 'Le renard brun rapide saute par-dessus le chien paresseux.',
-    /* About panel */
-    aboutTitle: 'À propos d\'Antartica.Org',
-    aboutTagline: 'Explorez le continent gelé',
-    aboutBody1: 'Antartica.Org est un hub d\'information dédié au continent le plus au sud du monde — sa science, son écologie, sa géopolitique et des siècles d\'histoire d\'exploration.',
-    aboutMissionLabel: 'Mission',
-    aboutMissionBody: 'Nous croyons que la connaissance de l\'Antarctique est importante — pour la science du climat, la biodiversité et l\'avenir de notre planète. Ce site rassemble les meilleures ressources en un seul endroit, librement accessibles à tous.',
-    aboutLegalLabel: 'Juridique',
-    aboutTermsText: 'Conditions d\'utilisation',
-    aboutPrivText: 'Politique de confidentialité',
-    aboutDiscText: 'Avertissement',
-    aboutCookieText: 'Politique des cookies',
-    /* External warning */
-    extWarnTitle: 'Quitter Antartica.Org',
-    extWarnBody: 'Vous êtes sur le point de visiter un site externe. Antartica.Org n\'est pas responsable du contenu des sites tiers.',
-    extWarnContinue: 'Continuer', extWarnCancel: 'Annuler',
-    /* Privacy */
-    privTitle: 'Politique de confidentialité',
-    privBody: 'Nous collectons un minimum de données et n\'utilisons que les cookies décrits dans notre politique des cookies. Vos données ne sont jamais vendues à des tiers.',
-    privCookieLink: 'Politique des cookies',
-    /* Disclaimer */
-    discTitle: 'Avertissement',
-    discBody: 'Le contenu d\'Antartica.Org est fourni à titre informatif uniquement. Nous n\'offrons aucune garantie quant à l\'exactitude et n\'assumons aucune responsabilité pour toute dépendance à ce contenu.',
-    discTermsLink: 'Conditions', discPrivBtn: 'Politique de confidentialité',
-    /* Share */
-    shareTitle: 'Partager Antartica.Org',
-    /* Cookie */
-    cookieTitle: 'Cookies sur Antartica.Org',
-    cookieBody: 'Les cookies essentiels maintiennent le site en fonctionnement. Les analyses facultatives sont votre choix.',
-    cookiePolicyLink: 'Politique des cookies.',
-    cookieAccept: 'Tout accepter', cookieEssential: 'Essentiels seulement',
-    /* Language panel */
-    langPanelTitle: 'Langue',
-    langSelectLabel: 'Choisir la langue',
-    langEnName: 'Anglais', langFrName: 'Français', langHiName: 'Hindi', langJaName: 'Japonais', langKoName: 'Coréen', langDeName: 'Allemand', langItName: 'Italien',
-    /* Footer */
-    footerLangPill: 'fr\u2011FR',
-    /* Bottom nav */
-    bnHome: 'Accueil', bnSearch: 'Rechercher', bnShare: 'Partager', bnSettings: 'Paramètres',
-    /* Drawer groups */
-    grpSite: 'Site', grpLegal: 'Juridique', grpMore: 'Plus', grpExplore: 'Explorer',
-    /* Site items translated */
-    site: [
-      { title:'À propos d\'Antartica', sub:'Qui sommes-nous' },
-      { title:'Paramètres',            sub:'Préférences' },
-      { title:'Blog',                  sub:'Articles' },
-      { title:'Partager',              sub:'Faites passer le mot' },
-      { title:'Accessibilité',         sub:'Pour tous' },
-      { title:'Plan du site',          sub:'Toutes les pages' },
-      { title:'Conditions',            sub:'Règles d\'utilisation' },
-      { title:'Politique de confidentialité', sub:'Protection des données' },
-      { title:'Avertissement',         sub:'Notice légale' },
-      { title:'Politique des cookies', sub:'Données et cookies' },
-      { title:'Langue',                sub:'Changer de locale' },
-      { title:'Wikipédia',             sub:'Ressource externe' },
-      { title:'Google',                sub:'Rechercher l\'Antarctique' },
-      { title:'Reddit',                sub:'Communauté' },
-    ],
-    footerCols: [
-      { h:'Juridique', keys:['Conditions','Politique de confidentialité','Avertissement','Politique des cookies'] },
-      { h:'Site',      keys:['À propos d\'Antartica','Paramètres','Blog','Partager'] },
-      { h:'Explorer',  keys:['Wikipédia','Google','Reddit','Langue'] },
-      { h:'Plus',      keys:['Accessibilité','Plan du site'] },
-    ],
-    noResults: 'Aucun résultat pour',
-    results: 'résultat', results_pl: 'résultats',
-  },
-  hi: {
-    searchPill: 'खोजें',
-    heroEyebrow: 'जमे हुए महाद्वीप की खोज करें',
-    heroTitle: 'अंट<em>ार्क</em>टिका<br>आपका इंतजार करता है',
-    heroSub: 'दुनिया के सबसे दूरस्थ महाद्वीप के बारे में तथ्य, संसाधन और लिंक खोजें — 14 मिलियन किमी² प्राचीन बर्फ, विज्ञान और आश्चर्य।',
-    heroCta: 'Antartica.Org खोजें',
-    sectionExplore: 'अन्वेषण करें',
-    shNavigate: 'नेविगेट करें', shOpen: 'खोलें', shClose: 'बंद करें',
-    searchPlaceholder: 'Antartica.Org खोजें…',
-    settingsTitle: 'सेटिंग्स',
-    settingsThemeLabel: 'थीम',
-    settingsAccessLabel: 'पहुंच',
-    settingsAccessRowLabel: 'पहुंच',
-    settingsAccessRowSub: 'फ़ॉन्ट आकार और प्रदर्शन',
-    accTitle: 'पहुंच',
-    accFontsizeLabel: 'फ़ॉन्ट आकार',
-    fsSmall: 'छोटा', fsDefault: 'डिफ़ॉल्ट', fsLarge: 'बड़ा', fsXlarge: 'अत्यंत बड़ा',
-    fontPreview: 'चालाक भूरी लोमड़ी आलसी कुत्ते के ऊपर कूदती है।',
-    aboutTitle: 'Antartica.Org के बारे में',
-    aboutTagline: 'जमे हुए महाद्वीप की खोज करें',
-    aboutBody1: 'Antartica.Org दुनिया के सबसे दक्षिणी महाद्वीप — इसके विज्ञान, पारिस्थितिकी, भू-राजनीति और सदियों के अन्वेषण इतिहास को समर्पित एक सूचना केंद्र है।',
-    aboutMissionLabel: 'मिशन',
-    aboutMissionBody: 'हम मानते हैं कि अंटार्कटिका के बारे में ज्ञान महत्वपूर्ण है — जलवायु विज्ञान, जैव विविधता और हमारे ग्रह के भविष्य के लिए। यह साइट सभी के लिए स्वतंत्र रूप से उपलब्ध सर्वोत्तम संसाधनों को एक स्थान पर एकत्रित करती है।',
-    aboutLegalLabel: 'कानूनी',
-    aboutTermsText: 'उपयोग की शर्तें',
-    aboutPrivText: 'गोपनीयता नीति',
-    aboutDiscText: 'अस्वीकरण',
-    aboutCookieText: 'कुकी नीति',
-    extWarnTitle: 'Antartica.Org छोड़ रहे हैं',
-    extWarnBody: 'आप एक बाहरी साइट पर जाने वाले हैं। Antartica.Org तृतीय-पक्ष साइटों की सामग्री के लिए जिम्मेदार नहीं है।',
-    extWarnContinue: 'जारी रखें', extWarnCancel: 'रद्द करें',
-    privTitle: 'गोपनीयता नीति',
-    privBody: 'हम न्यूनतम डेटा एकत्र करते हैं और केवल हमारी कुकी नीति में वर्णित कुकीज़ का उपयोग करते हैं। आपका डेटा कभी भी तृतीय पक्षों को नहीं बेचा जाता।',
-    privCookieLink: 'कुकी नीति',
-    discTitle: 'अस्वीकरण',
-    discBody: 'Antartica.Org पर सामग्री केवल सूचनात्मक उद्देश्यों के लिए है। हम सटीकता के संबंध में कोई वारंटी नहीं देते और इस सामग्री पर निर्भरता के लिए कोई दायित्व स्वीकार नहीं करते।',
-    discTermsLink: 'शर्तें', discPrivBtn: 'गोपनीयता नीति',
-    shareTitle: 'Antartica.Org साझा करें',
-    cookieTitle: 'Antartica.Org पर कुकीज़',
-    cookieBody: 'आवश्यक कुकीज़ साइट को काम करती रहती हैं। वैकल्पिक विश्लेषण आपकी पसंद है।',
-    cookiePolicyLink: 'कुकी नीति।',
-    cookieAccept: 'सभी स्वीकार करें', cookieEssential: 'केवल आवश्यक',
-    langPanelTitle: 'भाषा',
-    langSelectLabel: 'भाषा चुनें',
-    langEnName: 'अंग्रेज़ी', langFrName: 'फ़्रेंच', langHiName: 'हिंदी', langJaName: 'जापानी', langKoName: 'कोरियाई', langDeName: 'जर्मन', langItName: 'इतालवी',
-    footerLangPill: 'hi\u2011IN',
-    bnHome: 'होम', bnSearch: 'खोजें', bnShare: 'साझा करें', bnSettings: 'सेटिंग्स',
-    grpSite: 'साइट', grpLegal: 'कानूनी', grpMore: 'अधिक', grpExplore: 'अन्वेषण',
-    site: [
-      { title:'Antartica के बारे में',  sub:'हम कौन हैं' },
-      { title:'सेटिंग्स',               sub:'प्राथमिकताएं' },
-      { title:'ब्लॉग',                   sub:'लेख' },
-      { title:'साझा करें',              sub:'बात फैलाएं' },
-      { title:'पहुंच',                   sub:'सभी के लिए' },
-      { title:'साइटमैप',               sub:'सभी पृष्ठ' },
-      { title:'शर्तें',                  sub:'उपयोग नियम' },
-      { title:'गोपनीयता नीति',         sub:'डेटा सुरक्षा' },
-      { title:'अस्वीकरण',              sub:'कानूनी सूचना' },
-      { title:'कुकी नीति',             sub:'डेटा और कुकीज़' },
-      { title:'भाषा',                   sub:'लोकेल बदलें' },
-      { title:'Wikipedia',              sub:'बाहरी संसाधन' },
-      { title:'Google',                 sub:'अंटार्कटिका खोजें' },
-      { title:'Reddit',                 sub:'समुदाय' },
-    ],
-    footerCols: [
-      { h:'कानूनी',    keys:['शर्तें','गोपनीयता नीति','अस्वीकरण','कुकी नीति'] },
-      { h:'साइट',      keys:['Antartica के बारे में','सेटिंग्स','ब्लॉग','साझा करें'] },
-      { h:'अन्वेषण',   keys:['Wikipedia','Google','Reddit','भाषा'] },
-      { h:'अधिक',      keys:['पहुंच','साइटमैप'] },
-    ],
-    noResults: 'के लिए कोई परिणाम नहीं',
-    results: 'परिणाम', results_pl: 'परिणाम',
-  },
-  ja: {
-    searchPill: '検索',
-    heroEyebrow: '凍った大陸を探索する',
-    heroTitle: '南<em>極</em>大陸が<br>あなたを待っています',
-    heroSub: '世界で最も遠隔地の大陸に関する事実、リソース、リンクを発見してください — 1400万km²の太古の氷、科学、そして驚異。',
-    heroCta: 'Antartica.Orgを検索',
-    sectionExplore: '探索する',
-    shNavigate: 'ナビゲート', shOpen: '開く', shClose: '閉じる',
-    searchPlaceholder: 'Antartica.Orgを検索…',
-    settingsTitle: '設定',
-    settingsThemeLabel: 'テーマ',
-    settingsAccessLabel: 'アクセシビリティ',
-    settingsAccessRowLabel: 'アクセシビリティ',
-    settingsAccessRowSub: 'フォントサイズと表示',
-    accTitle: 'アクセシビリティ',
-    accFontsizeLabel: 'フォントサイズ',
-    fsSmall: '小', fsDefault: 'デフォルト', fsLarge: '大', fsXlarge: '特大',
-    fontPreview: '素早い茶色のキツネは怠け者の犬を飛び越える。',
-    aboutTitle: 'Antartica.Orgについて',
-    aboutTagline: '凍った大陸を探索する',
-    aboutBody1: 'Antartica.Orgは、世界最南端の大陸 — その科学、生態学、地政学、そして何世紀にもわたる探検の歴史に特化した情報ハブです。',
-    aboutMissionLabel: 'ミッション',
-    aboutMissionBody: '南極大陸についての知識は気候科学、生物多様性、そして私たちの惑星の未来のために重要だと信じています。このサイトは、すべての人が自由に利用できるよう、最良のリソースを一か所に集めています。',
-    aboutLegalLabel: '法律',
-    aboutTermsText: '利用規約',
-    aboutPrivText: 'プライバシーポリシー',
-    aboutDiscText: '免責事項',
-    aboutCookieText: 'クッキーポリシー',
-    extWarnTitle: 'Antartica.Orgを離れる',
-    extWarnBody: '外部サイトにアクセスしようとしています。Antartica.Orgはサードパーティサイトのコンテンツに責任を負いません。',
-    extWarnContinue: '続ける', extWarnCancel: 'キャンセル',
-    privTitle: 'プライバシーポリシー',
-    privBody: '最小限のデータを収集し、クッキーポリシーに記載されているクッキーのみを使用します。あなたのデータは第三者に販売されることはありません。',
-    privCookieLink: 'クッキーポリシー',
-    discTitle: '免責事項',
-    discBody: 'Antartica.Orgのコンテンツは情報提供のみを目的としています。正確性に関していかなる保証もせず、このコンテンツへの依存に対する責任も負いません。',
-    discTermsLink: '利用規約', discPrivBtn: 'プライバシーポリシー',
-    shareTitle: 'Antartica.Orgをシェア',
-    cookieTitle: 'Antartica.Orgのクッキー',
-    cookieBody: '必須クッキーがサイトを動作させ続けます。オプションの分析はあなたの選択です。',
-    cookiePolicyLink: 'クッキーポリシー。',
-    cookieAccept: 'すべて受け入れる', cookieEssential: '必須のみ',
-    langPanelTitle: '言語',
-    langSelectLabel: '言語を選択',
-    langEnName: '英語', langFrName: 'フランス語', langHiName: 'ヒンディー語', langJaName: '日本語', langKoName: '韓国語', langDeName: 'ドイツ語', langItName: 'イタリア語',
-    footerLangPill: 'ja\u2011JP',
-    bnHome: 'ホーム', bnSearch: '検索', bnShare: 'シェア', bnSettings: '設定',
-    grpSite: 'サイト', grpLegal: '法律', grpMore: 'その他', grpExplore: '探索',
-    site: [
-      { title:'Antarticaについて',   sub:'私たちについて' },
-      { title:'設定',                sub:'環境設定' },
-      { title:'ブログ',              sub:'記事' },
-      { title:'シェア',              sub:'広める' },
-      { title:'アクセシビリティ',    sub:'すべての人へ' },
-      { title:'サイトマップ',        sub:'全ページ' },
-      { title:'利用規約',            sub:'使用ルール' },
-      { title:'プライバシーポリシー', sub:'データ保護' },
-      { title:'免責事項',            sub:'法的通知' },
-      { title:'クッキーポリシー',    sub:'データとクッキー' },
-      { title:'言語',                sub:'ロケール変更' },
-      { title:'Wikipedia',           sub:'外部リソース' },
-      { title:'Google',              sub:'南極を検索' },
-      { title:'Reddit',              sub:'コミュニティ' },
-    ],
-    footerCols: [
-      { h:'法律',    keys:['利用規約','プライバシーポリシー','免責事項','クッキーポリシー'] },
-      { h:'サイト',  keys:['Antarticaについて','設定','ブログ','シェア'] },
-      { h:'探索',    keys:['Wikipedia','Google','Reddit','言語'] },
-      { h:'その他',  keys:['アクセシビリティ','サイトマップ'] },
-    ],
-    noResults: '検索結果なし：',
-    results: '件', results_pl: '件',
-  },
-  ko: {
-    searchPill: '검색',
-    heroEyebrow: '얼어붙은 대륙을 탐험하세요',
-    heroTitle: '남<em>극</em>대륙이<br>기다립니다',
-    heroSub: '세계에서 가장 외딴 대륙에 관한 사실, 자료 및 링크를 발견하세요 — 1400만 km²의 고대 얼음, 과학, 그리고 경이로움.',
-    heroCta: 'Antartica.Org 검색',
-    sectionExplore: '탐험하기',
-    shNavigate: '탐색', shOpen: '열기', shClose: '닫기',
-    searchPlaceholder: 'Antartica.Org 검색…',
-    settingsTitle: '설정',
-    settingsThemeLabel: '테마',
-    settingsAccessLabel: '접근성',
-    settingsAccessRowLabel: '접근성',
-    settingsAccessRowSub: '글꼴 크기 및 디스플레이',
-    accTitle: '접근성',
-    accFontsizeLabel: '글꼴 크기',
-    fsSmall: '작게', fsDefault: '기본', fsLarge: '크게', fsXlarge: '매우 크게',
-    fontPreview: '빠른 갈색 여우가 게으른 개를 뛰어넘는다.',
-    aboutTitle: 'Antartica.Org 소개',
-    aboutTagline: '얼어붙은 대륙을 탐험하세요',
-    aboutBody1: 'Antartica.Org는 세계 최남단 대륙 — 그 과학, 생태학, 지정학 및 수 세기에 걸친 탐험 역사에 전념하는 정보 허브입니다.',
-    aboutMissionLabel: '미션',
-    aboutMissionBody: '남극대륙에 대한 지식은 기후 과학, 생물 다양성, 우리 행성의 미래를 위해 중요하다고 믿습니다. 이 사이트는 모든 사람이 자유롭게 이용할 수 있도록 최고의 자료를 한 곳에 모읍니다.',
-    aboutLegalLabel: '법률',
-    aboutTermsText: '이용약관',
-    aboutPrivText: '개인정보 처리방침',
-    aboutDiscText: '면책조항',
-    aboutCookieText: '쿠키 정책',
-    extWarnTitle: 'Antartica.Org 떠나기',
-    extWarnBody: '외부 사이트를 방문하려고 합니다. Antartica.Org는 제3자 사이트의 콘텐츠에 대해 책임지지 않습니다.',
-    extWarnContinue: '계속', extWarnCancel: '취소',
-    privTitle: '개인정보 처리방침',
-    privBody: '최소한의 데이터를 수집하며 쿠키 정책에 설명된 쿠키만 사용합니다. 귀하의 데이터는 제3자에게 판매되지 않습니다.',
-    privCookieLink: '쿠키 정책',
-    discTitle: '면책조항',
-    discBody: 'Antartica.Org의 콘텐츠는 정보 제공 목적으로만 제공됩니다. 정확성에 대해 보증하지 않으며 이 콘텐츠에 대한 의존으로 인한 어떠한 책임도 지지 않습니다.',
-    discTermsLink: '약관', discPrivBtn: '개인정보 처리방침',
-    shareTitle: 'Antartica.Org 공유',
-    cookieTitle: 'Antartica.Org의 쿠키',
-    cookieBody: '필수 쿠키는 사이트가 작동하도록 유지합니다. 선택적 분석은 귀하의 선택입니다.',
-    cookiePolicyLink: '쿠키 정책.',
-    cookieAccept: '모두 수락', cookieEssential: '필수만',
-    langPanelTitle: '언어',
-    langSelectLabel: '언어 선택',
-    langEnName: '영어', langFrName: '프랑스어', langHiName: '힌디어', langJaName: '일본어', langKoName: '한국어', langDeName: '독일어', langItName: '이탈리아어',
-    footerLangPill: 'ko\u2011KR',
-    bnHome: '홈', bnSearch: '검색', bnShare: '공유', bnSettings: '설정',
-    grpSite: '사이트', grpLegal: '법률', grpMore: '더보기', grpExplore: '탐험',
-    site: [
-      { title:'Antartica 소개',       sub:'우리에 대해' },
-      { title:'설정',                  sub:'환경설정' },
-      { title:'블로그',                sub:'기사' },
-      { title:'공유',                  sub:'알리기' },
-      { title:'접근성',                sub:'모두를 위해' },
-      { title:'사이트맵',              sub:'모든 페이지' },
-      { title:'이용약관',              sub:'사용 규칙' },
-      { title:'개인정보 처리방침',     sub:'데이터 보호' },
-      { title:'면책조항',              sub:'법적 고지' },
-      { title:'쿠키 정책',             sub:'데이터 및 쿠키' },
-      { title:'언어',                  sub:'로케일 변경' },
-      { title:'Wikipedia',             sub:'외부 자료' },
-      { title:'Google',                sub:'남극 검색' },
-      { title:'Reddit',                sub:'커뮤니티' },
-    ],
-    footerCols: [
-      { h:'법률',    keys:['이용약관','개인정보 처리방침','면책조항','쿠키 정책'] },
-      { h:'사이트',  keys:['Antartica 소개','설정','블로그','공유'] },
-      { h:'탐험',    keys:['Wikipedia','Google','Reddit','언어'] },
-      { h:'더보기',  keys:['접근성','사이트맵'] },
-    ],
-    noResults: '검색 결과 없음:',
-    results: '결과', results_pl: '결과',
-  },
-  de: {
-    searchPill: 'Suchen',
-    heroEyebrow: 'Erforsche den gefrorenen Kontinent',
-    heroTitle: 'Ant<em>ark</em>tis<br>Wartet',
-    heroSub: 'Entdecken Sie Fakten, Ressourcen und Links über den entlegensten Kontinent der Welt — 14 Millionen km² uraltes Eis, Wissenschaft und Wunder.',
-    heroCta: 'Antartica.Org durchsuchen',
-    sectionExplore: 'Erkunden',
-    shNavigate: 'Navigieren', shOpen: 'Öffnen', shClose: 'Schließen',
-    searchPlaceholder: 'Antartica.Org durchsuchen…',
-    settingsTitle: 'Einstellungen',
-    settingsThemeLabel: 'Design',
-    settingsAccessLabel: 'Barrierefreiheit',
-    settingsAccessRowLabel: 'Barrierefreiheit',
-    settingsAccessRowSub: 'Schriftgröße & Anzeige',
-    accTitle: 'Barrierefreiheit',
-    accFontsizeLabel: 'Schriftgröße',
-    fsSmall: 'Klein', fsDefault: 'Standard', fsLarge: 'Groß', fsXlarge: 'Sehr groß',
-    fontPreview: 'Der schnelle braune Fuchs springt über den faulen Hund.',
-    aboutTitle: 'Über Antartica.Org',
-    aboutTagline: 'Erforsche den gefrorenen Kontinent',
-    aboutBody1: 'Antartica.Org ist ein Informationszentrum, das dem südlichsten Kontinent der Welt gewidmet ist — seiner Wissenschaft, Ökologie, Geopolitik und jahrhundertelangen Erkundungsgeschichte.',
-    aboutMissionLabel: 'Mission',
-    aboutMissionBody: 'Wir glauben, dass Wissen über die Antarktis wichtig ist — für die Klimawissenschaft, die Artenvielfalt und die Zukunft unseres Planeten. Diese Seite versammelt die besten Ressourcen an einem Ort, frei zugänglich für alle.',
-    aboutLegalLabel: 'Rechtliches',
-    aboutTermsText: 'Nutzungsbedingungen',
-    aboutPrivText: 'Datenschutzrichtlinie',
-    aboutDiscText: 'Haftungsausschluss',
-    aboutCookieText: 'Cookie-Richtlinie',
-    extWarnTitle: 'Antartica.Org verlassen',
-    extWarnBody: 'Sie sind dabei, eine externe Website zu besuchen. Antartica.Org ist nicht für Inhalte auf Drittanbieter-Websites verantwortlich.',
-    extWarnContinue: 'Weiter', extWarnCancel: 'Abbrechen',
-    privTitle: 'Datenschutzrichtlinie',
-    privBody: 'Wir erheben minimale Daten und verwenden nur Cookies, wie in unserer Cookie-Richtlinie beschrieben. Ihre Daten werden niemals an Dritte verkauft.',
-    privCookieLink: 'Cookie-Richtlinie',
-    discTitle: 'Haftungsausschluss',
-    discBody: 'Die Inhalte auf Antartica.Org dienen nur zu Informationszwecken. Wir geben keine Garantien bezüglich der Richtigkeit und übernehmen keine Haftung für das Vertrauen in diese Inhalte.',
-    discTermsLink: 'Bedingungen', discPrivBtn: 'Datenschutzrichtlinie',
-    shareTitle: 'Antartica.Org teilen',
-    cookieTitle: 'Cookies auf Antartica.Org',
-    cookieBody: 'Notwendige Cookies halten die Website am Laufen. Optionale Analysen sind Ihre Wahl.',
-    cookiePolicyLink: 'Cookie-Richtlinie.',
-    cookieAccept: 'Alle akzeptieren', cookieEssential: 'Nur notwendige',
-    langPanelTitle: 'Sprache',
-    langSelectLabel: 'Sprache auswählen',
-    langEnName: 'Englisch', langFrName: 'Französisch', langHiName: 'Hindi', langJaName: 'Japanisch', langKoName: 'Koreanisch', langDeName: 'Deutsch', langItName: 'Italienisch',
-    footerLangPill: 'de\u2011DE',
-    bnHome: 'Startseite', bnSearch: 'Suchen', bnShare: 'Teilen', bnSettings: 'Einstellungen',
-    grpSite: 'Website', grpLegal: 'Rechtliches', grpMore: 'Mehr', grpExplore: 'Erkunden',
-    site: [
-      { title:'Über Antartica',          sub:'Wer wir sind' },
-      { title:'Einstellungen',           sub:'Einstellungen' },
-      { title:'Blog',                    sub:'Artikel' },
-      { title:'Teilen',                  sub:'Weiterempfehlen' },
-      { title:'Barrierefreiheit',        sub:'Für alle' },
-      { title:'Sitemap',                 sub:'Alle Seiten' },
-      { title:'Bedingungen',             sub:'Nutzungsregeln' },
-      { title:'Datenschutzrichtlinie',   sub:'Datenschutz' },
-      { title:'Haftungsausschluss',      sub:'Rechtlicher Hinweis' },
-      { title:'Cookie-Richtlinie',       sub:'Daten & Cookies' },
-      { title:'Sprache',                 sub:'Sprache ändern' },
-      { title:'Wikipedia',               sub:'Externe Ressource' },
-      { title:'Google',                  sub:'Antarktis suchen' },
-      { title:'Reddit',                  sub:'Community' },
-    ],
-    footerCols: [
-      { h:'Rechtliches', keys:['Bedingungen','Datenschutzrichtlinie','Haftungsausschluss','Cookie-Richtlinie'] },
-      { h:'Website',     keys:['Über Antartica','Einstellungen','Blog','Teilen'] },
-      { h:'Erkunden',    keys:['Wikipedia','Google','Reddit','Sprache'] },
-      { h:'Mehr',        keys:['Barrierefreiheit','Sitemap'] },
-    ],
-    noResults: 'Keine Ergebnisse für',
-    results: 'Ergebnis', results_pl: 'Ergebnisse',
-  },
-  it: {
-    searchPill: 'Cerca',
-    heroEyebrow: 'Esplora il continente ghiacciato',
-    heroTitle: 'L\'Ant<em>arc</em>tide<br>Ti Aspetta',
-    heroSub: 'Scopri fatti, risorse e link sul continente più remoto del mondo — 14 milioni di km² di ghiaccio antico, scienza e meraviglie.',
-    heroCta: 'Cerca su Antartica.Org',
-    sectionExplore: 'Esplora',
-    shNavigate: 'Naviga', shOpen: 'Apri', shClose: 'Chiudi',
-    searchPlaceholder: 'Cerca su Antartica.Org…',
-    settingsTitle: 'Impostazioni',
-    settingsThemeLabel: 'Tema',
-    settingsAccessLabel: 'Accessibilità',
-    settingsAccessRowLabel: 'Accessibilità',
-    settingsAccessRowSub: 'Dimensione carattere e display',
-    accTitle: 'Accessibilità',
-    accFontsizeLabel: 'Dimensione carattere',
-    fsSmall: 'Piccolo', fsDefault: 'Predefinito', fsLarge: 'Grande', fsXlarge: 'Extra grande',
-    fontPreview: 'La volpe marrone veloce salta sopra il cane pigro.',
-    aboutTitle: 'Riguardo ad Antartica.Org',
-    aboutTagline: 'Esplora il continente ghiacciato',
-    aboutBody1: 'Antartica.Org è un hub informativo dedicato al continente più meridionale del mondo — la sua scienza, ecologia, geopolitica e secoli di storia esplorativa.',
-    aboutMissionLabel: 'Missione',
-    aboutMissionBody: 'Crediamo che la conoscenza dell\'Antartide sia importante — per la scienza del clima, la biodiversità e il futuro del nostro pianeta. Questo sito raccoglie le migliori risorse in un unico posto, liberamente accessibili a tutti.',
-    aboutLegalLabel: 'Legale',
-    aboutTermsText: 'Termini di utilizzo',
-    aboutPrivText: 'Informativa sulla privacy',
-    aboutDiscText: 'Disclaimer',
-    aboutCookieText: 'Informativa sui cookie',
-    extWarnTitle: 'Uscire da Antartica.Org',
-    extWarnBody: 'Stai per visitare un sito esterno. Antartica.Org non è responsabile dei contenuti su siti di terze parti.',
-    extWarnContinue: 'Continua', extWarnCancel: 'Annulla',
-    privTitle: 'Informativa sulla privacy',
-    privBody: 'Raccogliamo dati minimi e utilizziamo solo cookie come descritto nella nostra informativa sui cookie. I tuoi dati non vengono mai venduti a terze parti.',
-    privCookieLink: 'Informativa sui cookie',
-    discTitle: 'Disclaimer',
-    discBody: 'I contenuti su Antartica.Org sono solo a scopo informativo. Non offriamo garanzie riguardo all\'accuratezza e non accettiamo responsabilità per l\'affidamento su questi contenuti.',
-    discTermsLink: 'Termini', discPrivBtn: 'Informativa sulla privacy',
-    shareTitle: 'Condividi Antartica.Org',
-    cookieTitle: 'Cookie su Antartica.Org',
-    cookieBody: 'I cookie essenziali mantengono il sito funzionante. Le analisi opzionali sono una tua scelta.',
-    cookiePolicyLink: 'Informativa sui cookie.',
-    cookieAccept: 'Accetta tutto', cookieEssential: 'Solo essenziali',
-    langPanelTitle: 'Lingua',
-    langSelectLabel: 'Seleziona la lingua',
-    langEnName: 'Inglese', langFrName: 'Francese', langHiName: 'Hindi', langJaName: 'Giapponese', langKoName: 'Coreano', langDeName: 'Tedesco', langItName: 'Italiano',
-    footerLangPill: 'it\u2011IT',
-    bnHome: 'Home', bnSearch: 'Cerca', bnShare: 'Condividi', bnSettings: 'Impostazioni',
-    grpSite: 'Sito', grpLegal: 'Legale', grpMore: 'Altro', grpExplore: 'Esplora',
-    site: [
-      { title:'Chi siamo',                 sub:'La nostra storia' },
-      { title:'Impostazioni',              sub:'Preferenze' },
-      { title:'Blog',                      sub:'Articoli' },
-      { title:'Condividi',                 sub:'Diffondi la voce' },
-      { title:'Accessibilità',             sub:'Per tutti' },
-      { title:'Mappa del sito',            sub:'Tutte le pagine' },
-      { title:'Termini',                   sub:'Regole d\'uso' },
-      { title:'Informativa sulla privacy', sub:'Protezione dati' },
-      { title:'Disclaimer',                sub:'Avviso legale' },
-      { title:'Informativa sui cookie',    sub:'Dati e cookie' },
-      { title:'Lingua',                    sub:'Cambia locale' },
-      { title:'Wikipedia',                 sub:'Risorsa esterna' },
-      { title:'Google',                    sub:'Cerca Antartide' },
-      { title:'Reddit',                    sub:'Comunità' },
-    ],
-    footerCols: [
-      { h:'Legale',  keys:['Termini','Informativa sulla privacy','Disclaimer','Informativa sui cookie'] },
-      { h:'Sito',    keys:['Chi siamo','Impostazioni','Blog','Condividi'] },
-      { h:'Esplora', keys:['Wikipedia','Google','Reddit','Lingua'] },
-      { h:'Altro',   keys:['Accessibilità','Mappa del sito'] },
-    ],
-    noResults: 'Nessun risultato per',
-    results: 'risultato', results_pl: 'risultati',
-  }
-};
-
-/* Detect language: saved cookie → browser language → default en */
-let currentLang = (function detectLang() {
-  const saved = Ck.get('lang');
-  const supported = ['en','fr','hi','ja','ko','de','it'];
-  if (supported.includes(saved)) return saved;
-  const browser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-  if (browser.startsWith('fr')) return 'fr';
-  if (browser.startsWith('hi')) return 'hi';
-  if (browser.startsWith('ja')) return 'ja';
-  if (browser.startsWith('ko')) return 'ko';
-  if (browser.startsWith('de')) return 'de';
-  if (browser.startsWith('it')) return 'it';
-  return 'en';
-})();
-
-function t(key) { return (I18N[currentLang] || I18N.en)[key] || I18N.en[key] || key; }
-
-/* Apply all translations to DOM */
-function applyTranslations() {
-  const lang = currentLang;
-  document.documentElement.lang = {en:'en-US',fr:'fr-FR',hi:'hi-IN',ja:'ja-JP',ko:'ko-KR',de:'de-DE',it:'it-IT'}[lang] || 'en-US';
-
-  /* Nav */
-  const spt = byId('search-pill-text'); if(spt) spt.textContent = t('searchPill');
-
-  /* Hero */
-  const ey = byId('hero-eyebrow'); if(ey) ey.textContent = t('heroEyebrow');
-  const ht = byId('hero-title'); if(ht) ht.innerHTML = t('heroTitle');
-  const hs = byId('hero-sub'); if(hs) hs.textContent = t('heroSub');
-  const hc = byId('hero-cta-text'); if(hc) hc.textContent = t('heroCta');
-
-  /* Section head */
-  const se = byId('section-explore'); if(se) se.textContent = t('sectionExplore');
-
-  /* Search overlay */
-  const si = byId('main-search'); if(si) si.placeholder = t('searchPlaceholder');
-  const shn = byId('sh-navigate'); if(shn) shn.textContent = t('shNavigate');
-  const sho = byId('sh-open'); if(sho) sho.textContent = t('shOpen');
-  const shc = byId('sh-close'); if(shc) shc.textContent = t('shClose');
-
-  /* Settings panel */
-  const stl = byId('settings-title'); if(stl) stl.textContent = t('settingsTitle');
-  const sThL = byId('settings-theme-label'); if(sThL) sThL.textContent = t('settingsThemeLabel');
-  const sAL = byId('settings-access-label'); if(sAL) sAL.textContent = t('settingsAccessLabel');
-  const sARL = byId('settings-access-row-label'); if(sARL) sARL.textContent = t('settingsAccessRowLabel');
-  const sARS = byId('settings-access-row-sub'); if(sARS) sARS.textContent = t('settingsAccessRowSub');
-
-  /* Accessibility panel */
-  const acT = byId('acc-title'); if(acT) acT.textContent = t('accTitle');
-  const acFL = byId('acc-fontsize-label'); if(acFL) acFL.textContent = t('accFontsizeLabel');
-  const fpv = byId('font-size-preview'); if(fpv) fpv.textContent = t('fontPreview');
-  const fsS = byId('fs-small'); if(fsS) fsS.textContent = t('fsSmall');
-  const fsD = byId('fs-default'); if(fsD) fsD.textContent = t('fsDefault');
-  const fsL = byId('fs-large'); if(fsL) fsL.textContent = t('fsLarge');
-  const fsX = byId('fs-xlarge'); if(fsX) fsX.textContent = t('fsXlarge');
-
-  /* About panel */
-  const abT = byId('about-title'); if(abT) abT.textContent = t('aboutTitle');
-  const abTg = byId('about-tagline'); if(abTg) abTg.textContent = t('aboutTagline');
-  const abB1 = byId('about-body1'); if(abB1) abB1.textContent = t('aboutBody1');
-  const abML = byId('about-mission-label'); if(abML) abML.textContent = t('aboutMissionLabel');
-  const abMB = byId('about-mission-body'); if(abMB) abMB.textContent = t('aboutMissionBody');
-  const abLL = byId('about-legal-label'); if(abLL) abLL.textContent = t('aboutLegalLabel');
-  const abTT = byId('about-terms-text'); if(abTT) abTT.textContent = t('aboutTermsText');
-  const abPT = byId('about-priv-text'); if(abPT) abPT.textContent = t('aboutPrivText');
-  const abDT = byId('about-disc-text'); if(abDT) abDT.textContent = t('aboutDiscText');
-  const abCT = byId('about-cookie-text'); if(abCT) abCT.textContent = t('aboutCookieText');
-
-  /* Ext warn */
-  const ewT = byId('ext-warn-title'); if(ewT) ewT.textContent = t('extWarnTitle');
-  const ewB = byId('ext-warn-body'); if(ewB) ewB.textContent = t('extWarnBody');
-  const ewC = byId('ext-warn-continue'); if(ewC) ewC.textContent = t('extWarnContinue');
-  const ewCn = byId('ext-cancel-btn'); if(ewCn) ewCn.textContent = t('extWarnCancel');
-
-  /* Privacy */
-  const pvT = byId('priv-title'); if(pvT) pvT.textContent = t('privTitle');
-  const pvB = byId('priv-body'); if(pvB) pvB.textContent = t('privBody');
-  const pvCL = byId('priv-cookie-link'); if(pvCL) pvCL.textContent = t('privCookieLink');
-
-  /* Disclaimer */
-  const dcT = byId('disc-title'); if(dcT) dcT.textContent = t('discTitle');
-  const dcB = byId('disc-body'); if(dcB) dcB.textContent = t('discBody');
-  const dcTL = byId('disc-terms-link'); if(dcTL) dcTL.textContent = t('discTermsLink');
-  const dcPB = byId('disc-priv-btn'); if(dcPB) dcPB.textContent = t('discPrivBtn');
-
-  /* Share */
-  const shT = byId('share-title'); if(shT) shT.textContent = t('shareTitle');
-
-  /* Cookie */
-  const ckT = byId('cookie-title'); if(ckT) ckT.textContent = t('cookieTitle');
-  const ckB = byId('cookie-body');
-  if(ckB) {
-    ckB.innerHTML = `${esc(t('cookieBody'))} <a href="cookies" id="cookie-policy-link">${esc(t('cookiePolicyLink'))}</a>`;
-  }
-  const ckA = byId('cookie-accept-btn'); if(ckA) ckA.textContent = t('cookieAccept');
-  const ckE = byId('cookie-essential-btn'); if(ckE) ckE.textContent = t('cookieEssential');
-
-  /* Language panel */
-  const lpT = byId('lang-panel-title'); if(lpT) lpT.textContent = t('langPanelTitle');
-  const lpSL = byId('lang-select-label'); if(lpSL) lpSL.textContent = t('langSelectLabel');
-  const lpEnN = byId('lang-en-btn');
-  if(lpEnN) {
-    lpEnN.querySelector('.lang-option-name').textContent = t('langEnName');
-    lpEnN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpEnN.classList.toggle('active', lang === 'en');
-  }
-  const lpFrN = byId('lang-fr-btn');
-  if(lpFrN) {
-    lpFrN.querySelector('.lang-option-name').textContent = t('langFrName');
-    lpFrN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpFrN.classList.toggle('active', lang === 'fr');
-  }
-  const lpHiN = byId('lang-hi-btn');
-  if(lpHiN) {
-    lpHiN.querySelector('.lang-option-name').textContent = t('langHiName');
-    lpHiN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpHiN.classList.toggle('active', lang === 'hi');
-  }
-  const lpJaN = byId('lang-ja-btn');
-  if(lpJaN) {
-    lpJaN.querySelector('.lang-option-name').textContent = t('langJaName');
-    lpJaN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpJaN.classList.toggle('active', lang === 'ja');
-  }
-  const lpKoN = byId('lang-ko-btn');
-  if(lpKoN) {
-    lpKoN.querySelector('.lang-option-name').textContent = t('langKoName');
-    lpKoN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpKoN.classList.toggle('active', lang === 'ko');
-  }
-  const lpDeN = byId('lang-de-btn');
-  if(lpDeN) {
-    lpDeN.querySelector('.lang-option-name').textContent = t('langDeName');
-    lpDeN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpDeN.classList.toggle('active', lang === 'de');
-  }
-  const lpItN = byId('lang-it-btn');
-  if(lpItN) {
-    lpItN.querySelector('.lang-option-name').textContent = t('langItName');
-    lpItN.querySelector('.lang-option-check').innerHTML = IC.check;
-    lpItN.classList.toggle('active', lang === 'it');
-  }
-
-  /* Footer lang pill */
-  const lpl = byId('lang-pill-label'); if(lpl) lpl.textContent = t('footerLangPill');
-
-  /* Rebuild dynamic sections with translated SITE data */
-  rebuildWithTranslations();
-}
-
-/* Merge translated titles/subs into SITE array and rebuild dynamic UI */
-function rebuildWithTranslations() {
-  const siteTr = t('site');
-  SITE.forEach((item, i) => {
-    if (siteTr[i]) {
-      item._title = siteTr[i].title;
-      item._sub   = siteTr[i].sub;
-    }
-  });
-
-  /* Cards */
-  const grid = byId('card-grid');
-  if (grid) {
-    const filter = byId('main-search') ? byId('main-search').value : '';
-    renderCards(filter);
-  }
-
-  /* Footer */
-  buildFooter();
-
-  /* Drawer */
-  buildDrawer();
-
-  /* Bottom nav */
-  buildBottomNav();
-}
-
-/* Language panel open/close */
-function openLanguage() {
-  byId('language-panel').classList.add('open');
-  byId('overlay').classList.add('open');
-}
-function closeLanguage() {
-  byId('language-panel').classList.remove('open');
-  if(!anyOpen()) byId('overlay').classList.remove('open');
-}
-
-/* Set language and persist */
-function setLanguage(lang) {
-  if (!['en','fr','hi','ja','ko','de','it'].includes(lang)) return;
-  currentLang = lang;
-  Ck.set('lang', lang, 365);
-  applyTranslations();
-}
-
-/* ═══════════════════════════════════════════════════
-   INIT — placed here so I18N, currentLang, t() and
-   applyTranslations() are all fully defined before
-   this runs (const/let have no hoisting).
-═══════════════════════════════════════════════════ */
-(function init(){
-  checkCaptcha();
-
-  // Restore saved theme immediately (before paint)
-  const saved = Ck.get('theme');
-  if (saved && saved !== 'polar-night') {
-    document.documentElement.setAttribute('data-theme', saved);
-    const theme = THEMES.find(x=>x.id===saved);
-    if (theme) byId('meta-theme').setAttribute('content', theme.meta);
-  }
-
-  placeStaticIcons();
-  buildAccIcons();
-  buildShare();
-  buildThemeGrid();
-  initFontSize();
-  initAccessibilityFeatures();
-  applyTranslations(); // also calls renderCards, buildFooter, buildDrawer, buildBottomNav
-
-  if(!Ck.get('cookieconsent')){
-    Ck.set('cookieconsent','0');
-    setTimeout(()=>{ byId('cookie-banner').style.display='block'; },900);
-  }
-})();
-
-/* ═══════════════════════════════════════════════════
-   PENGUIN PIXEL ART ENGINE
-═══════════════════════════════════════════════════ */
-(function AntarcticaArt() {
-  const canvas = document.getElementById('antarctica-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  /* ── PENGUIN PIXEL MAP (32×32 grid, 15px per cell = 480×480) ──
-     0=bg  1=black  2=white/cream  3=orange  5=dark-eye  6=eye-shine  7=snow
-  ─────────────────────────────────────────────────────────────────── */
-  const G = 32, SZ = 15;
-  const P = [
-    // rows 0-2: sky
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    // row 3: head top
-    [0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-    // row 4
-    [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
-    // row 5
-    [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0],
-    // row 6: face (white oval on head)
-    [0,0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0,0,0,0],
-    // row 7
-    [0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,0],
-    // row 8: eyes
-    [0,0,0,0,0,0,0,1,1,2,2,5,5,2,2,2,2,5,5,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 9: eye shine
-    [0,0,0,0,0,0,0,1,1,2,2,5,6,2,2,2,2,5,6,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 10: eyes bottom
-    [0,0,0,0,0,0,0,1,1,2,2,5,5,2,2,2,2,5,5,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 11: beak
-    [0,0,0,0,0,0,0,1,1,2,2,2,2,3,3,3,3,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 12: beak lower
-    [0,0,0,0,0,0,0,1,1,2,2,2,3,3,3,3,3,3,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 13: chin
-    [0,0,0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0],
-    // row 14: shoulders expand
-    [0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0],
-    // row 15: body widens — wings start
-    [0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0],
-    // rows 16-21: main body
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0],
-    // row 22: body narrows
-    [0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0],
-    // row 23
-    [0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,0,0,0,0,0,0,0,0],
-    // row 24
-    [0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0],
-    // row 25: hips
-    [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
-    // rows 26-27: legs
-    [0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-    // rows 28-29: feet (orange)
-    [0,0,0,0,0,0,0,3,3,3,3,3,3,0,0,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0],
-    // rows 30-31: snow ground
-    [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-    [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
-  ];
-
-  /* ── THEME PALETTE ─────────────────────────────── */
-  function palette() {
-    const th = document.documentElement.getAttribute('data-theme') || 'polar-night';
-    const light = th === 'blizzard' || th === 'glacier';
-    const themes = {
-      'polar-night': { bg:'#060e1a', snow:'#c8e4ff', snowDeep:'#8ab8dc', aurA:[[0,200,255],[0,130,220]], aurB:[0.16,0.09] },
-      'aurora':      { bg:'#060d16', snow:'#c0f5e0', snowDeep:'#70c8a8', aurA:[[0,240,150],[0,180,100]], aurB:[0.20,0.12] },
-      'volcanic':    { bg:'#100806', snow:'#f0d8b8', snowDeep:'#c8a880', aurA:[[255,130,50],[200,60,10]], aurB:[0.18,0.10] },
-      'blizzard':    { bg:'#dce8f8', snow:'#ffffff', snowDeep:'#c0d8f0', aurA:[[26,95,255],[80,140,255]], aurB:[0.07,0.04] },
-      'glacier':     { bg:'#d0e8f4', snow:'#f0faff', snowDeep:'#a8d0e8', aurA:[[8,145,178],[0,190,220]], aurB:[0.09,0.05] },
-      'obsidian':    { bg:'#060410', snow:'#e8d8ff', snowDeep:'#9060c8', aurA:[[168,85,247],[100,40,210]], aurB:[0.20,0.13] },
-    };
-    const p = themes[th] || themes['polar-night'];
-    return { ...p, light };
-  }
-
-  /* ── PER-PIXEL NOISE (pre-baked) ─────────────── */
-  const noise = Float32Array.from({length: G*G}, () => (Math.random()-0.5)*0.1);
-
-  /* ── STARS ───────────────────────────────────── */
-  const STARS = Array.from({length:60}, () => ({
-    x: Math.random()*480, y: Math.random()*300,
-    ph: Math.random()*Math.PI*2,
-    sp: 0.3+Math.random()*1.0,
-    sz: Math.random()<0.15 ? 2 : 1
-  }));
-
-  /* ── SNOWFLAKES ──────────────────────────────── */
-  const SNOW = Array.from({length:30}, () => ({
-    x: Math.random()*480,
-    y: Math.random()*480,
-    sp: 0.3+Math.random()*0.7,
-    dr: (Math.random()-0.5)*0.4,
-    sz: Math.random()<0.2 ? 2 : 1,
-    op: 0.3+Math.random()*0.5
-  }));
-
-  /* ── BLINK STATE ─────────────────────────────── */
-  let blinkT = 0, blinking = false, nextBlink = 3+Math.random()*4;
-
-  /* ── ANIMATION LOOP ──────────────────────────── */
-  let t = 0, lastFrame = 0;
-  const FPS = 30, INTERVAL = 1000/FPS;
-
-  function draw(now) {
-    requestAnimationFrame(draw);
-    if (now - lastFrame < INTERVAL) return;
-    const dt = (now - lastFrame) / 1000;
-    lastFrame = now;
-    t += 0.018;
-
-    const pal = palette();
-    const W = 480, H = 480;
-
-    /* ── Background ─── */
-    ctx.fillStyle = pal.bg;
-    ctx.fillRect(0, 0, W, H);
-
-    /* ── Aurora bands ─── */
-    for (let b = 0; b < 2; b++) {
-      const [r,g,bl] = pal.aurA[b], al = pal.aurB[b];
-      const yOff = Math.sin(t*0.35 + b*1.9)*20;
-      const grd = ctx.createLinearGradient(0, 0, 0, H);
-      grd.addColorStop(0,    `rgba(${r},${g},${bl},${al})`);
-      grd.addColorStop(0.4,  `rgba(${r},${g},${bl},${al*0.3})`);
-      grd.addColorStop(1,    `rgba(${r},${g},${bl},0)`);
-      ctx.save();
-      ctx.translate(0, yOff);
-      ctx.beginPath(); ctx.moveTo(0,0);
-      for (let px = 0; px <= W; px += 4) {
-        const wy = Math.sin(px*0.014 + t*0.3 + b*2.1)*30 + 180 + b*60;
-        ctx.lineTo(px, wy);
-      }
-      ctx.lineTo(W, 0); ctx.closePath();
-      ctx.fillStyle = grd; ctx.fill();
-      ctx.restore();
-    }
-
-    /* ── Stars ─── */
-    if (!pal.light) {
-      for (const s of STARS) {
-        const bri = 0.2 + 0.6*(0.5 + 0.5*Math.sin(t*s.sp + s.ph));
-        ctx.fillStyle = `rgba(210,230,255,${bri})`;
-        ctx.fillRect(s.x|0, s.y|0, s.sz, s.sz);
-      }
-    }
-
-    /* ── Snow ground hills ─── */
-    const hillY = 30*SZ; // snow starts at row 30
-    ctx.fillStyle = pal.snowDeep;
-    ctx.beginPath(); ctx.moveTo(0, H);
-    for (let px = 0; px <= W; px += 6) {
-      const hy = hillY + Math.sin(px*0.025 + t*0.08)*4 + Math.sin(px*0.05 + t*0.12)*2;
-      ctx.lineTo(px, hy);
-    }
-    ctx.lineTo(W, H); ctx.closePath();
-    ctx.fill();
-
-    /* ── Blink logic ─── */
-    blinkT += dt;
-    if (!blinking && blinkT >= nextBlink) { blinking = true; blinkT = 0; }
-    if (blinking && blinkT >= 0.15) { blinking = false; blinkT = 0; nextBlink = 2+Math.random()*5; }
-
-    /* ── Draw penguin pixels ─── */
-    const COLS = {
-      0: null,          // bg (transparent)
-      1: null,          // black — rendered below
-      2: '#f0f4ff',     // white/cream belly
-      3: '#ff8c3a',     // orange beak/feet
-      5: '#0a0820',     // dark eye
-      6: '#c0e0ff',     // eye shine
-      7: null,          // snow ground — rendered via hill above
-    };
-
-    /* slight breathe offset */
-    const breathe = Math.sin(t*0.8)*0.6;
-    const offY = 480 - G*SZ; // 0 (canvas fits exactly)
-
-    for (let row = 0; row < G; row++) {
-      for (let col = 0; col < G; col++) {
-        const v = P[row][col];
-        if (v === 0 || v === 7) continue;
-
-        const px = col*SZ, py = row*SZ + breathe;
-        const n = noise[row*G+col];
-
-        if (v === 1) {
-          /* Black — slight noise variation */
-          const lv = Math.max(0, Math.min(255, (20 + n*30)|0));
-          ctx.fillStyle = `rgb(${lv},${lv},${lv+8})`;
-        } else if (v === 2) {
-          /* White belly — slight blue tint noise */
-          const lv = Math.max(200, Math.min(255, (240 + n*25)|0));
-          ctx.fillStyle = `rgb(${lv},${lv},255)`;
-        } else if (v === 3) {
-          /* Orange — beak/feet */
-          ctx.fillStyle = `rgb(${(255+n*20)|0},${(140+n*15)|0},${(30+n*10)|0})`;
-        } else if (v === 5) {
-          /* Eye — skip if blinking (rows 8-10 are the eye rows) */
-          if (blinking) { ctx.fillStyle = '#0a0820'; }
-          else { ctx.fillStyle = '#0a0820'; }
-        } else if (v === 6) {
-          /* Eye shine — hide when blinking */
-          if (blinking) continue;
-          ctx.fillStyle = '#d0eaff';
-        } else {
-          const c = COLS[v];
-          if (!c) continue;
-          ctx.fillStyle = c;
-        }
-
-        ctx.fillRect(px, py|0, SZ, SZ);
-
-        /* Pixel grid line (top + left edge) for non-black cells */
-        if (v !== 1 && v !== 5 && v !== 6) {
-          ctx.fillStyle = 'rgba(0,0,0,0.12)';
-          ctx.fillRect(px, py|0, SZ, 1);
-          ctx.fillRect(px, py|0, 1, SZ);
-        }
-      }
-    }
-
-    /* ── Snow ground pixels (rows 30-31) with noise brightness ─── */
-    for (let row = 30; row < G; row++) {
-      for (let col = 0; col < G; col++) {
-        const n = noise[row*G+col];
-        const lv = Math.max(160, Math.min(255, (210 + n*60)|0));
-        const th = document.documentElement.getAttribute('data-theme')||'polar-night';
-        if (th==='blizzard'||th==='glacier') {
-          ctx.fillStyle = `rgb(${lv},${Math.min(255,lv+10)},255)`;
-        } else {
-          ctx.fillStyle = `rgb(${(lv*0.5)|0},${(lv*0.7)|0},${lv})`;
-        }
-        ctx.fillRect(col*SZ, row*SZ, SZ, SZ);
-        ctx.fillStyle = 'rgba(0,0,0,0.08)';
-        ctx.fillRect(col*SZ, row*SZ, SZ, 1);
-        ctx.fillRect(col*SZ, row*SZ, 1, SZ);
-      }
-    }
-
-    /* ── Falling snowflakes ─── */
-    if (!pal.light) {
-      for (const s of SNOW) {
-        s.y += s.sp * 0.7;
-        s.x += s.dr;
-        if (s.y > H) { s.y = -4; s.x = Math.random()*W; }
-        if (s.x > W) s.x = 0; if (s.x < 0) s.x = W;
-        ctx.fillStyle = `rgba(220,235,255,${s.op})`;
-        ctx.fillRect(s.x|0, s.y|0, s.sz, s.sz);
-      }
-    }
-
-    /* ── Penguin belly glow (subtle radial) ─── */
-    const cx = 14.5*SZ, cy = 19*SZ;
-    const pulse = 0.5+0.5*Math.sin(t*0.8);
-    const grd2 = ctx.createRadialGradient(cx, cy+breathe, 0, cx, cy+breathe, 80);
-    grd2.addColorStop(0,   `rgba(180,210,255,${0.07*pulse})`);
-    grd2.addColorStop(1,   `rgba(180,210,255,0)`);
-    ctx.fillStyle = grd2;
-    ctx.fillRect(cx-90, cy-90, 180, 180);
-  }
-
-  requestAnimationFrame(draw);
-
-  /* Icon for caption */
-  const ci = document.getElementById('art-caption-icon');
-  if (ci) ci.innerHTML = IC.snowflake || '';
-})();
+setCookie("testcookie","1",30);
+var testa=document.getElementById("testcookiebb");
+var cookieconsentbuttona=document.getElementById("cookieconsentbutton");
+let test=getCookie("testcookie");
+if(test>"0"){testa.style.display="none";}
+else{cookieconsentbuttona.style.display="none";document.getElementById("testcookie").innerHTML="[ Some parts of this page may not work because cookies are disabled. ]";document.getElementById("testcookieab").innerHTML="Current cookie consent status: (default) Only essential cookies are enabled (4)";testa.style.display="block";try{document.getElementById("currentcookieconsentstatus").innerHTML="(default) Only essential cookies are enabled (4)";}catch(e){}(console.info||console.log)("[ Some parts of this page may not work because cookies are disabled. ]");}
+
+function cookieconsenttype1Function(){setCookie("cookieconsent","1",30);document.getElementById("cookieconsenta").style.display='none';document.getElementById("cookieconsentb").style.display='block';try{document.getElementById("currentcookieconsentstatus").innerHTML="Optional cookies accepted (1)";}catch(e){}}
+function cookieconsenttype2Function(){setCookie("cookieconsent","2",30);document.getElementById("cookieconsenta").style.display='none';document.getElementById("cookieconsentb").style.display='block';try{document.getElementById("currentcookieconsentstatus").innerHTML="Optional cookies refused (2)";}catch(e){}}
+function bbcookieconsenttype1Function(){setCookie("ae","1",30);document.getElementById("cookieconsentb").style.display='none';}
 </script>
+
+<script src="script/index.js"></script>
+<script src="script/url.js"></script>
+<script src="script/transit.js"></script>
+
+<!-- Onload -->
+<script>
+function startFunction(){
+  extractrelayinformationFunction();
+  homepageurlcommandscriptFunction();
+  timeanddateFunction();
+  statsFunction();
+  consoleonloadFunction();
+}
+</script>
+
+<!-- Date/time & search -->
+<script>
+function timeanddateFunction(){
+  const d=new Date();
+  const weekday=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const month=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  let day=weekday[d.getDay()],date=d.getDate(),mon=month[d.getMonth()],year=d.getFullYear(),text=d.toTimeString(),language=navigator.language;
+  const ids=["copyright","copyright5","copyright6","copyright7","copyright8","copyright9","copyright10","copyright11","copyright12"];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML="Copyright © "+year+" Antartica.Org";});
+  ["footerdateandtime","footerdateandtime2"].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=mon+" "+date+", "+year;});
+  (console.info||console.log)("Last loaded on: "+day+", "+date+" "+mon+" "+year+"; "+text+" Language: "+language+".");
+  (console.info||console.log)("Copyright © "+year+" Antartica.Org");
+  (console.info||console.log)("App Version 1.00.000");
+}
+
+function searchFunction(){
+  var input=document.getElementById("myInput"),filter=input.value.toUpperCase(),ul=document.getElementById("myUL"),li=ul.getElementsByTagName("li");
+  for(var i=0;i<li.length;i++){var a=li[i].getElementsByTagName("a")[0],txtValue=a.textContent||a.innerText;li[i].style.display=txtValue.toUpperCase().indexOf(filter)>-1?"":"none";}
+}
+</script>
+
+<!-- Modal open/close -->
+<script>
+var abe=document.getElementById("secondarydivision");
+
+function showmodal1(){abe.style.display="none";document.getElementById("myModal").style.display="block";}
+function closemodal1(){document.getElementById("myModal").style.display="none";abe.style.display="block";}
+
+function showmodal3(){abe.style.display="none";document.getElementById("myModal3").style.display="block";}
+function closemodal3(){document.getElementById("myModal3").style.display="none";abe.style.display="block";}
+
+function showmodal5(){abe.style.display="none";document.getElementById("myModal5").style.display="block";}
+function closemodal5(){document.getElementById("myModal5").style.display="none";abe.style.display="block";}
+
+function showmodal6(){abe.style.display="none";document.getElementById("myModal6").style.display="block";}
+function closemodal6(){document.getElementById("myModal6").style.display="none";abe.style.display="block";}
+
+function showmodal7(){abe.style.display="none";document.getElementById("myModal7").style.display="block";}
+function closemodal7(){document.getElementById("myModal7").style.display="none";abe.style.display="block";}
+
+function showmodal8(){abe.style.display="none";if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="block";}
+function closemodal8(){if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="none";abe.style.display="block";}
+
+function showmodal9(){abe.style.display="none";document.getElementById("myModal9").style.display="block";}
+function closemodal9(){document.getElementById("myModal9").style.display="none";abe.style.display="block";}
+
+function showmodal10(){
+  var modalaacc2=document.getElementById("myNavbar2"),modalaabb2=document.getElementById("blankspace2");
+  let bottombara=getCookie("bottomnavbar");
+  modalaacc2.style.display=bottombara=="1"?"flex":"none";
+  modalaabb2.style.display=bottombara=="1"?"block":"none";
+  abe.style.display="none";
+  document.getElementById("myModal10").style.display="block";
+}
+function closemodal10(){
+  document.getElementById("myModal10").style.display="none";
+  abe.style.display="block";
+  document.getElementById("myNavbar2").style.display="none";
+  document.getElementById("blankspace2").style.display="none";
+}
+</script>
+
+<!-- Transit functions -->
+<script>
+function transitshowmodal6(){if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="none";document.getElementById("myModal6").style.display="block";}
+function transitshowmodal7(){if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="none";document.getElementById("myModal7").style.display="block";}
+function transitsidebarabout(){document.getElementById("myModal10").style.display="none";document.getElementById("myModal3").style.display="block";}
+function transitsidebardisclaimer(){document.getElementById("myModal10").style.display="none";document.getElementById("myModal5").style.display="block";}
+function transitsidebarterms(){document.getElementById("myModal10").style.display="none";document.getElementById("myModal6").style.display="block";}
+function transitsidebarprivacypolicy(){document.getElementById("myModal10").style.display="none";document.getElementById("myModal7").style.display="block";}
+function transitsidebarblog(){document.getElementById("myModal10").style.display="none";document.getElementById("myModal").style.display="block";}
+function transitsidebarshare(){abe.style.display="none";document.getElementById("myModal10").style.display="none";document.getElementById("myModal9").style.display="block";}
+function transitsidebarcookiepolicy(){document.getElementById("myModal10").style.display="none";if(document.getElementById("myModal2"))document.getElementById("myModal2").style.display="block";}
+function transiterror404language(){abe.style.display="none";document.getElementById("myModal").style.display="none";if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="block";}
+function transitaboutlanguage(){abe.style.display="none";document.getElementById("myModal3").style.display="none";if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="block";}
+function transitsharelanguage(){abe.style.display="none";document.getElementById("myModal9").style.display="none";if(document.getElementById("myModal8"))document.getElementById("myModal8").style.display="block";}
+function aaabbbcccFunction(){document.getElementById("cookieconsenta").style.display="none";}
+function printaFunction(){window.print();}
+function printbFunction(){window.print();}
+</script>
+
+<!-- Relay & captcha -->
+<script>
+function extractrelayinformationFunction(){
+  let a=getCookie("relayinformation.cookie1"),b=getCookie("relayinformation.cookie2");
+  if(a=="search.html"){showmodal10();setCookie("relayinformation.cookie1","0",30);}
+  else if(b=="search.html"){showmodal10();setCookie("relayinformation.cookie2","0",30);}
+  else if(a=="share.html"){showmodal9();setCookie("relayinformation.cookie1","0",30);}
+}
+function relayinformationeaFunction(){setCookie("relayinformation.cookie2","search.html",30);extractrelayinformationFunction();}
+
+window.onload=function(){
+  const captchaValue=getCookie('captcha');
+  if(captchaValue==='1'){console.log("Captcha value is 1. Continuing on this page.");}
+  else if(captchaValue==='0'||captchaValue==='2'||captchaValue===''){window.location.href="./captcha/";}
+};
+</script>
+
 </body>
 </html>
