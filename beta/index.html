@@ -266,9 +266,46 @@ body{
 .wcol-id{
   background:linear-gradient(160deg,var(--s2),rgba(0,212,170,.04));
   border:1px solid var(--b1);border-radius:var(--rxl);
-  padding:1.5rem;margin-bottom:1rem;
-  display:flex;flex-direction:column;align-items:center;gap:1.1rem;
+  /* No horizontal padding – QR bleeds edge-to-edge */
+  padding:0;
+  margin-bottom:1rem;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  overflow:hidden;
 }
+/* QR hero zone: full-bleed square */
+.wcol-id .qr-frame{
+  border-radius:0!important;
+  /* Let the responsive rules below set the exact size,
+     but enforce full-bleed on mobile by default */
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1!important;
+  max-width:100%!important;
+  padding:14px!important;
+  box-shadow:none!important;
+}
+/* Info strip below QR */
+.wcol-id-info{
+  width:100%;
+  padding:.9rem 1.1rem .85rem;
+  display:flex;flex-direction:column;gap:.65rem;
+  border-top:1px solid var(--b1);
+  background:rgba(0,0,0,.15);
+}
+/* Header row inside the ID card */
+.wcol-id-header{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:.5rem;
+}
+.wcol-id-header .wallet-addr-lbl{margin:0}
+.qr-teal-pulse{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 8px var(--teal);
+  animation:tpulse 2s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes tpulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--teal)}50%{opacity:.4;box-shadow:0 0 2px var(--teal)}}
 .wcol-balance-hero{
   background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);
   padding:1.25rem;margin-bottom:1rem;text-align:center;
@@ -289,7 +326,7 @@ body{
 
 /* ── Canvas/img always fills frame minus its inner padding ── */
 @media (max-width:1023px){
-  .qr-frame canvas,.qr-frame img{
+  .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{
     width:calc(100% - 24px)!important;
     height:calc(100% - 24px)!important;
     max-width:calc(100% - 24px)!important;
@@ -303,19 +340,21 @@ body{
   }
 }
 
-/* ── < 600px PORTRAIT: QR = 100vw − 2px, 1px from each screen edge ── */
+/* ── < 600px PORTRAIT: QR = full card width (card is full-bleed) ── */
 @media (max-width:599px) and (orientation:portrait){
-  /* The centering trick: flex parent centers the child, so a child wider
-     than the parent (100vw-2px) naturally lands with 1px from screen edges
-     as long as the ancestor chain is viewport-centered (which it is via
-     app-main's margin:0 auto). */
-  .qr-frame{
-    width:calc(100vw - 2px)!important;
-    height:calc(100vw - 2px)!important;
+  /* app-main padding creates 1rem inset; the card with overflow:hidden
+     clips the QR cleanly. Make QR 100% of that card width. */
+  .wcol-id .qr-frame{
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:1!important;
     max-width:none!important;
     max-height:none!important;
+    border-radius:0!important;
     flex-shrink:0;
-    border-radius:var(--r);
+    margin-top:0!important;
+    padding:12px!important;
+    box-shadow:none!important;
   }
   .tqr-frame{
     width:calc(100vw - 2px)!important;
@@ -337,14 +376,16 @@ body{
 
 /* ── < 600px LANDSCAPE: height is the constraint, QR = 100dvh − 2px ── */
 @media (max-width:599px) and (orientation:landscape){
-  .qr-frame{
+  .wcol-id .qr-frame{
     width:calc(100dvh - 2px)!important;
     height:calc(100dvh - 2px)!important;
     max-width:none!important;
     max-height:none!important;
-    margin:1px auto!important;
+    border-radius:0!important;
+    margin-top:0!important;
+    padding:12px!important;
+    box-shadow:none!important;
     flex-shrink:0;
-    border-radius:var(--r);
   }
   .tqr-frame{
     width:calc(100dvh - 2px)!important;
@@ -363,14 +404,18 @@ body{
   }
 }
 
-/* ── 600px – 1023px PORTRAIT: QR = 80vw with 1px margin ── */
+/* ── 600px – 1023px PORTRAIT: wallet QR = 80vw with 1px margin ── */
 @media (min-width:600px) and (max-width:1023px) and (orientation:portrait){
-  .qr-frame{
+  .wcol-id .qr-frame{
     width:calc(80vw - 2px)!important;
-    height:calc(80vw - 2px)!important;
+    height:auto!important;
+    aspect-ratio:1!important;
     max-width:none!important;
-    margin:1px auto!important;
+    margin:0 auto!important;
     flex-shrink:0;
+    border-radius:0!important;
+    padding:14px!important;
+    box-shadow:none!important;
   }
   .tqr-frame{
     width:calc(80vw - 2px)!important;
@@ -387,11 +432,14 @@ body{
 
 /* ── 600px – 1023px LANDSCAPE: height is the constraint, QR = 80dvh ── */
 @media (min-width:600px) and (max-width:1023px) and (orientation:landscape){
-  .qr-frame{
+  .wcol-id .qr-frame{
     width:calc(80dvh - 2px)!important;
     height:calc(80dvh - 2px)!important;
     max-width:none!important;
-    margin:1px auto!important;
+    margin:0 auto!important;
+    border-radius:0!important;
+    padding:14px!important;
+    box-shadow:none!important;
     flex-shrink:0;
   }
   .tqr-frame{
@@ -517,21 +565,40 @@ body{
     align-items:stretch;
   }
 
-  /* ─────────── WALLET: 3 columns ─────────── */
-  .wallet-desktop{grid-template-columns:260px 1fr 300px}
+  /* ─────────── WALLET: 3 columns, wider QR column ─────────── */
+  .wallet-desktop{grid-template-columns:clamp(320px,40vw,560px) 1fr 280px}
 
   /* Reset mobile card wrappers for desktop */
   .wcol-id{
     background:linear-gradient(180deg,rgba(0,212,170,.04),transparent 70%);
     border:none;border-right:1px solid var(--b1);border-radius:0;
-    padding:2rem 1.5rem;margin:0;
-    overflow-y:auto;
-    display:flex;flex-direction:column;align-items:center;gap:1.25rem;
+    padding:0;margin:0;
+    overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;gap:0;
+    justify-content:flex-start;
   }
-  .wcol-id .qr-frame{width:200px;height:200px;flex-shrink:0}
+  /* QR fills the column – constrained by both width and available height */
+  .wcol-id .qr-frame{
+    width:min(calc(100% - 2rem), calc(100vh - 290px))!important;
+    height:min(calc(100% - 2rem), calc(100vh - 290px))!important;
+    max-width:none!important;max-height:none!important;
+    aspect-ratio:1!important;
+    border-radius:12px!important;
+    flex-shrink:0;
+    margin-top:1.5rem;
+    padding:14px!important;
+    box-shadow:var(--glow-teal),var(--shadow)!important;
+  }
   .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{
-    width:176px!important;height:176px!important;
-    max-width:176px!important;max-height:176px!important;
+    width:calc(100% - 28px)!important;height:calc(100% - 28px)!important;
+    max-width:calc(100% - 28px)!important;max-height:calc(100% - 28px)!important;
+  }
+  .wcol-id-info{
+    padding:1rem 1.5rem 1.25rem;
+    border-top:1px solid var(--b1);
+    margin-top:1.5rem;
+    width:100%;
+    background:rgba(0,0,0,.12);
   }
   .wcol-id .wallet-addr-lbl{font-size:.57rem}
   .wcol-id .wallet-masked{font-size:.62rem;width:100%}
@@ -638,10 +705,9 @@ body{
 ══════════════════════════════════════════════════════ */
 @media(min-width:1400px){
   :root{--sidebar-w:240px}
-  .wallet-desktop{grid-template-columns:300px 1fr 340px}
-  .wcol-id{padding:2rem}
-  .wcol-id .qr-frame{width:230px;height:230px}
-  .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{width:206px!important;height:206px!important;max-width:206px!important;max-height:206px!important}
+  .wallet-desktop{grid-template-columns:clamp(360px,42vw,600px) 1fr 300px}
+  /* QR auto-sizes via min() in the base desktop rule – no fixed overrides needed */
+  .wcol-id{padding:0;margin:0}
   .wcol-balance-hero{padding:1.75rem 2.5rem 1.5rem}
   .wcol-balance-hero .balance-num{font-size:4rem}
   .wallet-tx-section{padding:1.5rem 2.5rem 2rem}
@@ -848,9 +914,8 @@ body{
 ══════════════════════════════════════════════════════ */
 @media(min-width:1800px){
   :root{--sidebar-w:260px}
-  .wallet-desktop{grid-template-columns:320px 1fr 380px}
-  .wcol-id .qr-frame{width:260px;height:260px}
-  .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{width:236px!important;height:236px!important;max-width:236px!important;max-height:236px!important}
+  .wallet-desktop{grid-template-columns:clamp(400px,44vw,660px) 1fr 320px}
+  /* QR auto-sizes via min() – no fixed overrides needed */
   .wcol-balance-hero .balance-num{font-size:4.6rem}
   .wcol-balance-hero .spv{font-size:1.5rem}
   .mine-btn{width:290px;height:290px}
@@ -937,15 +1002,19 @@ body{
 
     <!-- Col 1 · Identity (QR + address) -->
     <div class="wcol-id">
-      <div class="wallet-addr-lbl">YOUR WALLET QR CODE</div>
       <div class="qr-frame" id="wallet-qr-frame">
         <div style="color:var(--t3);font-family:var(--mono);font-size:.6rem;text-align:center">Generating…</div>
       </div>
-      <div class="wallet-addr-lbl">ADDRESS (MASKED)</div>
-      <div class="wallet-masked" id="wallet-masked">••••••••••••••••••••••••••••••</div>
-      <div class="refresh-chip">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 8A5.5 5.5 0 112.5 6"/><polyline points="2 2 2 6 6 6"/></svg>
-        ID refreshes after each transaction
+      <div class="wcol-id-info">
+        <div class="wcol-id-header">
+          <div class="wallet-addr-lbl">WALLET QR · ADDRESS</div>
+          <div class="qr-teal-pulse"></div>
+        </div>
+        <div class="wallet-masked" id="wallet-masked">••••••••••••••••••••••••••••••</div>
+        <div class="refresh-chip">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 8A5.5 5.5 0 112.5 6"/><polyline points="2 2 2 6 6 6"/></svg>
+          ID refreshes after each transaction
+        </div>
       </div>
     </div>
 
