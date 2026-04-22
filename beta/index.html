@@ -1249,7 +1249,7 @@ body{
           <div class="step-lbl">ENTER AMOUNT TO SEND</div>
         </div>
         <div class="amount-row">
-          <input type="number" id="send-amount" min="1" max="10" value="1"
+          <input type="number" id="send-amount" min="1" max="20" value="1"
             oninput="updateSendBtn()"
             onblur="clampAmount(this);updateSendBtn()"
             onchange="updateSendBtn()">
@@ -1259,7 +1259,7 @@ body{
             <button class="stepper" onclick="stepAmount(-1)">▼</button>
           </div>
         </div>
-        <div class="amount-hint">Max <b>10</b> per transaction · <b id="send-available-count">0</b> available</div>
+        <div class="amount-hint">Max <b>20</b> per transaction · <b id="send-available-count">0</b> available</div>
       </div>
       <!-- Step 3 -->
       <div class="step-card">
@@ -1403,7 +1403,7 @@ function decodeTransferPayload(p){
   const coinPart=p.length-wl;
   if(coinPart%cl!==0)return null;            // coin section must be exact multiples of 40
   const N=coinPart/cl;
-  if(N<1||N>10)return null;                   // 1–10 coins only
+  if(N<1||N>20)return null;                   // 1–20 coins only
   const coinIds=[];
   for(let i=0;i<N;i++)coinIds.push(p.slice(i*cl,(i+1)*cl));
   const recipientWalletId=p.slice(-wl);
@@ -1545,7 +1545,7 @@ function renderCoinList(){
 
 // ═══ SEND ═════════════════════════════════════════════
 let sendScanner=null,sendScanning=false,recipientWalletId=null;
-function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>10)v=10;if(v>av)v=Math.max(1,av);inp.value=v;}
+function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>20)v=20;if(v>av)v=Math.max(1,av);inp.value=v;}
 function stepAmount(d){const inp=document.getElementById('send-amount');inp.value=(parseInt(inp.value)||1)+d;clampAmount(inp);updateSendBtn();}
 function updateAvailableCount(){const av=coins.length;const el=document.getElementById('send-available-count');if(el)el.textContent=av;const ptb=document.getElementById('ptb-send-avail');if(ptb)ptb.textContent=av+' available';const inp=document.getElementById('send-amount');if(inp)clampAmount(inp);}
 function setSendSrc(src,el){
@@ -1607,7 +1607,7 @@ async function scanSendFile(file){
 function updateSendBtn(){const amt=parseInt(document.getElementById('send-amount')?.value)||0;document.getElementById('btn-generate-transfer').disabled=!(recipientWalletId&&amt>=1&&coins.length>=amt);}
 function generateTransferQR(){
   if(!recipientWalletId)return;
-  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,10);
+  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,20);
   if(coins.length<amt){toast('Not enough coins','err');return;}
   const coinIds=coins.slice(0,amt).map(c=>c.id);
   const payload=encodeTransferPayload(walletId,coinIds,recipientWalletId);
@@ -1731,7 +1731,7 @@ function onRecvScan(text,source){
   if(!/^[A-Za-z0-9]+$/.test(text)){recvSetFail('Invalid QR — non-alphanumeric characters.');toast('Not a valid transfer QR','err');return;}
   const parsed=decodeTransferPayload(text);
   if(!parsed){
-    const validLens=[70,110,150,190,230,270,310,350,390,430];
+    const validLens=[70,110,150,190,230,270,310,350,390,430,470,510,550,590,630,670,710,750,790,830];
     recvSetFail(`Invalid QR (${text.length} chars).\nExpected lengths: ${validLens.join('/')} for 1–10 coins.`);
     toast('Not a valid transfer QR','err');return;
   }
