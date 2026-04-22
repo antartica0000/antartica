@@ -550,8 +550,8 @@ body{
 /* ── QR TRANSFER MODAL ── */
 .qr-modal-backdrop{
   position:fixed;inset:0;z-index:1000;
-  background:rgba(0,0,0,.72);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   display:flex;align-items:center;justify-content:center;
   padding:1rem;
   opacity:0;pointer-events:none;
@@ -563,47 +563,76 @@ body{
   border:1px solid var(--teal2);
   border-radius:var(--rxl);
   box-shadow:0 24px 80px rgba(0,0,0,.75),var(--glow-teal);
-  width:100%;max-width:420px;
+  /* Grow to fill most of screen */
+  width:min(100%, calc(100vw - 2rem));
+  height:calc(100dvh - 2rem);
+  max-width:560px;
   display:flex;flex-direction:column;align-items:center;
-  gap:1.1rem;padding:1.75rem 1.5rem 1.5rem;
+  gap:.7rem;padding:1.25rem 1.25rem 1.1rem;
   position:relative;
   transform:translateY(18px) scale(.97);
   transition:transform .24s cubic-bezier(.22,.9,.34,1.02),opacity .22s ease;
-  max-height:calc(100dvh - 2rem);overflow-y:auto;
+  overflow:hidden;
 }
 .qr-modal-backdrop.open .qr-modal{transform:none;}
 .qr-modal-close{
-  position:absolute;top:.85rem;right:.9rem;
+  position:absolute;top:.75rem;right:.75rem;
   width:32px;height:32px;border-radius:50%;
   background:var(--s3);border:1px solid var(--b2);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;color:var(--t2);font-size:1.1rem;line-height:1;
-  transition:all .14s;
+  transition:all .14s;flex-shrink:0;z-index:2;
 }
 .qr-modal-close:hover{background:var(--s4);color:var(--t1);border-color:var(--teal2);}
 .qr-modal-title{
   font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;
   color:var(--teal);text-transform:uppercase;
   display:flex;align-items:center;gap:.5rem;
+  flex-shrink:0;width:100%;justify-content:center;
+  padding-right:38px; /* avoid overlap with close btn */
 }
+/* QR frame fills all remaining vertical space, capped to square */
 .qr-modal-frame{
-  background:#fff;border-radius:14px;padding:13px;
+  background:#fff;border-radius:14px;padding:12px;
   box-shadow:var(--glow-teal),var(--shadow);
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
+  flex:1;min-height:0;
+  /* square: side = min(available-width, flex-height) via aspect-ratio + min() */
+  width:100%;
+  aspect-ratio:1/1;
+  max-width:100%;
+  align-self:center;
+  overflow:hidden;
+}
+/* Force the generated canvas/img to fill the frame 100% */
+.qr-modal-frame canvas,
+.qr-modal-frame img{
+  width:100%!important;height:100%!important;
+  max-width:100%!important;max-height:100%!important;
+  display:block;object-fit:contain;
+  image-rendering:pixelated;
 }
 .qr-modal-coins{
-  font-family:var(--mono);font-size:.62rem;color:var(--amber);
-  text-align:center;line-height:2;white-space:pre;
+  font-family:var(--mono);font-size:.6rem;color:var(--amber);
+  text-align:center;line-height:1.85;white-space:pre;
   background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);
-  padding:.65rem 1rem;width:100%;
+  padding:.5rem .9rem;width:100%;flex-shrink:0;
+  overflow:hidden;text-overflow:ellipsis;
 }
 .qr-modal-hint{
-  font-family:var(--mono);font-size:.6rem;color:var(--t3);
-  text-align:center;line-height:1.7;
+  font-family:var(--mono);font-size:.59rem;color:var(--t3);
+  text-align:center;line-height:1.6;flex-shrink:0;
 }
-.qr-modal-actions{display:flex;gap:8px;width:100%;}
-.qr-modal-actions .btn{flex:1;}
+.qr-modal-actions{display:flex;gap:8px;width:100%;flex-shrink:0;}
+.qr-modal-actions .btn{flex:1;min-height:44px;}
+
+/* On very small phones, tighten gaps */
+@media(max-height:600px){
+  .qr-modal{gap:.4rem;padding:1rem 1rem .85rem;}
+  .qr-modal-coins{padding:.35rem .75rem;line-height:1.65;font-size:.56rem;}
+  .qr-modal-hint{display:none;}
+  .qr-modal-actions .btn{min-height:40px;}
+}
 
 /* ══════════════════════════════════════════════════════
    1800px — maximum space, breathing room everywhere
@@ -1240,19 +1269,41 @@ function generateTransferQR(){
 let _modalPayload='',_modalQRGenerated=false;
 function openTransferModal(payload,coinIds){
   _modalPayload=payload;_modalQRGenerated=false;
-  // Render QR inside modal frame
-  const frame=document.getElementById('modal-qr-frame');
-  frame.innerHTML='';
-  const sz=Math.min(window.innerWidth-80,240);
-  frame.style.width=(sz+26)+'px';frame.style.height=(sz+26)+'px';
-  const d=document.createElement('div');frame.appendChild(d);
-  try{new QRCode(d,{text:payload,width:sz,height:sz,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
-  catch(e){frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem">QR error</div>';}
-  setTimeout(()=>{const el=frame.querySelector('canvas')||frame.querySelector('img');if(el){el.style.width=sz+'px';el.style.height=sz+'px';el.style.maxWidth=sz+'px';el.style.maxHeight=sz+'px';}},30);
   document.getElementById('modal-coin-preview').textContent=coinIds.map((id,i)=>`COIN ${i+1}: ${id.slice(0,10)}…${id.slice(-6)}`).join('\n');
+  // Show modal first so layout is applied, then measure & render QR
   document.getElementById('transfer-modal').classList.add('open');
   document.body.style.overflow='hidden';
+  // Wait for next frame so the flex layout has resolved the frame's size
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>_renderModalQR(payload));
+  });
   _modalQRGenerated=true;
+}
+function _renderModalQR(payload){
+  const frame=document.getElementById('modal-qr-frame');
+  frame.innerHTML='';
+  // Measure the rendered frame (padding 12px each side = 24px total)
+  const frameRect=frame.getBoundingClientRect();
+  const sz=Math.max(64,Math.floor(Math.min(frameRect.width,frameRect.height))-24);
+  const d=document.createElement('div');
+  d.style.cssText='width:'+sz+'px;height:'+sz+'px;flex-shrink:0;';
+  frame.appendChild(d);
+  try{
+    new QRCode(d,{text:payload,width:sz,height:sz,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){
+    frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem;text-align:center">QR error</div>';
+    return;
+  }
+  // Once QR canvas/img is created, override its size so CSS aspect-ratio fill works
+  setTimeout(()=>{
+    const el=frame.querySelector('canvas')||frame.querySelector('img');
+    if(el){
+      el.style.cssText='width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;display:block;image-rendering:pixelated;';
+      // Also stretch the inner wrapper div
+      const inner=frame.querySelector('div');
+      if(inner)inner.style.cssText='width:100%;height:100%;display:flex;align-items:center;justify-content:center;';
+    }
+  },40);
 }
 function closeTransferModal(){
   document.getElementById('transfer-modal').classList.remove('open');
@@ -1264,10 +1315,15 @@ function handleModalBackdropClick(e){if(e.target===document.getElementById('tran
 function downloadModalQR(){
   const frame=document.getElementById('modal-qr-frame');
   const c=frame.querySelector('canvas')||frame.querySelector('img');
-  if(!c)return;
+  if(!c){toast('QR not ready','err');return;}
   const a=document.createElement('a');a.download='transfer-qr-'+Date.now()+'.png';
-  if(c.tagName==='CANVAS')a.href=c.toDataURL('image/png');
-  else{const cv=document.createElement('canvas');cv.width=c.naturalWidth;cv.height=c.naturalHeight;cv.getContext('2d').drawImage(c,0,0);a.href=cv.toDataURL('image/png');}
+  if(c.tagName==='CANVAS'){
+    a.href=c.toDataURL('image/png');
+  }else{
+    const cv=document.createElement('canvas');
+    cv.width=c.naturalWidth||c.width;cv.height=c.naturalHeight||c.height;
+    cv.getContext('2d').drawImage(c,0,0);a.href=cv.toDataURL('image/png');
+  }
   a.click();toast('Transfer QR saved','ok');
 }
 function downloadTransferQR(){const c=getQRCanvas('transfer-qr-frame');if(!c)return;const a=document.createElement('a');a.download='transfer-qr-'+Date.now()+'.png';a.href=c.toDataURL('image/png');a.click();toast('Transfer QR saved','ok');}
