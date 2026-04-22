@@ -281,6 +281,133 @@ body{
 .wcol-coins{}
 
 /* ══════════════════════════════════════════════════════
+   QR CODE RESPONSIVE SIZING
+   < 600px          → 100vw − 2px  (1px margin each side)
+   600px – 1023px   → 80vw or 80vh (whichever is smaller) with 1px margin
+   Landscape/short  → height-constrained sizing
+══════════════════════════════════════════════════════ */
+
+/* ── Canvas/img always fills frame minus its inner padding ── */
+@media (max-width:1023px){
+  .qr-frame canvas,.qr-frame img{
+    width:calc(100% - 24px)!important;
+    height:calc(100% - 24px)!important;
+    max-width:calc(100% - 24px)!important;
+    max-height:calc(100% - 24px)!important;
+  }
+  .tqr-frame canvas,.tqr-frame img{
+    width:calc(100% - 22px)!important;
+    height:calc(100% - 22px)!important;
+    max-width:calc(100% - 22px)!important;
+    max-height:calc(100% - 22px)!important;
+  }
+}
+
+/* ── < 600px PORTRAIT: QR = 100vw − 2px, 1px from each screen edge ── */
+@media (max-width:599px) and (orientation:portrait){
+  /* The centering trick: flex parent centers the child, so a child wider
+     than the parent (100vw-2px) naturally lands with 1px from screen edges
+     as long as the ancestor chain is viewport-centered (which it is via
+     app-main's margin:0 auto). */
+  .qr-frame{
+    width:calc(100vw - 2px)!important;
+    height:calc(100vw - 2px)!important;
+    max-width:none!important;
+    max-height:none!important;
+    flex-shrink:0;
+    border-radius:var(--r);
+  }
+  .tqr-frame{
+    width:calc(100vw - 2px)!important;
+    height:calc(100vw - 2px)!important;
+    max-width:none!important;
+    flex-shrink:0;
+    border-radius:var(--r);
+  }
+  /* Modal also stretches full-width for 450–599px range
+     (< 450px is already handled above) */
+  .qr-modal-backdrop{padding:0!important;}
+  .qr-modal{
+    width:calc(100vw - 2px)!important;
+    max-width:calc(100vw - 2px)!important;
+    max-height:calc(100dvh - 2px)!important;
+    border-radius:var(--r)!important;
+  }
+}
+
+/* ── < 600px LANDSCAPE: height is the constraint, QR = 100dvh − 2px ── */
+@media (max-width:599px) and (orientation:landscape){
+  .qr-frame{
+    width:calc(100dvh - 2px)!important;
+    height:calc(100dvh - 2px)!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:1px auto!important;
+    flex-shrink:0;
+    border-radius:var(--r);
+  }
+  .tqr-frame{
+    width:calc(100dvh - 2px)!important;
+    height:calc(100dvh - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+    flex-shrink:0;
+    border-radius:var(--r);
+  }
+  .qr-modal-backdrop{padding:0!important;}
+  .qr-modal{
+    width:calc(100vw - 2px)!important;
+    max-width:calc(100vw - 2px)!important;
+    max-height:calc(100dvh - 2px)!important;
+    border-radius:var(--r)!important;
+  }
+}
+
+/* ── 600px – 1023px PORTRAIT: QR = 80vw with 1px margin ── */
+@media (min-width:600px) and (max-width:1023px) and (orientation:portrait){
+  .qr-frame{
+    width:calc(80vw - 2px)!important;
+    height:calc(80vw - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+    flex-shrink:0;
+  }
+  .tqr-frame{
+    width:calc(80vw - 2px)!important;
+    height:calc(80vw - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+  }
+  .qr-modal{
+    width:calc(80vw - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+  }
+}
+
+/* ── 600px – 1023px LANDSCAPE: height is the constraint, QR = 80dvh ── */
+@media (min-width:600px) and (max-width:1023px) and (orientation:landscape){
+  .qr-frame{
+    width:calc(80dvh - 2px)!important;
+    height:calc(80dvh - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+    flex-shrink:0;
+  }
+  .tqr-frame{
+    width:calc(80dvh - 2px)!important;
+    height:calc(80dvh - 2px)!important;
+    max-width:none!important;
+    margin:1px auto!important;
+  }
+  .qr-modal{
+    width:auto!important;
+    max-width:none!important;
+    /* keep the side-by-side modal layout from its existing rule */
+  }
+}
+
+/* ══════════════════════════════════════════════════════
    DESKTOP ≥1024px — Full native desktop layout
 ══════════════════════════════════════════════════════ */
 @media(min-width:1024px){
