@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CipherCoin</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & TOKENS ─────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#07090e;
+  --s1:#0d1117;--s2:#131720;--s3:#191e2a;--s4:#1f2535;
+  --b1:#1e2540;--b2:#263050;--b3:#2e3a60;
+  --teal:#00d4aa;--teal2:#00b894;--teal3:rgba(0,212,170,.1);--teal4:rgba(0,212,170,.22);
+  --amber:#ffb030;--amber2:rgba(255,176,48,.1);
+  --red:#ff4d6a;--purple:#a78bfa;
+  --t1:#e8edf8;--t2:#8892b0;--t3:#4a5270;
+  --mono:'Space Mono',monospace;--sans:'Inter',sans-serif;
+  --r:12px;--rl:18px;--rxl:24px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --nav-h:68px;--hdr-h:60px;
+  --shadow:0 8px 32px rgba(0,0,0,.45);
+  --glow-teal:0 0 24px rgba(0,212,170,.18);
+}
+html{height:100%;scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--t1);font-family:var(--sans);
+  min-height:100%;display:flex;flex-direction:column;
+  padding-bottom:calc(var(--nav-h) + var(--safe-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ── HEADER ── */
+.app-header{
+  height:var(--hdr-h);padding:0 1rem 0 1.1rem;
+  display:flex;align-items:center;gap:.75rem;
+  position:sticky;top:0;z-index:300;
+  background:rgba(7,9,14,.9);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b1);
+}
+.app-logo{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--glow-teal)}
+.app-title{font-family:var(--mono);font-size:.92rem;letter-spacing:.04em}
+.app-title em{color:var(--teal);font-style:normal}
+.app-balance{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;line-height:1.2}
+.app-balance-num{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--teal)}
+.app-balance-lbl{font-family:var(--mono);font-size:.52rem;color:var(--t3);letter-spacing:.1em;text-transform:uppercase}
+.app-net{margin-left:.7rem;font-family:var(--mono);font-size:.56rem;color:var(--amber);border:1px solid rgba(255,176,48,.35);padding:3px 8px;border-radius:20px;letter-spacing:.08em;white-space:nowrap;flex-shrink:0}
+
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:300;
+  height:calc(var(--nav-h) + var(--safe-bottom));
+  padding-bottom:var(--safe-bottom);
+  background:rgba(13,17,23,.97);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid var(--b1);
+  display:flex;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:5px;cursor:pointer;transition:all .16s;border:none;background:none;
+  padding:.4rem 0 0;color:var(--t3);position:relative;
+}
+.nav-item.on{color:var(--teal)}
+.nav-item:active{transform:scale(.91)}
+.nav-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .16s}
+.nav-item.on .nav-icon{background:var(--teal3);box-shadow:0 0 10px rgba(0,212,170,.18)}
+.nav-label{font-family:var(--mono);font-size:.56rem;letter-spacing:.07em;font-weight:700}
+.nav-pip{position:absolute;top:8px;right:calc(50% - 18px);width:7px;height:7px;border-radius:50%;background:var(--amber);border:2px solid var(--bg);display:none}
+.nav-pip.show{display:block}
+
+/* ── MAIN ── */
+.app-main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:1.1rem 1rem 1.5rem}
+.panel{display:none;animation:fadeUp .2s ease}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* ── CARDS ── */
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
+.card-inset{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:1rem}
+.step-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.1rem;margin-bottom:.9rem}
+
+/* ── SECTION LABEL ── */
+.sec-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-bottom:.7rem}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:0 20px;border-radius:var(--r);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;cursor:pointer;border:1px solid;transition:all .14s;white-space:nowrap;font-weight:700;-webkit-user-select:none;user-select:none}
+.btn-full{width:100%}
+.btn-p{background:var(--teal);color:#030e09;border-color:var(--teal)}
+.btn-p:hover{background:var(--teal2);box-shadow:var(--glow-teal)}
+.btn-g{background:var(--s3);color:var(--t2);border-color:var(--b2)}
+.btn-g:hover{background:var(--s4);color:var(--t1)}
+.btn-d{background:transparent;color:var(--red);border-color:rgba(255,77,106,.4)}
+.btn-d:hover{background:rgba(255,77,106,.07)}
+.btn-amber{background:var(--amber);color:#100800;border-color:var(--amber);font-weight:700}
+.btn-amber:hover{background:#e09a1a}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.28;cursor:not-allowed;transform:none!important;pointer-events:none}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:.85rem}
+.btn-row .btn{flex:1;min-width:90px}
+
+/* ── WALLET TAB ── */
+.wallet-qr-card{
+  display:flex;flex-direction:column;align-items:center;gap:1.1rem;padding:1.5rem;
+  background:linear-gradient(160deg,var(--s2),rgba(0,212,170,.04));
+  border:1px solid var(--b1);border-radius:var(--rxl);margin-bottom:1rem;
+}
+.qr-frame{background:#fff;border-radius:14px;padding:12px;box-shadow:var(--glow-teal),var(--shadow);display:flex;align-items:center;justify-content:center;width:200px;height:200px;flex-shrink:0}
+.qr-frame canvas,.qr-frame img{width:176px!important;height:176px!important;max-width:176px!important;max-height:176px!important;display:block}
+.wallet-addr-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--t3);text-align:center;text-transform:uppercase}
+.wallet-masked{font-family:var(--mono);font-size:.7rem;color:var(--teal);letter-spacing:.07em;text-align:center;word-break:break-all;line-height:1.9;background:var(--s3);border:1px solid var(--b1);border-radius:8px;padding:.5rem .75rem;width:100%}
+.balance-num{font-family:var(--mono);font-size:3.2rem;font-weight:700;color:var(--teal);line-height:1;text-align:center;text-shadow:0 0 28px rgba(0,212,170,.28)}
+.balance-unit{font-family:var(--mono);font-size:.7rem;color:var(--t3);margin-top:.2rem;letter-spacing:.12em;text-align:center}
+.stat-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.stat-pill{background:var(--s3);border:1px solid var(--b1);border-radius:10px;padding:.75rem .5rem;text-align:center}
+.spv{font-family:var(--mono);font-size:1.15rem;font-weight:700;color:var(--teal)}
+.spk{font-family:var(--mono);font-size:.54rem;color:var(--t3);margin-top:3px;letter-spacing:.08em}
+.refresh-chip{display:flex;align-items:center;gap:7px;background:var(--teal3);border:1px solid rgba(0,212,170,.2);border-radius:30px;padding:.42rem .9rem;font-family:var(--mono);font-size:.6rem;color:var(--teal);letter-spacing:.04em}
+/* tx */
+.tx-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto}
+.tx-item{display:flex;align-items:center;gap:11px;padding:.75rem 1rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r)}
+.tx-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tx-ico.mine{background:rgba(255,176,48,.12);border:1px solid rgba(255,176,48,.25)}
+.tx-ico.send{background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.2)}
+.tx-ico.recv{background:var(--teal3);border:1px solid rgba(0,212,170,.2)}
+.tx-body{flex:1;min-width:0}
+.tx-title{font-family:var(--mono);font-size:.67rem;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-sub{font-size:.63rem;color:var(--t3);margin-top:2px}
+.tx-time{font-family:var(--mono);font-size:.58rem;color:var(--t3);flex-shrink:0}
+/* coins grid */
+.coins-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.coins-legend{display:flex;align-items:center;gap:.8rem;font-family:var(--mono);font-size:.58rem;color:var(--t3)}
+.coins-legend span{display:flex;align-items:center;gap:4px}
+.dot-a{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.dot-t{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.coins-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:300px;overflow-y:auto}
+.coin-card{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:.75rem;display:flex;flex-direction:column;gap:6px;border-left:3px solid var(--b2)}
+.coin-card.mc{border-left-color:var(--amber)}
+.coin-card.rc{border-left-color:var(--teal)}
+.coin-id-w{font-family:var(--mono);font-size:.59rem;color:var(--t2);word-break:break-all;line-height:1.65}
+.coin-foot{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.coin-badge{font-family:var(--mono);font-size:.53rem;padding:2px 7px;border-radius:20px}
+.coin-badge.mined{background:rgba(255,176,48,.1);border:1px solid rgba(255,176,48,.2);color:var(--amber)}
+.coin-badge.received{background:var(--teal3);border:1px solid rgba(0,212,170,.18);color:var(--teal)}
+.coin-age{font-family:var(--mono);font-size:.53rem;color:var(--t3)}
+
+/* ── MINE TAB ── */
+.mine-hero{display:flex;flex-direction:column;align-items:center;gap:1.75rem;padding:1.25rem 0}
+.mine-desc{font-size:.85rem;color:var(--t2);text-align:center;max-width:280px;line-height:1.55}
+.mine-btn-wrap{position:relative;display:flex;align-items:center;justify-content:center;padding:.75rem}
+.mine-ring{position:absolute;width:196px;height:196px;border-radius:50%;border:2px solid transparent;border-top-color:var(--amber);animation:spin 1.1s linear infinite;display:none;box-shadow:0 0 28px rgba(255,176,48,.12)}
+.mine-btn{width:172px;height:172px;border-radius:50%;background:radial-gradient(circle at 38% 34%,var(--s4),var(--s2));border:2px solid var(--teal2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;font-family:var(--mono);font-size:.76rem;letter-spacing:.1em;color:var(--teal);transition:all .2s;box-shadow:var(--glow-teal)}
+.mine-btn:hover{transform:scale(1.04);box-shadow:0 0 40px rgba(0,212,170,.28)}
+.mine-btn:active{transform:scale(.97)}
+.mine-btn.mining{border-color:var(--amber);color:var(--amber);cursor:default;animation:pulsemine .9s ease-in-out infinite;box-shadow:0 0 30px rgba(255,176,48,.22)}
+.mine-btn.mining:hover{transform:none}
+.mine-ico{font-size:2.4rem;line-height:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulsemine{0%,100%{box-shadow:0 0 20px rgba(255,176,48,.2)}50%{box-shadow:0 0 50px rgba(255,176,48,.4)}}
+.mine-prog-wrap{width:100%;max-width:320px}
+.prog-bar{height:6px;background:var(--s4);border-radius:3px;overflow:hidden;border:1px solid var(--b1)}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,#c97800,var(--amber));border-radius:3px;transition:width .1s linear}
+.mine-status{font-family:var(--mono);font-size:.67rem;color:var(--t3);text-align:center;margin-top:.5rem;letter-spacing:.06em}
+.mine-result-card{width:100%;background:var(--amber2);border:1px solid rgba(255,176,48,.28);border-radius:var(--r);padding:1rem}
+.mine-result-lbl{font-family:var(--mono);font-size:.6rem;color:var(--amber);letter-spacing:.1em;margin-bottom:.5rem}
+.mine-result-id{font-family:var(--mono);font-size:.68rem;color:var(--t1);word-break:break-all;line-height:1.8}
+.mine-coins-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.1rem}
+.m-coin-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.m-coin-row{display:flex;align-items:center;gap:10px;padding:.7rem .9rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r)}
+.m-dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex-shrink:0}
+.m-dot.r{background:var(--teal)}
+.m-id{font-family:var(--mono);font-size:.65rem;color:var(--t1);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-badge{font-family:var(--mono);font-size:.54rem;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.m-badge.mined{background:rgba(255,176,48,.1);border:1px solid rgba(255,176,48,.2);color:var(--amber)}
+.m-badge.received{background:var(--teal3);border:1px solid rgba(0,212,170,.18);color:var(--teal)}
+
+/* ── SEND / RECEIVE TAB ── */
+.step-head{display:flex;align-items:center;gap:.65rem;margin-bottom:1rem}
+.step-num{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:var(--teal3);border:1.5px solid var(--teal2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--teal);font-weight:700}
+.step-num.done{background:var(--teal);color:#030e09;border-color:var(--teal)}
+.step-lbl{font-family:var(--mono);font-size:.7rem;letter-spacing:.07em;color:var(--t2)}
+.src-tabs{display:flex;gap:6px;margin-bottom:.85rem}
+.src-tab,.rsrc-tab{flex:1;min-height:44px;padding:0 10px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;color:var(--t3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .14s}
+.src-tab:hover,.rsrc-tab:hover{border-color:var(--b2);color:var(--t2)}
+.src-tab.on,.rsrc-tab.on{border-color:var(--teal2);color:var(--teal);background:var(--teal3)}
+/* camera */
+.cam-wrap{border-radius:var(--r);overflow:hidden;background:#000;border:1px solid var(--b1);position:relative;min-height:220px}
+.cam-wrap video{width:100%!important;height:auto!important;display:block!important}
+.cam-wrap img{display:none!important}
+.cam-overlay{position:absolute;inset:0;pointer-events:none;display:none;z-index:5}
+.cam-overlay.on{display:block}
+.sf{position:absolute;top:5%;left:4%;right:4%;bottom:5%}
+.sf::before,.sf::after,.sf>span::before,.sf>span::after{content:'';position:absolute;width:22px;height:22px;border-color:var(--teal);border-style:solid}
+.sf::before{top:0;left:0;border-width:2px 0 0 2px}
+.sf::after{top:0;right:0;border-width:2px 2px 0 0}
+.sf>span::before{bottom:0;left:0;border-width:0 0 2px 2px}
+.sf>span::after{bottom:0;right:0;border-width:0 2px 2px 0}
+.sline{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--teal),var(--teal2),var(--teal),transparent);animation:scanmove 2s ease-in-out infinite;opacity:.9}
+@keyframes scanmove{0%{top:5%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:95%;opacity:0}}
+.cam-status{background:rgba(0,0,0,.75);padding:7px 12px;text-align:center;font-family:var(--mono);font-size:.61rem;letter-spacing:.08em;color:var(--teal);border:1px solid var(--b1);border-top:none;border-radius:0 0 var(--r) var(--r)}
+/* file drop */
+.file-drop{border:2px dashed var(--b2);border-radius:var(--r);min-height:150px;padding:1.4rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;text-align:center;transition:all .16s;background:var(--s3)}
+.file-drop:hover,.file-drop.dov{border-color:var(--teal2);background:var(--teal3)}
+.file-drop p{font-size:.84rem;color:var(--t2)}
+.file-drop small{font-family:var(--mono);font-size:.61rem;color:var(--t3)}
+.file-prev-img{max-width:100%;max-height:120px;border-radius:8px;object-fit:contain;border:1px solid var(--b1)}
+/* recipient chip */
+.recipient-chip{display:flex;align-items:center;gap:9px;margin-top:.75rem;background:var(--teal3);border:1px solid rgba(0,212,170,.22);border-radius:var(--r);padding:.65rem 1rem}
+.rec-check{width:20px;height:20px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;color:#030e09;font-weight:700}
+.rec-info{flex:1;min-width:0}
+.rec-title{font-family:var(--mono);font-size:.62rem;color:var(--teal);letter-spacing:.07em}
+.rec-fp{font-family:var(--mono);font-size:.6rem;color:var(--t2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* amount */
+.amount-row{display:flex;align-items:center;gap:10px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:.75rem 1rem}
+.amount-row input[type=number]{background:none;border:none;outline:none;font-family:var(--mono);font-size:1.85rem;font-weight:700;color:var(--teal);width:56px;text-align:center}
+.amount-row input::-webkit-inner-spin-button,.amount-row input::-webkit-outer-spin-button{-webkit-appearance:none}
+.amount-unit{font-family:var(--mono);font-size:.74rem;color:var(--t3);letter-spacing:.1em}
+.amount-steppers{display:flex;flex-direction:column;gap:4px;margin-left:auto}
+.stepper{width:32px;height:26px;background:var(--s4);border:1px solid var(--b2);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--t2);transition:all .12s}
+.stepper:hover{border-color:var(--teal2);color:var(--teal)}
+.amount-hint{font-family:var(--mono);font-size:.61rem;color:var(--t3);margin-top:.45rem}
+.amount-hint b{color:var(--amber)}
+/* transfer qr */
+.transfer-qr-card{background:linear-gradient(135deg,var(--s2),rgba(0,212,170,.04));border:1px solid var(--teal2);border-radius:var(--rxl);padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1.1rem;margin-bottom:.9rem}
+.transfer-qr-title{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--teal)}
+.tqr-frame{background:#fff;border-radius:12px;padding:11px;box-shadow:var(--glow-teal);display:flex;align-items:center;justify-content:center;width:190px;height:190px}
+.tqr-frame canvas,.tqr-frame img{width:168px!important;height:168px!important;max-width:168px!important;max-height:168px!important;display:block}
+.transfer-coin-list{font-family:var(--mono);font-size:.62rem;color:var(--amber);text-align:center;line-height:1.9;white-space:pre}
+.transfer-hint{font-family:var(--mono);font-size:.59rem;color:var(--t3);text-align:center}
+.qr-placeholder{background:var(--s2);border:2px dashed var(--b1);border-radius:var(--rxl);min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:var(--t3);text-align:center;margin-bottom:.9rem;padding:2rem}
+.qr-ph-txt{font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;line-height:1.8}
+/* result */
+.result-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;transition:border-color .24s,box-shadow .24s}
+.result-card.flash{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,212,170,.18)}
+.result-card.flash-err{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,77,106,.1)}
+.res-hdr{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;color:var(--t3)}
+.rdot{width:8px;height:8px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.rdot.ok{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+.rdot.err{background:var(--red)}
+.rdot.warn{background:var(--amber)}
+.res-body{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:1rem;font-family:var(--mono);font-size:.74rem;line-height:1.7;color:var(--teal);word-break:break-all;white-space:pre-wrap}
+.res-body.empty{color:var(--t3);font-style:italic}
+.res-body.err{color:var(--red)}
+.recv-coin-lbl{font-family:var(--mono);font-size:.58rem;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.recv-coin-ids{font-family:var(--mono);font-size:.67rem;color:var(--amber);word-break:break-all;line-height:1.9}
+/* empty */
+.empty-state{text-align:center;padding:2rem 1rem;color:var(--t3);font-family:var(--mono);font-size:.7rem;line-height:1.8}
+
+/* ── TOASTS ── */
+.toasts{position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + .75rem);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:999;width:calc(100% - 2rem);max-width:400px}
+.toast{background:var(--s2);border:1px solid var(--b2);color:var(--t1);padding:11px 16px;border-radius:var(--r);font-size:.79rem;font-family:var(--mono);animation:tin .22s ease,tout .28s ease 2.7s forwards;display:flex;align-items:center;gap:9px;box-shadow:0 6px 28px rgba(0,0,0,.55)}
+.toast.ok{border-color:var(--teal2)}.toast.err{border-color:var(--red)}.toast.warn{border-color:var(--amber)}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.toast.ok .tdot{background:var(--teal)}.toast.err .tdot{background:var(--red)}.toast.warn .tdot{background:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{from{opacity:1}to{opacity:0;transform:translateY(-4px)}}
+
+/* ══════════════════════════════════════════════════════
+   DESKTOP ≥700px
+══════════════════════════════════════════════════════ */
+@media(min-width:700px){
+  :root{--nav-h:0px;--hdr-h:64px}
+  body{padding-bottom:0;flex-direction:row}
+  /* sidebar */
+  .bottom-nav{
+    position:fixed;top:0;bottom:0;left:0;
+    width:76px;height:100vh;
+    flex-direction:column;justify-content:flex-start;
+    border-top:none;border-right:1px solid var(--b1);
+    padding:0;gap:0;
+  }
+  .nav-logo-slot{height:64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--b1);flex-shrink:0}
+  .nav-logo-inner{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:var(--glow-teal)}
+  .nav-item{width:76px;height:70px;flex:none;border-radius:0;padding:.4rem 0}
+  .nav-item.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:30px;background:var(--teal);border-radius:0 2px 2px 0}
+  .nav-label{font-size:.49rem}
+  .nav-pip{right:12px;top:12px}
+  /* header */
+  .app-header{left:76px;right:0;padding:0 2rem 0 1.75rem}
+  /* main */
+  .app-main{margin-left:76px;max-width:none;padding:1.75rem 2.5rem 2.5rem}
+  /* 2-col layouts */
+  .wallet-desktop{display:grid;grid-template-columns:310px 1fr;gap:1.75rem;align-items:start}
+  .mine-desktop{display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;align-items:start}
+  .send-desktop{display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;align-items:start}
+  .recv-desktop{display:grid;grid-template-columns:1fr 1fr;gap:1.75rem;align-items:start}
+  /* coins grid wider */
+  .coins-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+  /* toasts corner */
+  .toasts{left:auto;right:2rem;bottom:2rem;transform:none;width:auto;max-width:360px}
+}
+@media(min-width:1100px){
+  .app-main{padding:2rem 3rem 3rem}
+  .wallet-desktop{grid-template-columns:330px 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="app-logo">₿</div>
+  <div class="app-title">Cipher<em>Coin</em></div>
+  <div class="app-balance">
+    <div class="app-balance-num" id="hdr-balance">0</div>
+    <div class="app-balance-lbl">CC Balance</div>
+  </div>
+  <div class="app-net">⛏ MAINNET</div>
+</header>
+
+<!-- NAV -->
+<nav class="bottom-nav">
+  <div class="nav-logo-slot" id="nav-logo-slot" style="display:none">
+    <div class="nav-logo-inner">₿</div>
+  </div>
+  <button class="nav-item on" onclick="switchTab('wallet',this)">
+    <div class="nav-pip" id="pip-wallet"></div>
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="5" width="16" height="11" rx="2"/><path d="M2 8.5h16"/><circle cx="14" cy="12.5" r="1"/></svg>
+    </div>
+    <span class="nav-label">WALLET</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('mine',this)">
+    <div class="nav-pip" id="pip-mine"></div>
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17L10 3l7 14"/><path d="M5.5 11h9"/></svg>
+    </div>
+    <span class="nav-label">MINE</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('send',this)">
+    <div class="nav-pip" id="pip-send"></div>
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 3L3 9l6 2.5 2 5.5 6-14z"/></svg>
+    </div>
+    <span class="nav-label">SEND</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('receive',this)">
+    <div class="nav-pip" id="pip-recv"></div>
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3v11"/><polyline points="6,10 10,14 14,10"/><path d="M3 17h14"/></svg>
+    </div>
+    <span class="nav-label">RECEIVE</span>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main class="app-main">
+
+<!-- ① WALLET -->
+<div id="panel-wallet" class="panel on">
+  <div class="wallet-desktop">
+    <div>
+      <div class="wallet-qr-card">
+        <div class="wallet-addr-lbl">YOUR WALLET QR CODE</div>
+        <div class="qr-frame" id="wallet-qr-frame">
+          <div style="color:var(--t3);font-family:var(--mono);font-size:.6rem;text-align:center">Generating…</div>
+        </div>
+        <div class="wallet-addr-lbl">ADDRESS (MASKED)</div>
+        <div class="wallet-masked" id="wallet-masked">••••••••••••••••••••••••••••••</div>
+        <div>
+          <div class="balance-num" id="wallet-balance">0</div>
+          <div class="balance-unit">CIPHERCOIN</div>
+        </div>
+        <div class="stat-pills">
+          <div class="stat-pill"><div class="spv" id="stat-mined">0</div><div class="spk">MINED</div></div>
+          <div class="stat-pill"><div class="spv" id="stat-sent">0</div><div class="spk">SENT</div></div>
+          <div class="stat-pill"><div class="spv" id="stat-recv">0</div><div class="spk">RECVD</div></div>
+        </div>
+        <div class="refresh-chip">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 8A5.5 5.5 0 112.5 6"/><polyline points="2 2 2 6 6 6"/></svg>
+          ID refreshes after each transaction
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="sec-label">Transaction History</div>
+        <div class="tx-list" id="tx-list">
+          <div class="empty-state">No transactions yet.<br>Mine or receive coins to start.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="coins-hdr">
+          <div class="sec-label" style="margin:0">Your Coins &nbsp;<span id="wallet-coin-count" style="color:var(--teal)">0</span></div>
+          <div class="coins-legend">
+            <span><div class="dot-a"></div>Mined</span>
+            <span><div class="dot-t"></div>Received</span>
+          </div>
+        </div>
+        <div class="coins-grid" id="wallet-coins-grid">
+          <div class="empty-state" style="grid-column:1/-1;padding:1.5rem">No coins yet. Go mine some!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ② MINE -->
+<div id="panel-mine" class="panel">
+  <div class="mine-desktop">
+    <div>
+      <div class="mine-hero">
+        <div>
+          <div class="sec-label" style="text-align:center">PROOF OF WORK MINING</div>
+          <div class="mine-desc">Each mined coin gets a unique 40-character cryptographic ID. Takes ~3 seconds.</div>
+        </div>
+        <div class="mine-btn-wrap">
+          <div class="mine-ring" id="mine-ring"></div>
+          <button class="mine-btn" id="mine-btn" onclick="startMining()">
+            <span class="mine-ico">⛏</span>
+            <span id="mine-btn-text">MINE COIN</span>
+          </button>
+        </div>
+        <div class="mine-prog-wrap" id="mine-progress" style="display:none">
+          <div class="prog-bar"><div class="prog-fill" id="progress-fill"></div></div>
+          <div class="mine-status" id="mine-status">Initializing miner…</div>
+        </div>
+        <div id="mine-result" style="display:none;width:100%;max-width:380px">
+          <div class="mine-result-card">
+            <div class="mine-result-lbl">✓ COIN MINED SUCCESSFULLY</div>
+            <div class="mine-result-id" id="last-mined-id"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="mine-coins-card">
+        <div class="sec-label">Your Coins (<span id="coin-count">0</span>)</div>
+        <div class="m-coin-list" id="coin-list">
+          <div class="empty-state">No coins yet. Start mining!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ SEND -->
+<div id="panel-send" class="panel">
+  <div class="send-desktop">
+    <div>
+      <!-- Step 1 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-num" id="step1-num">1</div>
+          <div class="step-lbl">SCAN RECIPIENT'S WALLET QR</div>
+        </div>
+        <div class="src-tabs">
+          <button class="src-tab on" onclick="setSendSrc('cam',this)">📷 CAMERA</button>
+          <button class="src-tab" onclick="setSendSrc('file',this)">📁 FILE</button>
+        </div>
+        <div id="send-cam-sec">
+          <div class="cam-wrap">
+            <div id="send-camera-reader"></div>
+            <div class="cam-overlay" id="send-cam-overlay"><div class="sf"><span></span><div class="sline"></div></div></div>
+          </div>
+          <div class="cam-status" id="send-cam-status">CAMERA OFF — tap START</div>
+          <div class="btn-row">
+            <button class="btn btn-p" id="send-btn-start" onclick="startSendCam()">▶ START</button>
+            <button class="btn btn-d" id="send-btn-stop" onclick="stopSendCam()" style="display:none">■ STOP</button>
+          </div>
+        </div>
+        <div id="send-file-sec" style="display:none">
+          <div class="file-drop" id="send-file-drop"
+            onclick="document.getElementById('send-file-input').click()"
+            ondragover="event.preventDefault();this.classList.add('dov')"
+            ondragleave="this.classList.remove('dov')"
+            ondrop="onSendDrop(event)">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+            <p>Tap or drop recipient's wallet QR</p><small>PNG · JPG · WEBP</small>
+          </div>
+          <input type="file" id="send-file-input" accept="image/*" style="display:none" onchange="scanSendFile(this.files[0])">
+        </div>
+        <div id="recipient-display" style="display:none">
+          <div class="recipient-chip">
+            <div class="rec-check">✓</div>
+            <div class="rec-info">
+              <div class="rec-title">RECIPIENT SCANNED</div>
+              <div class="rec-fp" id="recipient-fingerprint"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-num" id="step2-num">2</div>
+          <div class="step-lbl">ENTER AMOUNT TO SEND</div>
+        </div>
+        <div class="amount-row">
+          <input type="number" id="send-amount" min="1" max="5" value="1"
+            oninput="clampAmount(this);updateSendBtn()"
+            onchange="clampAmount(this);updateSendBtn()">
+          <div class="amount-unit">CC</div>
+          <div class="amount-steppers">
+            <button class="stepper" onclick="stepAmount(1)">▲</button>
+            <button class="stepper" onclick="stepAmount(-1)">▼</button>
+          </div>
+        </div>
+        <div class="amount-hint">Max <b>5</b> per transaction · <b id="send-available-count">0</b> available</div>
+      </div>
+      <!-- Step 3 -->
+      <div class="step-card">
+        <div class="step-head">
+          <div class="step-num" id="step3-num">3</div>
+          <div class="step-lbl">GENERATE TRANSFER QR</div>
+        </div>
+        <button class="btn btn-p btn-full" id="btn-generate-transfer" onclick="generateTransferQR()" disabled>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2L2 8l5 2 2 4 5-12z"/></svg>
+          GENERATE TRANSFER QR
+        </button>
+        <div style="font-family:var(--mono);font-size:.59rem;color:var(--t3);margin-top:.6rem">Give the generated QR to recipient to scan in their Receive tab.</div>
+      </div>
+    </div>
+    <div>
+      <div class="transfer-qr-card" id="transfer-qr-box" style="display:none">
+        <div class="transfer-qr-title">📤 TRANSFER QR CODE</div>
+        <div class="tqr-frame" id="transfer-qr-frame"></div>
+        <div class="transfer-coin-list" id="transfer-coin-preview"></div>
+        <div class="transfer-hint">Ask recipient to scan in their Receive tab</div>
+        <div class="btn-row" style="justify-content:center;margin-top:.2rem">
+          <button class="btn btn-amber" onclick="downloadTransferQR()">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><path d="M8 3v10"/><path d="M2 14h12"/></svg>
+            SAVE QR
+          </button>
+          <button class="btn btn-g" onclick="resetSend()">RESET</button>
+        </div>
+      </div>
+      <div class="qr-placeholder" id="transfer-qr-placeholder">
+        <svg width="58" height="58" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".28"><rect x="8" y="8" width="20" height="20" rx="2"/><rect x="12" y="12" width="12" height="12"/><rect x="36" y="8" width="20" height="20" rx="2"/><rect x="40" y="12" width="12" height="12"/><rect x="8" y="36" width="20" height="20" rx="2"/><rect x="12" y="40" width="12" height="12"/><path d="M38 38h4v4h-4z"/><path d="M46 38h10"/><path d="M38 46h10v10H38z"/></svg>
+        <div class="qr-ph-txt">TRANSFER QR<br>APPEARS HERE</div>
+        <div style="font-size:.8rem;color:var(--t3)">Complete steps 1–3</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ RECEIVE -->
+<div id="panel-receive" class="panel">
+  <div class="recv-desktop">
+    <div>
+      <div class="step-card">
+        <div class="sec-label">SCAN TRANSFER QR FROM SENDER</div>
+        <div class="src-tabs">
+          <button class="rsrc-tab on" onclick="setRecvSrc('cam',this)">📷 CAMERA</button>
+          <button class="rsrc-tab" onclick="setRecvSrc('file',this)">📁 FILE</button>
+        </div>
+        <div id="recv-cam-sec">
+          <div class="cam-wrap">
+            <div id="recv-camera-reader"></div>
+            <div class="cam-overlay" id="recv-cam-overlay"><div class="sf"><span></span><div class="sline"></div></div></div>
+          </div>
+          <div class="cam-status" id="recv-cam-status">CAMERA OFF — tap START</div>
+          <div class="btn-row">
+            <button class="btn btn-p" id="recv-btn-start" onclick="startRecvCam()">▶ START</button>
+            <button class="btn btn-d" id="recv-btn-stop" onclick="stopRecvCam()" style="display:none">■ STOP</button>
+          </div>
+        </div>
+        <div id="recv-file-sec" style="display:none">
+          <div class="file-drop" id="recv-file-drop"
+            onclick="document.getElementById('recv-file-input').click()"
+            ondragover="event.preventDefault();this.classList.add('dov')"
+            ondragleave="this.classList.remove('dov')"
+            ondrop="onRecvDrop(event)">
+            <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+            <p>Tap or drop the transfer QR image</p><small>PNG · JPG · WEBP</small>
+          </div>
+          <input type="file" id="recv-file-input" accept="image/*" style="display:none" onchange="scanRecvFile(this.files[0])">
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="result-card" id="recv-result-panel">
+        <div class="res-hdr"><div class="rdot" id="recv-dot"></div><span id="recv-label">AWAITING SCAN</span></div>
+        <div class="res-body empty" id="recv-text">Point camera at a transfer QR, or upload an image…</div>
+        <div id="recv-coin-detail" style="display:none">
+          <div class="recv-coin-lbl">Coins Received:</div>
+          <div class="recv-coin-ids" id="recv-coin-id-display"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toasts" id="toasts"></div>
+<div id="file-reader-hidden"      style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+<div id="send-file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+<div id="recv-file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+// Desktop nav logo
+const mq=window.matchMedia('(min-width:700px)');
+function applyLayout(e){document.getElementById('nav-logo-slot').style.display=e.matches?'flex':'none';}
+applyLayout(mq);mq.addEventListener('change',applyLayout);
+
+// ═══ CRYPTO UTILS ════════════════════════════════════
+const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+function genAlphaNum(len){let s='';const a=new Uint8Array(len);crypto.getRandomValues(a);for(let i=0;i<len;i++)s+=CHARSET[a[i]%CHARSET.length];return s;}
+function generateWalletId(){return genAlphaNum(30);}
+function generateCoinId(){return genAlphaNum(40);}
+function evenDigits(id){return id.split('').filter((_,i)=>i%2===0).join('');}
+function encodeTransferPayload(sw,coinIds,rw){return coinIds.join('')+String(coinIds.length)+evenDigits(rw);}
+function decodeTransferPayload(p){
+  if(p.length<56)return null;
+  const cb=p.length-16;if(cb%40!==0)return null;
+  const N=cb/40;if(N<1||N>5)return null;
+  if(parseInt(p[cb])!==N)return null;
+  const coinIds=[];for(let i=0;i<N;i++)coinIds.push(p.slice(i*40,i*40+40));
+  return{coinIds,N,recipientEvenDigits:p.slice(-15)};
+}
+function maskWallet(id){return id.slice(0,4)+'•'.repeat(22)+id.slice(-4);}
+function walletFingerprint(id){return id.slice(0,6)+'…'+id.slice(-6);}
+
+// ═══ STATE ════════════════════════════════════════════
+let walletId =localStorage.getItem('cc_wallet')||generateWalletId();
+let coins    =JSON.parse(localStorage.getItem('cc_coins')||'[]');
+let txHistory=JSON.parse(localStorage.getItem('cc_tx')||'[]');
+let sentCoins=JSON.parse(localStorage.getItem('cc_sent')||'[]');
+function saveState(){
+  localStorage.setItem('cc_wallet',walletId);
+  localStorage.setItem('cc_coins',JSON.stringify(coins));
+  localStorage.setItem('cc_tx',JSON.stringify(txHistory));
+  localStorage.setItem('cc_sent',JSON.stringify(sentCoins));
+}
+
+// ═══ QR HELPER ═══════════════════════════════════════
+function generateQR(cid,text,size=176){
+  const c=document.getElementById(cid);c.innerHTML='';
+  const d=document.createElement('div');c.appendChild(d);
+  try{new QRCode(d,{text,width:size,height:size,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+  catch(e){c.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;text-align:center;padding:.5rem">QR error</div>';}
+  setTimeout(()=>{const el=c.querySelector('canvas')||c.querySelector('img');if(el){el.style.width=size+'px';el.style.height=size+'px';el.style.maxWidth=size+'px';el.style.maxHeight=size+'px';}},30);
+}
+function getQRCanvas(id){const c=document.getElementById(id);return c?(c.querySelector('canvas')||c.querySelector('img')):null;}
+
+// ═══ WALLET ═══════════════════════════════════════════
+function refreshWalletId(){walletId=generateWalletId();saveState();renderWallet();toast('🔄 Wallet ID refreshed','ok');}
+
+function renderWallet(){
+  generateQR('wallet-qr-frame',walletId,176);
+  document.getElementById('wallet-masked').textContent=maskWallet(walletId);
+  const bal=coins.length;
+  document.getElementById('wallet-balance').textContent=bal;
+  document.getElementById('hdr-balance').textContent=bal;
+  document.getElementById('stat-mined').textContent=coins.filter(c=>c.type==='mined').length;
+  document.getElementById('stat-sent').textContent=sentCoins.length;
+  document.getElementById('stat-recv').textContent=coins.filter(c=>c.type==='received').length;
+  document.getElementById('coin-count').textContent=coins.length;
+  renderTxHistory();renderWalletCoins();
+  document.getElementById('pip-wallet').classList.toggle('show',bal>0);
+}
+
+function renderTxHistory(){
+  const el=document.getElementById('tx-list');
+  if(!txHistory.length){el.innerHTML='<div class="empty-state">No transactions yet.<br>Mine or receive coins to start.</div>';return;}
+  const icons={mined:'⛏',sent:'📤',received:'📥'};
+  const labels={mined:'Mined',sent:'Sent',received:'Received'};
+  el.innerHTML=txHistory.slice().reverse().map(tx=>{
+    const cls=tx.type==='mined'?'mine':tx.type==='sent'?'send':'recv';
+    return`<div class="tx-item"><div class="tx-ico ${cls}">${icons[tx.type]||'•'}</div><div class="tx-body"><div class="tx-title">${labels[tx.type]||tx.type} — ${tx.coinId?tx.coinId.slice(0,12)+'…'+tx.coinId.slice(-6):''}</div><div class="tx-sub">${tx.label||''}</div></div><div class="tx-time">${ago(tx.ts)}</div></div>`;
+  }).join('');
+}
+
+function renderWalletCoins(){
+  const grid=document.getElementById('wallet-coins-grid');
+  document.getElementById('wallet-coin-count').textContent=coins.length;
+  if(!coins.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1;padding:1.5rem">No coins yet. Go mine some!</div>';return;}
+  grid.innerHTML=coins.slice().reverse().map(c=>{
+    const cls=c.type==='received'?'rc':'mc';
+    const badge=c.type==='received'?'received':'mined';
+    return`<div class="coin-card ${cls}"><div class="coin-id-w">${c.id.match(/.{1,10}/g).join('\n')}</div><div class="coin-foot"><div class="coin-badge ${badge}">${badge.toUpperCase()}</div><div class="coin-age">${ago(c.ts)}</div></div></div>`;
+  }).join('');
+}
+
+// ═══ MINE ═════════════════════════════════════════════
+let miningActive=false;
+function startMining(){
+  if(miningActive)return;miningActive=true;
+  const btn=document.getElementById('mine-btn');
+  btn.classList.add('mining');
+  document.getElementById('mine-btn-text').textContent='MINING…';
+  document.getElementById('mine-ring').style.display='block';
+  document.getElementById('mine-progress').style.display='block';
+  document.getElementById('mine-result').style.display='none';
+  const fill=document.getElementById('progress-fill');
+  const status=document.getElementById('mine-status');
+  const phases=[[0,20,'Generating proof of work…'],[20,50,'Computing hash nonce…'],[50,75,'Verifying block header…'],[75,95,'Broadcasting to network…'],[95,100,'Finalizing coin ID…']];
+  let pct=0,pi=0;fill.style.width='0%';
+  const iv=setInterval(()=>{
+    pct+=1.2;if(pct>100)pct=100;fill.style.width=pct+'%';
+    while(pi<phases.length-1&&pct>=phases[pi][1])pi++;
+    status.textContent=phases[Math.min(pi,phases.length-1)][2];
+    if(pct>=100){clearInterval(iv);finishMining();}
+  },36);
+}
+function finishMining(){
+  const coinId=generateCoinId();
+  coins.push({id:coinId,type:'mined',ts:Date.now()});
+  txHistory.push({type:'mined',coinId,ts:Date.now(),label:'Block reward'});
+  saveState();miningActive=false;
+  const btn=document.getElementById('mine-btn');
+  btn.classList.remove('mining');
+  document.getElementById('mine-btn-text').textContent='MINE COIN';
+  document.getElementById('mine-ring').style.display='none';
+  document.getElementById('mine-progress').style.display='none';
+  document.getElementById('mine-result').style.display='block';
+  document.getElementById('last-mined-id').textContent=coinId;
+  renderWallet();renderCoinList();updateAvailableCount();updateSendBtn();
+  toast('⛏ Coin mined! '+coinId.slice(0,8)+'…','ok');
+}
+function renderCoinList(){
+  const el=document.getElementById('coin-list');
+  document.getElementById('coin-count').textContent=coins.length;
+  if(!coins.length){el.innerHTML='<div class="empty-state">No coins yet. Start mining!</div>';return;}
+  el.innerHTML=coins.slice().reverse().map(c=>{
+    const cls=c.type==='received'?'r':'';
+    const badge=c.type==='received'?'received':'mined';
+    return`<div class="m-coin-row"><div class="m-dot ${cls}"></div><div class="m-id">${c.id}</div><div class="m-badge ${badge}">${badge.toUpperCase()}</div></div>`;
+  }).join('');
+}
+
+// ═══ SEND ═════════════════════════════════════════════
+let sendScanner=null,sendScanning=false,recipientWalletId=null;
+function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>5)v=5;if(v>av)v=Math.max(1,av);inp.value=v;}
+function stepAmount(d){const inp=document.getElementById('send-amount');inp.value=(parseInt(inp.value)||1)+d;clampAmount(inp);updateSendBtn();}
+function updateAvailableCount(){const av=coins.length;const el=document.getElementById('send-available-count');if(el)el.textContent=av;const inp=document.getElementById('send-amount');if(inp)clampAmount(inp);}
+function setSendSrc(src,el){
+  document.querySelectorAll('#panel-send .src-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  document.getElementById('send-cam-sec').style.display=src==='cam'?'block':'none';
+  document.getElementById('send-file-sec').style.display=src==='file'?'block':'none';
+  if(src==='file')stopSendCam();
+}
+async function startSendCam(){
+  document.getElementById('send-cam-status').textContent='Requesting camera…';
+  document.getElementById('send-btn-start').disabled=true;
+  let perm;
+  try{perm=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}
+  catch(e){document.getElementById('send-cam-status').textContent='ACCESS DENIED';toast('Camera permission denied','err');document.getElementById('send-btn-start').disabled=false;return;}
+  perm.getTracks().forEach(t=>t.stop());
+  if(sendScanner){try{await sendScanner.stop();}catch(e){}sendScanner=null;}
+  sendScanner=new Html5Qrcode('send-camera-reader',{verbose:false});
+  try{
+    await sendScanner.start({facingMode:'environment'},{fps:30,qrbox:(w,h)=>({width:w,height:h}),experimentalFeatures:{useBarCodeDetectorIfSupported:true}},text=>onSendScan(text),()=>{});
+    sendScanning=true;
+    document.getElementById('send-btn-start').style.display='none';
+    document.getElementById('send-btn-stop').style.display='flex';
+    document.getElementById('send-cam-overlay').classList.add('on');
+    document.getElementById('send-cam-status').textContent='SCANNING… point at recipient wallet QR';
+  }catch(e){document.getElementById('send-cam-status').textContent='ERROR: '+e.message;document.getElementById('send-btn-start').disabled=false;}
+}
+async function stopSendCam(){
+  sendScanning=false;
+  if(sendScanner){try{await sendScanner.stop();}catch(e){}try{sendScanner.clear();}catch(e){}sendScanner=null;}
+  document.getElementById('send-btn-start').disabled=false;
+  document.getElementById('send-btn-start').style.display='flex';
+  document.getElementById('send-btn-stop').style.display='none';
+  document.getElementById('send-cam-overlay').classList.remove('on');
+  document.getElementById('send-camera-reader').innerHTML='';
+  document.getElementById('send-cam-status').textContent='CAMERA OFF — tap START';
+}
+function onSendScan(text){
+  if(text.length===30&&/^[A-Za-z0-9]+$/.test(text)){
+    if(text===walletId){toast('Cannot send to yourself!','err');return;}
+    recipientWalletId=text;stopSendCam();showRecipientScanned(text);updateSendBtn();toast('✓ Recipient wallet scanned','ok');
+  }else{toast('Invalid wallet QR','err');}
+}
+function showRecipientScanned(id){
+  document.getElementById('recipient-display').style.display='block';
+  document.getElementById('recipient-fingerprint').textContent=walletFingerprint(id);
+  document.getElementById('send-cam-sec').style.display='none';
+  document.getElementById('send-file-sec').style.display='none';
+  const s=document.getElementById('step1-num');s.className='step-num done';s.textContent='✓';
+}
+function onSendDrop(e){e.preventDefault();document.getElementById('send-file-drop').classList.remove('dov');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))scanSendFile(f);}
+async function scanSendFile(file){
+  if(!file)return;
+  const fr=new FileReader();
+  fr.onload=ev=>{const d=document.getElementById('send-file-drop');d.innerHTML=`<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.75rem;color:var(--t3)">${file.name}</p>`;d.onclick=null;};
+  fr.readAsDataURL(file);
+  const text=await decodeQRFromFile(file,'send-file-reader-hidden');
+  if(text)onSendScan(text);else toast('No valid wallet QR found','err');
+}
+function updateSendBtn(){const amt=parseInt(document.getElementById('send-amount')?.value)||0;document.getElementById('btn-generate-transfer').disabled=!(recipientWalletId&&amt>=1&&coins.length>=amt);}
+function generateTransferQR(){
+  if(!recipientWalletId)return;
+  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,5);
+  if(coins.length<amt){toast('Not enough coins','err');return;}
+  const coinIds=coins.slice(0,amt).map(c=>c.id);
+  const payload=encodeTransferPayload(walletId,coinIds,recipientWalletId);
+  document.getElementById('transfer-qr-placeholder').style.display='none';
+  document.getElementById('transfer-qr-box').style.display='flex';
+  generateQR('transfer-qr-frame',payload,168);
+  document.getElementById('transfer-coin-preview').textContent=coinIds.map((id,i)=>`COIN ${i+1}: ${id.slice(0,10)}…${id.slice(-6)}`).join('\n');
+  const ts=Date.now();
+  coinIds.forEach(id=>{sentCoins.push(id);txHistory.push({type:'sent',coinId:id,ts,label:'To '+walletFingerprint(recipientWalletId)});});
+  coins=coins.filter(c=>!coinIds.includes(c.id));
+  saveState();
+  const s3=document.getElementById('step3-num');s3.className='step-num done';s3.textContent='✓';
+  refreshWalletId();updateAvailableCount();updateSendBtn();
+  toast(`Transfer QR generated! Sending ${amt} CC.`,'ok');
+}
+function downloadTransferQR(){const c=getQRCanvas('transfer-qr-frame');if(!c)return;const a=document.createElement('a');a.download='transfer-qr-'+Date.now()+'.png';a.href=c.toDataURL('image/png');a.click();toast('Transfer QR saved','ok');}
+function resetSend(){
+  recipientWalletId=null;
+  document.getElementById('recipient-display').style.display='none';
+  document.getElementById('send-cam-sec').style.display='block';
+  document.getElementById('send-file-sec').style.display='none';
+  document.getElementById('transfer-qr-box').style.display='none';
+  document.getElementById('transfer-qr-placeholder').style.display='flex';
+  document.getElementById('send-file-drop').innerHTML=`<svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg><p>Tap or drop recipient's wallet QR</p><small>PNG · JPG · WEBP</small>`;
+  document.getElementById('send-file-drop').onclick=()=>document.getElementById('send-file-input').click();
+  document.getElementById('send-amount').value=1;
+  ['step1-num','step2-num','step3-num'].forEach((id,i)=>{const el=document.getElementById(id);el.className='step-num';el.textContent=i+1;});
+  document.querySelectorAll('#panel-send .src-tab').forEach((t,i)=>t.classList.toggle('on',i===0));
+  updateAvailableCount();updateSendBtn();
+}
+
+// ═══ RECEIVE ══════════════════════════════════════════
+let recvScanner=null,recvScanning=false,lastRecvTs=0,lastRecvText='';
+function setRecvSrc(src,el){
+  document.querySelectorAll('#panel-receive .rsrc-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  document.getElementById('recv-cam-sec').style.display=src==='cam'?'block':'none';
+  document.getElementById('recv-file-sec').style.display=src==='file'?'block':'none';
+  if(src==='file')stopRecvCam();
+}
+async function startRecvCam(){
+  document.getElementById('recv-cam-status').textContent='Requesting camera…';
+  document.getElementById('recv-btn-start').disabled=true;
+  let perm;
+  try{perm=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}
+  catch(e){document.getElementById('recv-cam-status').textContent='ACCESS DENIED';toast('Camera permission denied','err');document.getElementById('recv-btn-start').disabled=false;return;}
+  perm.getTracks().forEach(t=>t.stop());
+  if(recvScanner){try{await recvScanner.stop();}catch(e){}recvScanner=null;}
+  recvScanner=new Html5Qrcode('recv-camera-reader',{verbose:false});
+  try{
+    await recvScanner.start({facingMode:'environment'},{fps:30,qrbox:(w,h)=>({width:w,height:h}),experimentalFeatures:{useBarCodeDetectorIfSupported:true}},text=>onRecvScan(text,'camera'),()=>{});
+    recvScanning=true;
+    document.getElementById('recv-btn-start').style.display='none';
+    document.getElementById('recv-btn-stop').style.display='flex';
+    document.getElementById('recv-cam-overlay').classList.add('on');
+    document.getElementById('recv-cam-status').textContent='SCANNING… point at transfer QR';
+  }catch(e){document.getElementById('recv-cam-status').textContent='ERROR: '+e.message;document.getElementById('recv-btn-start').disabled=false;}
+}
+async function stopRecvCam(){
+  recvScanning=false;
+  if(recvScanner){try{await recvScanner.stop();}catch(e){}try{recvScanner.clear();}catch(e){}recvScanner=null;}
+  document.getElementById('recv-btn-start').disabled=false;
+  document.getElementById('recv-btn-start').style.display='flex';
+  document.getElementById('recv-btn-stop').style.display='none';
+  document.getElementById('recv-cam-overlay').classList.remove('on');
+  document.getElementById('recv-camera-reader').innerHTML='';
+  document.getElementById('recv-cam-status').textContent='CAMERA OFF — tap START';
+}
+function onRecvDrop(e){e.preventDefault();document.getElementById('recv-file-drop').classList.remove('dov');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))scanRecvFile(f);}
+async function scanRecvFile(file){
+  if(!file)return;
+  const fr=new FileReader();
+  fr.onload=ev=>{const d=document.getElementById('recv-file-drop');d.innerHTML=`<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.75rem;color:var(--t3)">${file.name}</p>`;d.onclick=null;};
+  fr.readAsDataURL(file);
+  const text=await decodeQRFromFile(file,'recv-file-reader-hidden');
+  if(text)onRecvScan(text,'file');
+  else{recvSetFail('No QR code found in image');toast('No QR code found','err');}
+}
+function onRecvScan(text,source){
+  const now=Date.now();
+  if(source==='camera'&&text===lastRecvText&&now-lastRecvTs<3000)return;
+  lastRecvText=text;lastRecvTs=now;
+  if(!/^[A-Za-z0-9]+$/.test(text)){recvSetFail('Invalid QR — non-alphanumeric characters.');toast('Not a valid transfer QR','err');return;}
+  const parsed=decodeTransferPayload(text);
+  if(!parsed){recvSetFail(`Invalid QR length (${text.length} chars).\nExpected 56/96/136/176/216 for 1–5 coins.`);toast('Not a valid transfer QR','err');return;}
+  const ourEven=evenDigits(walletId);
+  if(parsed.recipientEvenDigits!==ourEven){recvSetFail('Transfer NOT addressed to your wallet.\nEven-digit fingerprint mismatch.');toast('Transfer not for you!','warn');return;}
+  const dupes=parsed.coinIds.filter(id=>coins.find(c=>c.id===id));
+  if(dupes.length){recvSetFail('Duplicate coin(s) detected:\n'+dupes.map(id=>id.slice(0,10)+'…').join('\n'));toast('Duplicate coin(s) rejected','warn');return;}
+  const ts=now;
+  parsed.coinIds.forEach(id=>{coins.push({id,type:'received',ts});txHistory.push({type:'received',coinId:id,ts,label:'Transfer verified ✓'});});
+  saveState();
+  recvSetOK(parsed);
+  if(source==='camera')stopRecvCam();
+  renderWallet();renderCoinList();updateAvailableCount();updateSendBtn();
+  setTimeout(()=>refreshWalletId(),800);
+  toast(`📥 Received ${parsed.N} coin${parsed.N>1?'s':''}! +${parsed.N} CC`,'ok');
+}
+function recvSetOK(parsed){
+  const p=document.getElementById('recv-result-panel');
+  p.classList.remove('flash-err');p.classList.add('flash');setTimeout(()=>p.classList.remove('flash'),700);
+  document.getElementById('recv-dot').className='rdot ok';
+  document.getElementById('recv-label').textContent=`✓ ${parsed.N} COIN${parsed.N>1?'S':''} RECEIVED`;
+  const rt=document.getElementById('recv-text');rt.className='res-body';
+  rt.textContent=`Transfer authenticated.\nWallet fingerprint matched ✓\nCoins received: ${parsed.N}`;
+  document.getElementById('recv-coin-detail').style.display='block';
+  document.getElementById('recv-coin-id-display').textContent=parsed.coinIds.map((id,i)=>`[${i+1}] ${id}`).join('\n');
+}
+function recvSetFail(msg){
+  const p=document.getElementById('recv-result-panel');
+  p.classList.remove('flash');p.classList.add('flash-err');setTimeout(()=>p.classList.remove('flash-err'),700);
+  document.getElementById('recv-dot').className='rdot err';
+  document.getElementById('recv-label').textContent='VERIFICATION FAILED';
+  const rt=document.getElementById('recv-text');rt.className='res-body err';rt.textContent=msg;
+  document.getElementById('recv-coin-detail').style.display='none';
+}
+
+// ═══ FILE QR DECODE ═══════════════════════════════════
+async function decodeQRFromFile(file,hidId){
+  if(window.BarcodeDetector){
+    try{
+      const bd=new BarcodeDetector({formats:['qr_code']});
+      const bmp=await createImageBitmap(file);
+      let bc=await bd.detect(bmp);
+      if(bc.length&&bc[0].rawValue){bmp.close();return bc[0].rawValue;}
+      const scale=Math.min(1,800/Math.max(bmp.width,bmp.height));
+      const sw=Math.round(bmp.width*scale)|0,sh=Math.round(bmp.height*scale)|0;
+      const hit=await Promise.any([45,90,135,180,225,270,315].map(angle=>{
+        const rad=angle*Math.PI/180,cA=Math.abs(Math.cos(rad)),sA=Math.abs(Math.sin(rad));
+        const cw=Math.round(sw*cA+sh*sA)|0,ch=Math.round(sw*sA+sh*cA)|0;
+        const tmp=document.createElement('canvas');tmp.width=cw;tmp.height=ch;
+        const tc=tmp.getContext('2d',{alpha:false});
+        tc.translate(cw/2,ch/2);tc.rotate(rad);tc.drawImage(bmp,-sw/2,-sh/2,sw,sh);
+        return bd.detect(tmp).then(r=>{if(r.length&&r[0].rawValue)return r[0].rawValue;return Promise.reject('none');});
+      })).catch(()=>null);
+      bmp.close();if(hit)return hit;
+    }catch(e){}
+  }
+  const fs=new Html5Qrcode(hidId,{verbose:false});
+  try{return await fs.scanFile(file,false);}
+  catch(e){return null;}
+  finally{try{fs.clear();}catch(e){}}
+}
+
+// ═══ TABS ═════════════════════════════════════════════
+function switchTab(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+  if(id!=='send')stopSendCam();
+  if(id!=='receive')stopRecvCam();
+  if(id==='wallet')renderWallet();
+  if(id==='mine')renderCoinList();
+  if(id==='send'){updateAvailableCount();updateSendBtn();}
+}
+
+// ═══ HELPERS ══════════════════════════════════════════
+function ago(ts){const d=Date.now()-ts;if(d<60e3)return'now';if(d<36e5)return Math.floor(d/60e3)+'m';if(d<864e5)return Math.floor(d/36e5)+'h';return Math.floor(d/864e5)+'d';}
+function toast(msg,type='ok'){const w=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+type;el.innerHTML=`<div class="tdot"></div>${msg}`;w.appendChild(el);setTimeout(()=>el.remove(),3200);}
+
+// ═══ INIT ═════════════════════════════════════════════
+renderWallet();renderCoinList();updateAvailableCount();updateSendBtn();
+</script>
+</body>
+</html>
