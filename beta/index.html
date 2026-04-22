@@ -563,7 +563,6 @@ body{
   border:1px solid var(--teal2);
   border-radius:var(--rxl);
   box-shadow:0 24px 80px rgba(0,0,0,.75),var(--glow-teal);
-  /* Grow to fill most of screen */
   width:min(100%, calc(100vw - 2rem));
   height:calc(100dvh - 2rem);
   max-width:560px;
@@ -575,6 +574,19 @@ body{
   overflow:hidden;
 }
 .qr-modal-backdrop.open .qr-modal{transform:none;}
+/* ≤450px: full width, 1px gap each side, no border-radius on sides */
+@media(max-width:450px){
+  .qr-modal-backdrop{padding:0;}
+  .qr-modal{
+    width:calc(100vw - 2px);
+    max-width:calc(100vw - 2px);
+    height:100dvh;
+    border-radius:0;
+    gap:.5rem;
+    padding:1rem .75rem .85rem;
+  }
+  .qr-modal-frame{border-radius:0;}
+}
 .qr-modal-close{
   position:absolute;top:.75rem;right:.75rem;
   width:32px;height:32px;border-radius:50%;
@@ -1269,30 +1281,19 @@ let _modalPayload='',_modalQRGenerated=false;
 function openTransferModal(payload,coinIds){
   _modalPayload=payload;_modalQRGenerated=false;
   document.getElementById('modal-coin-preview').textContent=coinIds.map((id,i)=>`COIN ${i+1}: ${id.slice(0,10)}…${id.slice(-6)}`).join('\n');
-  document.getElementById('transfer-modal').classList.add('open');
-  document.body.style.overflow='hidden';
-
-  // Generate QR at high native resolution so it stays crisp at any display size
   const frame=document.getElementById('modal-qr-frame');
   frame.innerHTML='';
-  const nativeSize=1024; // high-res native pixels
-  const wrapper=document.createElement('div');
-  wrapper.style.cssText='width:'+nativeSize+'px;height:'+nativeSize+'px;';
-  frame.appendChild(wrapper);
-  try{
-    new QRCode(wrapper,{text:payload,width:nativeSize,height:nativeSize,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-  }catch(e){
-    frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem;text-align:center">QR error</div>';
-    return;
-  }
-  // Scale the canvas/img to fill the frame via CSS — same QR, just bigger
+  const wrap=document.createElement('div');
+  frame.appendChild(wrap);
+  try{new QRCode(wrap,{text:payload,width:256,height:256,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+  catch(e){frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem;text-align:center">QR error</div>';return;}
   setTimeout(()=>{
     const el=frame.querySelector('canvas')||frame.querySelector('img');
-    if(el){
-      el.style.cssText='width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;display:block;';
-      wrapper.style.cssText='width:100%;height:100%;display:block;';
-    }
-  },40);
+    if(el){el.style.cssText='width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;display:block;';}
+    wrap.style.cssText='width:100%;height:100%;';
+  },30);
+  document.getElementById('transfer-modal').classList.add('open');
+  document.body.style.overflow='hidden';
   _modalQRGenerated=true;
 }
 function closeTransferModal(){
