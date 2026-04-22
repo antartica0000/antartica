@@ -423,11 +423,6 @@ body{
     max-width:none!important;
     margin:1px auto!important;
   }
-  .qr-modal{
-    width:calc(80vw - 2px)!important;
-    max-width:none!important;
-    margin:1px auto!important;
-  }
 }
 
 /* ── 600px – 1023px LANDSCAPE: height is the constraint, QR = 80dvh ── */
@@ -447,11 +442,6 @@ body{
     height:calc(80dvh - 2px)!important;
     max-width:none!important;
     margin:1px auto!important;
-  }
-  .qr-modal{
-    width:auto!important;
-    max-width:none!important;
-    /* keep the side-by-side modal layout from its existing rule */
   }
 }
 
@@ -888,10 +878,89 @@ body{
   align-self:center;
   overflow:hidden;
 }
-/* >600px: minimize white quiet-zone padding — the QR library bakes in its own
-   4-module quiet zone inside the canvas, so 3px CSS border is all we need.   */
-@media(min-width:601px){
-  .qr-modal-frame{padding:3px;}
+/* >600px tall enough: full-screen modal, grid layout to maximise QR area.
+   The QR library bakes in its own 4-module quiet zone, so 3px CSS border is enough.
+   Scoped to min-height:501px so the existing landscape-phone rules still win
+   for short (≤500px tall) screens.                                             */
+@media(min-width:601px) and (min-height:501px){
+  /* Backdrop: 4px gap from screen edges instead of 1rem */
+  .qr-modal-backdrop{padding:4px;}
+
+  /* Modal: near-full screen */
+  .qr-modal{
+    width:calc(100vw - 8px);
+    max-width:none;
+    height:calc(100dvh - 8px);
+    max-height:none;
+    border-radius:var(--r);
+    padding:.65rem;
+
+    /* Switch from flex-column to grid:
+       left col (1fr) = QR | right col (220px) = info stack        */
+    display:grid;
+    grid-template-columns:1fr 220px;
+    grid-template-rows:auto 1fr auto auto;  /* title | coins | hint | actions */
+    column-gap:.75rem;
+    row-gap:.45rem;
+    align-items:start;
+  }
+
+  /* QR frame: spans all 4 rows in col 1 → fills the full grid height as a square.
+     height:100% = full spanned-row area; aspect-ratio keeps it square;
+     max-width:100% prevents overflow when the column is narrower than the height
+     (portrait screens) — the aspect-ratio then shrinks height to match width.    */
+  .qr-modal-frame{
+    grid-column:1;
+    grid-row:1/-1;
+    height:100%;
+    width:auto;
+    aspect-ratio:1/1;
+    max-width:100%;
+    justify-self:center;
+    align-self:center;
+    padding:3px;
+    border-radius:10px;
+    flex:none;
+    min-height:0;
+  }
+
+  /* .qr-modal-right has display:contents so its children are direct grid items */
+
+  /* Title → col 2, row 1 */
+  .qr-modal-title{
+    grid-column:2;
+    grid-row:1;
+    padding-right:38px;   /* room for the close button */
+    justify-content:flex-start;
+    font-size:.65rem;
+    width:auto;
+  }
+
+  /* Coins list → col 2, row 2 (flex/grows to fill 1fr row) */
+  .qr-modal-coins{
+    grid-column:2;
+    grid-row:2;
+    overflow-y:auto;
+    font-size:.6rem;
+  }
+
+  /* Hint → col 2, row 3 */
+  .qr-modal-hint{
+    grid-column:2;
+    grid-row:3;
+    font-size:.58rem;
+  }
+
+  /* Actions → col 2, row 4 */
+  .qr-modal-actions{
+    grid-column:2;
+    grid-row:4;
+    width:auto;
+  }
+  .qr-modal-actions .btn{min-height:44px;}
+
+  /* Close button nudged to match tighter padding */
+  .qr-modal-close{top:.65rem;right:.65rem;}
 }
 .qr-modal-frame canvas,
 .qr-modal-frame img{
