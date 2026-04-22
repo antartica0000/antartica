@@ -610,7 +610,6 @@ body{
   width:100%!important;height:100%!important;
   max-width:100%!important;max-height:100%!important;
   display:block;object-fit:contain;
-  image-rendering:pixelated;
 }
 .qr-modal-coins{
   font-family:var(--mono);font-size:.6rem;color:var(--amber);
@@ -1270,40 +1269,31 @@ let _modalPayload='',_modalQRGenerated=false;
 function openTransferModal(payload,coinIds){
   _modalPayload=payload;_modalQRGenerated=false;
   document.getElementById('modal-coin-preview').textContent=coinIds.map((id,i)=>`COIN ${i+1}: ${id.slice(0,10)}…${id.slice(-6)}`).join('\n');
-  // Show modal first so layout is applied, then measure & render QR
   document.getElementById('transfer-modal').classList.add('open');
   document.body.style.overflow='hidden';
-  // Wait for next frame so the flex layout has resolved the frame's size
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>_renderModalQR(payload));
-  });
-  _modalQRGenerated=true;
-}
-function _renderModalQR(payload){
+
+  // Generate QR at high native resolution so it stays crisp at any display size
   const frame=document.getElementById('modal-qr-frame');
   frame.innerHTML='';
-  // Measure the rendered frame (padding 12px each side = 24px total)
-  const frameRect=frame.getBoundingClientRect();
-  const sz=Math.max(64,Math.floor(Math.min(frameRect.width,frameRect.height))-24);
-  const d=document.createElement('div');
-  d.style.cssText='width:'+sz+'px;height:'+sz+'px;flex-shrink:0;';
-  frame.appendChild(d);
+  const nativeSize=1024; // high-res native pixels
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='width:'+nativeSize+'px;height:'+nativeSize+'px;';
+  frame.appendChild(wrapper);
   try{
-    new QRCode(d,{text:payload,width:sz,height:sz,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    new QRCode(wrapper,{text:payload,width:nativeSize,height:nativeSize,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
   }catch(e){
     frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem;text-align:center">QR error</div>';
     return;
   }
-  // Once QR canvas/img is created, override its size so CSS aspect-ratio fill works
+  // Scale the canvas/img to fill the frame via CSS — same QR, just bigger
   setTimeout(()=>{
     const el=frame.querySelector('canvas')||frame.querySelector('img');
     if(el){
-      el.style.cssText='width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;display:block;image-rendering:pixelated;';
-      // Also stretch the inner wrapper div
-      const inner=frame.querySelector('div');
-      if(inner)inner.style.cssText='width:100%;height:100%;display:flex;align-items:center;justify-content:center;';
+      el.style.cssText='width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;display:block;';
+      wrapper.style.cssText='width:100%;height:100%;display:block;';
     }
   },40);
+  _modalQRGenerated=true;
 }
 function closeTransferModal(){
   document.getElementById('transfer-modal').classList.remove('open');
