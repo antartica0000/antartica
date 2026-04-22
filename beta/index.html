@@ -110,8 +110,8 @@ body{
   background:linear-gradient(160deg,var(--s2),rgba(0,212,170,.04));
   border:1px solid var(--b1);border-radius:var(--rxl);margin-bottom:1rem;
 }
-.qr-frame{background:#fff;border-radius:14px;padding:12px;box-shadow:var(--glow-teal),var(--shadow);display:flex;align-items:center;justify-content:center;width:200px;height:200px;flex-shrink:0}
-.qr-frame canvas,.qr-frame img{width:176px!important;height:176px!important;max-width:176px!important;max-height:176px!important;display:block}
+.qr-frame{background:#fff;border-radius:14px;padding:3px;box-shadow:var(--glow-teal),var(--shadow);display:flex;align-items:center;justify-content:center;width:200px;height:200px;flex-shrink:0}
+.qr-frame canvas,.qr-frame img{width:194px!important;height:194px!important;max-width:194px!important;max-height:194px!important;display:block}
 .wallet-addr-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--t3);text-align:center;text-transform:uppercase}
 .wallet-masked{font-family:var(--mono);font-size:.7rem;color:var(--teal);letter-spacing:.07em;text-align:center;word-break:break-all;line-height:1.9;background:var(--s3);border:1px solid var(--b1);border-radius:8px;padding:.5rem .75rem;width:100%}
 .balance-num{font-family:var(--mono);font-size:3.2rem;font-weight:700;color:var(--teal);line-height:1;text-align:center;text-shadow:0 0 28px rgba(0,212,170,.28)}
@@ -281,7 +281,7 @@ body{
   height:auto!important;
   aspect-ratio:1!important;
   max-width:100%!important;
-  padding:14px!important;
+  padding:3px!important;
   box-shadow:none!important;
 }
 /* Info strip below QR */
@@ -327,10 +327,10 @@ body{
 /* ── Canvas/img always fills frame minus its inner padding ── */
 @media (max-width:1023px){
   .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{
-    width:calc(100% - 24px)!important;
-    height:calc(100% - 24px)!important;
-    max-width:calc(100% - 24px)!important;
-    max-height:calc(100% - 24px)!important;
+    width:calc(100% - 6px)!important;
+    height:calc(100% - 6px)!important;
+    max-width:calc(100% - 6px)!important;
+    max-height:calc(100% - 6px)!important;
   }
   .tqr-frame canvas,.tqr-frame img{
     width:calc(100% - 22px)!important;
@@ -353,7 +353,7 @@ body{
     border-radius:0!important;
     flex-shrink:0;
     margin-top:0!important;
-    padding:12px!important;
+    padding:3px!important;
     box-shadow:none!important;
   }
   .tqr-frame{
@@ -383,7 +383,7 @@ body{
     max-height:none!important;
     border-radius:0!important;
     margin-top:0!important;
-    padding:12px!important;
+    padding:3px!important;
     box-shadow:none!important;
     flex-shrink:0;
   }
@@ -414,7 +414,7 @@ body{
     margin:0 auto!important;
     flex-shrink:0;
     border-radius:0!important;
-    padding:14px!important;
+    padding:3px!important;
     box-shadow:none!important;
   }
   .tqr-frame{
@@ -438,7 +438,7 @@ body{
     max-width:none!important;
     margin:0 auto!important;
     border-radius:0!important;
-    padding:14px!important;
+    padding:3px!important;
     box-shadow:none!important;
     flex-shrink:0;
   }
@@ -586,12 +586,12 @@ body{
     border-radius:12px!important;
     flex-shrink:0;
     margin-top:1.5rem;
-    padding:14px!important;
+    padding:3px!important;
     box-shadow:var(--glow-teal),var(--shadow)!important;
   }
   .wcol-id .qr-frame canvas,.wcol-id .qr-frame img{
-    width:calc(100% - 28px)!important;height:calc(100% - 28px)!important;
-    max-width:calc(100% - 28px)!important;max-height:calc(100% - 28px)!important;
+    width:calc(100% - 6px)!important;height:calc(100% - 6px)!important;
+    max-width:calc(100% - 6px)!important;max-height:calc(100% - 6px)!important;
   }
   .wcol-id-info{
     padding:1rem 1.5rem 1.25rem;
@@ -1352,12 +1352,13 @@ function saveState(){
 }
 
 // ═══ QR HELPER ═══════════════════════════════════════
-function generateQR(cid,text,size=176){
+function generateQR(cid,text,size=512){
   const c=document.getElementById(cid);c.innerHTML='';
   const d=document.createElement('div');c.appendChild(d);
   try{new QRCode(d,{text,width:size,height:size,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
   catch(e){c.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;text-align:center;padding:.5rem">QR error</div>';}
-  setTimeout(()=>{const el=c.querySelector('canvas')||c.querySelector('img');if(el){el.style.width=size+'px';el.style.height=size+'px';el.style.maxWidth=size+'px';el.style.maxHeight=size+'px';}},30);
+  // Don't set restrictive inline sizes – CSS handles display dimensions
+  setTimeout(()=>{const el=c.querySelector('canvas')||c.querySelector('img');if(el){el.style.width='100%';el.style.height='100%';el.style.maxWidth='100%';el.style.maxHeight='100%';}},30);
 }
 function getQRCanvas(id){const c=document.getElementById(id);return c?(c.querySelector('canvas')||c.querySelector('img')):null;}
 
@@ -1365,7 +1366,8 @@ function getQRCanvas(id){const c=document.getElementById(id);return c?(c.querySe
 function refreshWalletId(){walletId=generateWalletId();saveState();renderWallet();toast('🔄 Wallet ID refreshed','ok');}
 
 function renderWallet(){
-  generateQR('wallet-qr-frame',walletId,176);
+  // Use high resolution for the wallet ID QR so it stays crisp at large sizes
+  generateQR('wallet-qr-frame',walletId,512);
   document.getElementById('wallet-masked').textContent=maskWallet(walletId);
   const bal=coins.length;
   document.getElementById('wallet-balance').textContent=bal;
