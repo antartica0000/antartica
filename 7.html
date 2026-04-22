@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CipherCoin Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080a0f;--s1:#0f1219;--s2:#151820;--s3:#1c2030;
+  --b1:#232840;--b2:#2e3555;
+  --teal:#00d4aa;--teal2:#00a888;--teal3:rgba(0,212,170,.08);--teal4:rgba(0,212,170,.2);
+  --amber:#ffb030;--amber2:rgba(255,176,48,.08);--red:#ff4d6a;--purple:#a78bfa;--gold:#ffd700;
+  --t1:#dde2f0;--t2:#8892b0;--t3:#4a5270;
+  --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+  --r:10px;--rl:16px
+}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column}
+header{padding:1.25rem 2rem;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:.9rem;position:sticky;top:0;background:rgba(8,10,15,.92);backdrop-filter:blur(16px);z-index:200}
+.logo{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+h1{font-family:var(--mono);font-size:1rem;letter-spacing:.06em}
+h1 em{color:var(--teal);font-style:normal}
+.badge{margin-left:auto;font-family:var(--mono);font-size:.65rem;color:var(--amber);border:1px solid var(--amber);padding:3px 10px;border-radius:20px;letter-spacing:.08em;display:flex;align-items:center;gap:5px}
+.bal-header{font-family:var(--mono);font-size:.75rem;color:var(--t2);margin-left:1rem;padding-left:1rem;border-left:1px solid var(--b2)}
+.bal-header span{color:var(--teal)}
+
+.tabs{display:flex;gap:4px;padding:1.5rem 2rem 0;max-width:1020px;width:100%;margin:0 auto}
+.tab{font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;padding:9px 22px;border:1px solid var(--b1);background:transparent;color:var(--t3);border-radius:var(--r) var(--r) 0 0;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--t2);border-color:var(--b2)}
+.tab.on{color:var(--teal);border-color:var(--teal2);border-bottom-color:var(--s1);background:var(--s1)}
+main{flex:1;max-width:1020px;width:100%;margin:0 auto;padding:0 2rem 3rem}
+.panel{display:none;background:var(--s1);border:1px solid var(--b1);border-top:1px solid var(--teal2);border-radius:0 var(--rl) var(--rl) var(--rl);padding:2rem;animation:fi .2s ease}
+.panel.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* GRID LAYOUTS */
+.two-col{display:grid;grid-template-columns:1fr 360px;gap:2rem;align-items:start}
+.send-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
+@media(max-width:720px){.two-col,.send-grid{grid-template-columns:1fr}.tabs{padding:1rem 1rem 0;flex-wrap:wrap}main{padding:0 1rem 2rem}.tab{padding:8px 14px;font-size:.65rem}}
+
+/* CARDS */
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.5rem}
+.card-sm{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:1.1rem}
+
+/* WALLET TAB */
+.wallet-hero{display:flex;flex-direction:column;align-items:center;gap:1.5rem}
+.qr-frame{background:#fff;border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:center;width:220px;height:220px;position:relative;box-shadow:0 0 40px rgba(0,212,170,.15)}
+.qr-frame canvas,.qr-frame img{width:192px!important;height:192px!important;max-width:192px!important;max-height:192px!important;display:block}
+.wallet-label{font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;color:var(--t3);text-align:center}
+.masked-id{font-family:var(--mono);font-size:.78rem;color:var(--teal);letter-spacing:.1em;text-align:center;word-break:break-all;line-height:1.8}
+.balance-big{text-align:center}
+.balance-big .num{font-family:var(--mono);font-size:2.8rem;font-weight:700;color:var(--teal);line-height:1}
+.balance-big .unit{font-family:var(--mono);font-size:.9rem;color:var(--t3);margin-top:.3rem;letter-spacing:.1em}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem}
+.stat-box{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:1rem;text-align:center}
+.stat-box .sv{font-family:var(--mono);font-size:1.2rem;color:var(--teal)}
+.stat-box .sk{font-size:.7rem;color:var(--t3);margin-top:3px;font-family:var(--mono);letter-spacing:.06em}
+
+/* WALLET COINS GRID */
+.wallet-coins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;max-height:260px;overflow-y:auto}
+.wallet-coin-card{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s}
+.wallet-coin-card:hover{border-color:var(--b2)}
+.wallet-coin-card.recv-coin{border-left:2px solid var(--teal)}
+.wallet-coin-card.mine-coin{border-left:2px solid var(--amber)}
+.wcoin-id{font-family:var(--mono);font-size:.63rem;color:var(--t2);word-break:break-all;line-height:1.6}
+.wcoin-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.wcoin-badge{font-family:var(--mono);font-size:.56rem;padding:2px 7px;border-radius:10px}
+.wcoin-badge.mined{background:rgba(255,176,48,.1);border:1px solid rgba(255,176,48,.2);color:var(--amber)}
+.wcoin-badge.received{background:var(--teal3);border:1px solid rgba(0,212,170,.2);color:var(--teal)}
+.wcoin-time{font-family:var(--mono);font-size:.57rem;color:var(--t3)}
+
+/* TX HISTORY */
+.tx-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto}
+.tx-item{display:flex;align-items:center;gap:12px;padding:10px 13px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r)}
+.tx-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tx-icon.mine{background:rgba(255,176,48,.12);border:1px solid rgba(255,176,48,.3)}
+.tx-icon.send{background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.25)}
+.tx-icon.recv{background:var(--teal3);border:1px solid rgba(0,212,170,.25)}
+.tx-details{flex:1;min-width:0}
+.tx-id{font-family:var(--mono);font-size:.7rem;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:.68rem;color:var(--t3);margin-top:2px}
+.tx-time{font-family:var(--mono);font-size:.62rem;color:var(--t3);flex-shrink:0}
+.empty-state{text-align:center;padding:2rem;color:var(--t3);font-family:var(--mono);font-size:.75rem}
+
+/* MINE TAB */
+.mine-center{display:flex;flex-direction:column;align-items:center;gap:2rem}
+.mine-btn-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.mine-btn{width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,var(--s3),var(--b1));border:2px solid var(--teal2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:var(--mono);font-size:.75rem;letter-spacing:.1em;color:var(--teal);transition:all .2s;position:relative;overflow:hidden}
+.mine-btn:hover{border-color:var(--teal);box-shadow:0 0 30px rgba(0,212,170,.2);transform:scale(1.03)}
+.mine-btn:active{transform:scale(.97)}
+.mine-btn.mining{animation:pulse-mine 1s ease-in-out infinite;border-color:var(--amber);color:var(--amber);cursor:default}
+.mine-btn.mining:hover{transform:none}
+@keyframes pulse-mine{0%,100%{box-shadow:0 0 20px rgba(255,176,48,.2)}50%{box-shadow:0 0 50px rgba(255,176,48,.5)}}
+.mine-icon{font-size:2.5rem;line-height:1}
+.mine-ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid transparent;border-top-color:var(--teal);animation:spin 1.2s linear infinite;display:none}
+.mine-btn.mining .mine-ring{display:block;border-top-color:var(--amber)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mine-progress{width:100%;max-width:400px}
+.progress-bar{width:100%;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;border:1px solid var(--b1)}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal2),var(--teal));border-radius:3px;transition:width .1s linear}
+.progress-fill.amber{background:linear-gradient(90deg,#c97800,var(--amber))}
+.mine-status{font-family:var(--mono);font-size:.72rem;color:var(--t3);text-align:center;margin-top:.5rem;letter-spacing:.07em}
+.coin-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.coin-item{display:flex;align-items:center;gap:12px;padding:10px 13px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;transition:border-color .15s}
+.coin-item:hover{border-color:var(--b2)}
+.coin-item.selected{border-color:var(--teal2);background:var(--teal3)}
+.coin-bullet{width:10px;height:10px;border-radius:50%;background:var(--amber);border:2px solid rgba(255,176,48,.4);flex-shrink:0}
+.coin-bullet.recv{background:var(--teal)}
+.coin-id-text{font-family:var(--mono);font-size:.68rem;color:var(--t1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coin-badge{font-family:var(--mono);font-size:.58rem;padding:2px 7px;border-radius:10px;flex-shrink:0}
+.coin-badge.mined{background:rgba(255,176,48,.1);border:1px solid rgba(255,176,48,.25);color:var(--amber)}
+.coin-badge.received{background:var(--teal3);border:1px solid rgba(0,212,170,.25);color:var(--teal)}
+
+/* AMOUNT INPUT */
+.amount-wrap{display:flex;align-items:center;gap:12px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:10px 14px}
+.amount-wrap input[type=number]{background:transparent;border:none;outline:none;font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--teal);width:60px;text-align:center}
+.amount-wrap input[type=number]::-webkit-inner-spin-button{opacity:.4}
+.amount-unit{font-family:var(--mono);font-size:.75rem;color:var(--t3);letter-spacing:.1em}
+.amount-stepper{display:flex;flex-direction:column;gap:4px;margin-left:auto}
+.stepper-btn{width:28px;height:22px;background:var(--s2);border:1px solid var(--b1);border-radius:5px;cursor:pointer;font-family:var(--mono);font-size:.8rem;color:var(--t2);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.stepper-btn:hover{border-color:var(--teal2);color:var(--teal)}
+.max-hint{font-family:var(--mono);font-size:.62rem;color:var(--t3);margin-top:.4rem}
+.max-hint span{color:var(--amber)}display:flex;align-items:center;gap:10px;margin-bottom:1.2rem}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--teal3);border:1px solid var(--teal2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--teal);flex-shrink:0}
+.step-title{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;color:var(--t2)}
+.scan-box{border:2px dashed var(--b2);border-radius:var(--rl);padding:2rem;text-align:center;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:all .2s;background:var(--s2)}
+.scan-box:hover,.scan-box.dov{border-color:var(--teal2);background:var(--teal3)}
+.scan-box p{font-size:.88rem;color:var(--t2)}
+.scan-box small{font-family:var(--mono);font-size:.67rem;color:var(--t3)}
+.scan-box.scanned{border-color:var(--teal2);border-style:solid;background:var(--teal3);cursor:default}
+
+/* Camera inside send/receive */
+.cam-container{position:relative;border-radius:var(--rl);overflow:hidden;background:#000;border:1px solid var(--b1);min-height:240px}
+.cam-container video{width:100%!important;height:auto!important;display:block!important}
+.cam-container img{display:none!important}
+.cam-container [id$="__dashboard"]{display:none!important}
+.cam-overlay-send{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;display:none;z-index:10}
+.cam-overlay-send.on{display:block}
+.sf{position:absolute;top:5%;left:3%;right:3%;bottom:5%}
+.sf::before,.sf::after,.sf>span::before,.sf>span::after{content:'';position:absolute;width:26px;height:26px;border-color:var(--teal);border-style:solid}
+.sf::before{top:0;left:0;border-width:2px 0 0 2px}
+.sf::after{top:0;right:0;border-width:2px 2px 0 0}
+.sf>span::before{bottom:0;left:0;border-width:0 0 2px 2px}
+.sf>span::after{bottom:0;right:0;border-width:0 2px 2px 0}
+.sline{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--teal),var(--teal2),var(--teal),transparent);animation:sm 2.2s ease-in-out infinite;opacity:.85}
+@keyframes sm{0%{top:5%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:95%;opacity:0}}
+.cam-status-bar{background:rgba(0,0,0,.7);padding:6px 12px;text-align:center;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;color:var(--teal)}
+
+/* TRANSFER QR */
+.transfer-qr-box{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1.5rem;background:var(--s2);border:1px solid var(--teal2);border-radius:var(--rl)}
+.transfer-qr-title{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:var(--teal);text-transform:uppercase}
+
+/* RECEIVE */
+.recv-src-tabs{display:flex;gap:6px;margin-bottom:1rem}
+.rsrc-tab{flex:1;padding:9px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--t3);text-align:center;transition:all .18s}
+.rsrc-tab:hover{border-color:var(--b2);color:var(--t2)}
+.rsrc-tab.on{border-color:var(--teal2);color:var(--teal);background:var(--teal3)}
+.result-panel{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.4rem;display:flex;flex-direction:column;gap:.9rem;transition:border-color .3s}
+.result-panel.flash{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal4)}
+.result-panel.flash-err{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,77,106,.15)}
+.res-hdr{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--t3);text-transform:uppercase}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.dot.ok{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+.dot.err{background:var(--red)}
+.dot.warn{background:var(--amber)}
+.res-text{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:13px;font-family:var(--mono);font-size:.78rem;line-height:1.65;color:var(--teal);word-break:break-all;min-height:60px;white-space:pre-wrap}
+.res-text.empty{color:var(--t3);font-style:italic}
+.res-text.err{color:var(--red)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;cursor:pointer;border:1px solid;transition:all .18s;white-space:nowrap}
+.btn-p{background:var(--teal);color:#06080c;border-color:var(--teal);font-weight:700}
+.btn-p:hover{background:var(--teal2);border-color:var(--teal2)}
+.btn-g{background:transparent;color:var(--t2);border-color:var(--b2)}
+.btn-g:hover{background:var(--s3);color:var(--t1)}
+.btn-d{background:transparent;color:var(--red);border-color:var(--red)}
+.btn-d:hover{background:rgba(255,77,106,.08)}
+.btn-amber{background:var(--amber);color:#1a0e00;border-color:var(--amber);font-weight:700}
+.btn-amber:hover{background:#e09a1a}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.brow{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem}
+
+/* FIELDS */
+.field{margin-bottom:1rem}
+.field label{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:7px}
+
+/* SECTION TITLE */
+.sec-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--t3);text-transform:uppercase;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid var(--b1)}
+
+/* INFO BADGE */
+.info-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-family:var(--mono);font-size:.65rem;letter-spacing:.07em}
+.info-badge.ok{background:var(--teal3);border:1px solid rgba(0,212,170,.25);color:var(--teal)}
+.info-badge.warn{background:var(--amber2);border:1px solid rgba(255,176,48,.25);color:var(--amber)}
+.info-badge.err{background:rgba(255,77,106,.08);border:1px solid rgba(255,77,106,.2);color:var(--red)}
+
+/* TOASTS */
+.toasts{position:fixed;bottom:2rem;right:2rem;display:flex;flex-direction:column;gap:7px;z-index:999}
+.toast{background:var(--s2);border:1px solid var(--b2);color:var(--t1);padding:11px 16px;border-radius:var(--r);font-size:.82rem;font-family:var(--mono);animation:tin .3s ease,tout .3s ease 2.7s forwards;display:flex;align-items:center;gap:9px;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.toast.ok{border-color:var(--teal2)}.toast.err{border-color:var(--red)}.toast.warn{border-color:var(--amber)}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.toast.ok .tdot{background:var(--teal)}.toast.err .tdot{background:var(--red)}.toast.warn .tdot{background:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes tout{from{opacity:1}to{opacity:0;transform:translateX(16px)}}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--b1);margin:1.5rem 0}
+
+/* File drop */
+.file-drop-zone{border:2px dashed var(--b2);border-radius:var(--rl);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--s2);display:flex;flex-direction:column;align-items:center;gap:10px;min-height:200px;justify-content:center}
+.file-drop-zone:hover,.file-drop-zone.dov{border-color:var(--teal2);background:var(--teal3)}
+.file-drop-zone p{font-size:.88rem;color:var(--t2)}
+.file-drop-zone small{font-family:var(--mono);font-size:.67rem;color:var(--t3)}
+.file-prev-img{max-width:100%;max-height:160px;border-radius:var(--r);object-fit:contain;border:1px solid var(--b1)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">₿</div>
+  <h1>Cipher<em>Coin</em></h1>
+  <div class="bal-header">BALANCE: <span id="hdr-balance">0</span> CC</div>
+  <div class="badge">⛏ MAINNET</div>
+</header>
+
+<div class="tabs">
+  <button class="tab on" onclick="switchTab('wallet',this)">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="2"/><path d="M1 7h14"/><circle cx="11.5" cy="10.5" r="1"/></svg>
+    WALLET
+  </button>
+  <button class="tab" onclick="switchTab('mine',this)">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14L8 2l6 12"/><path d="M4.5 9h7"/></svg>
+    MINE
+  </button>
+  <button class="tab" onclick="switchTab('send',this)">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L2 8l5 2 2 4 5-12z"/></svg>
+    SEND
+  </button>
+  <button class="tab" onclick="switchTab('receive',this)">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v10"/><polyline points="4 8 8 12 12 8"/><path d="M2 14h12"/></svg>
+    RECEIVE
+  </button>
+</div>
+
+<main>
+
+<!-- ═══ WALLET TAB ═══ -->
+<div id="panel-wallet" class="panel on">
+  <div class="two-col" style="margin-bottom:1.5rem">
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <div class="wallet-hero">
+          <div>
+            <div class="wallet-label" style="margin-bottom:.5rem">YOUR WALLET QR</div>
+            <div class="qr-frame" id="wallet-qr-frame">
+              <div style="color:var(--t3);font-family:var(--mono);font-size:.65rem;text-align:center">Generating…</div>
+            </div>
+            <div class="wallet-label" style="margin-top:.8rem">WALLET ADDRESS (MASKED)</div>
+            <div class="masked-id" id="wallet-masked">••••••••••••••••••••••••••••••</div>
+          </div>
+          <div class="balance-big">
+            <div class="num" id="wallet-balance">0</div>
+            <div class="unit">CIPHERCOIN</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-box"><div class="sv" id="stat-mined">0</div><div class="sk">MINED</div></div>
+            <div class="stat-box"><div class="sv" id="stat-sent">0</div><div class="sk">SENT</div></div>
+            <div class="stat-box"><div class="sv" id="stat-recv">0</div><div class="sk">RECEIVED</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-badge ok">🔄 Wallet ID refreshes automatically after each transaction</div>
+    </div>
+    <div>
+      <div class="sec-title">Transaction History</div>
+      <div class="tx-list" id="tx-list">
+        <div class="empty-state">No transactions yet.<br>Mine or receive coins to start.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Owned Coins -->
+  <div style="border-top:1px solid var(--b1);padding-top:1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div style="font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--t3);text-transform:uppercase">
+        Your Coins <span id="wallet-coin-count" style="color:var(--teal);margin-left:6px">0</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="font-family:var(--mono);font-size:.62rem;color:var(--t3)">
+          <span style="color:var(--amber)">▮</span> Mined &nbsp;
+          <span style="color:var(--teal)">▮</span> Received
+        </div>
+      </div>
+    </div>
+    <div class="wallet-coins-grid" id="wallet-coins-grid">
+      <div class="empty-state" style="grid-column:1/-1;padding:1.5rem">No coins yet. Go mine some!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MINE TAB ═══ -->
+<div id="panel-mine" class="panel">
+  <div class="two-col">
+    <div>
+      <div class="mine-center">
+        <div style="text-align:center">
+          <div style="font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--t3);margin-bottom:.5rem">PROOF OF WORK MINING</div>
+          <div style="font-size:.88rem;color:var(--t2);max-width:320px">Each mined coin receives a unique 40-character cryptographic ID. Mining takes ~3 seconds.</div>
+        </div>
+        <div class="mine-btn-wrap">
+          <div class="mine-ring" id="mine-ring"></div>
+          <button class="mine-btn" id="mine-btn" onclick="startMining()">
+            <span class="mine-icon">⛏</span>
+            <span id="mine-btn-text">MINE COIN</span>
+          </button>
+        </div>
+        <div class="mine-progress" id="mine-progress" style="display:none">
+          <div class="progress-bar"><div class="progress-fill amber" id="progress-fill"></div></div>
+          <div class="mine-status" id="mine-status">Initializing miner…</div>
+        </div>
+        <div id="mine-result" style="display:none;width:100%;max-width:440px">
+          <div class="card-sm" style="border-color:var(--amber);background:var(--amber2)">
+            <div style="font-family:var(--mono);font-size:.65rem;color:var(--amber);letter-spacing:.1em;margin-bottom:.5rem">✓ COIN MINED SUCCESSFULLY</div>
+            <div style="font-family:var(--mono);font-size:.7rem;color:var(--t1);word-break:break-all;line-height:1.8" id="last-mined-id"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-title">Your Coins (<span id="coin-count">0</span>)</div>
+      <div class="coin-list" id="coin-list">
+        <div class="empty-state">No coins yet. Start mining!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SEND TAB ═══ -->
+<div id="panel-send" class="panel">
+  <div class="send-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+      <!-- Step 1: Scan recipient -->
+      <div class="card-sm" style="margin-bottom:1rem">
+        <div class="step-header">
+          <div class="step-num" id="step1-num">1</div>
+          <div class="step-title">SCAN RECIPIENT'S WALLET QR</div>
+        </div>
+        <div class="recv-src-tabs">
+          <button class="rsrc-tab on" onclick="setSendSrc('cam',this)" id="send-src-cam-btn">📷 CAMERA</button>
+          <button class="rsrc-tab" onclick="setSendSrc('file',this)" id="send-src-file-btn">📁 FILE</button>
+        </div>
+
+        <!-- Camera for scan recipient -->
+        <div id="send-cam-sec">
+          <div class="cam-container" id="send-cam-container">
+            <div id="send-camera-reader"></div>
+            <div class="cam-overlay-send" id="send-cam-overlay">
+              <div class="sf"><span></span><div class="sline"></div></div>
+            </div>
+          </div>
+          <div class="cam-status-bar" id="send-cam-status">CAMERA OFF — click START</div>
+          <div class="brow">
+            <button class="btn btn-p" id="send-btn-start" onclick="startSendCam()">▶ START</button>
+            <button class="btn btn-d" id="send-btn-stop" onclick="stopSendCam()" style="display:none">■ STOP</button>
+          </div>
+        </div>
+
+        <!-- File for scan recipient -->
+        <div id="send-file-sec" style="display:none">
+          <div class="file-drop-zone" id="send-file-drop"
+            onclick="document.getElementById('send-file-input').click()"
+            ondragover="event.preventDefault();this.classList.add('dov')"
+            ondragleave="this.classList.remove('dov')"
+            ondrop="onSendDrop(event)">
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+            <p>Click or drop recipient's wallet QR image</p>
+            <small>PNG · JPG · WEBP</small>
+          </div>
+          <input type="file" id="send-file-input" accept="image/*" style="display:none" onchange="scanSendFile(this.files[0])">
+        </div>
+
+        <!-- Scanned recipient display -->
+        <div id="recipient-display" style="display:none;margin-top:.8rem">
+          <div class="info-badge ok" id="recipient-badge">✓ RECIPIENT WALLET SCANNED</div>
+          <div style="font-family:var(--mono);font-size:.65rem;color:var(--t3);margin-top:.4rem">WALLET FINGERPRINT: <span style="color:var(--teal)" id="recipient-fingerprint"></span></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Amount input -->
+      <div class="card-sm" style="margin-bottom:1rem">
+        <div class="step-header">
+          <div class="step-num" id="step2-num">2</div>
+          <div class="step-title">ENTER AMOUNT TO SEND</div>
+        </div>
+        <div class="amount-wrap">
+          <input type="number" id="send-amount" min="1" max="5" value="1"
+            oninput="clampAmount(this);updateSendBtn()"
+            onchange="clampAmount(this);updateSendBtn()">
+          <div class="amount-unit">CC</div>
+          <div class="amount-stepper">
+            <button class="stepper-btn" onclick="stepAmount(1)">▲</button>
+            <button class="stepper-btn" onclick="stepAmount(-1)">▼</button>
+          </div>
+        </div>
+        <div class="max-hint">Max <span>5 coins</span> per transaction · You have <span id="send-available-count">0</span> available</div>
+      </div>
+
+      <!-- Step 3: Generate -->
+      <div class="card-sm">
+        <div class="step-header">
+          <div class="step-num" id="step3-num">3</div>
+          <div class="step-title">GENERATE TRANSFER QR</div>
+        </div>
+        <button class="btn btn-p" id="btn-generate-transfer" onclick="generateTransferQR()" disabled style="width:100%;justify-content:center">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2L2 8l5 2 2 4 5-12z"/></svg>
+          GENERATE TRANSFER QR
+        </button>
+        <div style="font-size:.75rem;color:var(--t3);margin-top:.5rem;font-family:var(--mono)">Give the generated QR to the recipient to scan.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Transfer QR output -->
+    <div>
+      <div class="transfer-qr-box" id="transfer-qr-box" style="display:none">
+        <div class="transfer-qr-title">📤 TRANSFER QR CODE</div>
+        <div class="qr-frame" id="transfer-qr-frame" style="width:200px;height:200px"></div>
+        <div style="font-family:var(--mono);font-size:.65rem;color:var(--t3);text-align:center;line-height:1.8">
+          <div id="transfer-coin-preview" style="color:var(--amber)"></div>
+          <div style="margin-top:.3rem;color:var(--t3)">Ask recipient to scan this QR in their Receive tab</div>
+        </div>
+        <div class="brow" style="justify-content:center;margin-top:0">
+          <button class="btn btn-amber" onclick="downloadTransferQR()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><path d="M8 3v10"/><path d="M2 14h12"/></svg>
+            SAVE QR
+          </button>
+          <button class="btn btn-g" onclick="resetSend()">RESET</button>
+        </div>
+      </div>
+      <div id="transfer-qr-placeholder" class="card" style="min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:var(--t3);text-align:center">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4"><rect x="8" y="8" width="20" height="20" rx="2"/><rect x="12" y="12" width="12" height="12"/><rect x="36" y="8" width="20" height="20" rx="2"/><rect x="40" y="12" width="12" height="12"/><rect x="8" y="36" width="20" height="20" rx="2"/><rect x="12" y="40" width="12" height="12"/><path d="M38 38h4v4h-4z"/><path d="M46 38h10"/><path d="M38 46h10v10H38z"/></svg>
+        <div style="font-family:var(--mono);font-size:.72rem;letter-spacing:.08em">TRANSFER QR WILL<br>APPEAR HERE</div>
+        <div style="font-size:.8rem">Complete steps 1-3 to generate</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RECEIVE TAB ═══ -->
+<div id="panel-receive" class="panel">
+  <div class="send-grid">
+    <div>
+      <div class="card-sm" style="margin-bottom:1rem">
+        <div style="font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--t3);margin-bottom:1rem">SCAN TRANSFER QR FROM SENDER</div>
+        <div class="recv-src-tabs">
+          <button class="rsrc-tab on" onclick="setRecvSrc('cam',this)">📷 CAMERA</button>
+          <button class="rsrc-tab" onclick="setRecvSrc('file',this)">📁 FILE</button>
+        </div>
+
+        <!-- Camera receive -->
+        <div id="recv-cam-sec">
+          <div class="cam-container">
+            <div id="recv-camera-reader"></div>
+            <div class="cam-overlay-send" id="recv-cam-overlay">
+              <div class="sf"><span></span><div class="sline"></div></div>
+            </div>
+          </div>
+          <div class="cam-status-bar" id="recv-cam-status">CAMERA OFF — click START</div>
+          <div class="brow">
+            <button class="btn btn-p" id="recv-btn-start" onclick="startRecvCam()">▶ START</button>
+            <button class="btn btn-d" id="recv-btn-stop" onclick="stopRecvCam()" style="display:none">■ STOP</button>
+          </div>
+        </div>
+
+        <!-- File receive -->
+        <div id="recv-file-sec" style="display:none">
+          <div class="file-drop-zone" id="recv-file-drop"
+            onclick="document.getElementById('recv-file-input').click()"
+            ondragover="event.preventDefault();this.classList.add('dov')"
+            ondragleave="this.classList.remove('dov')"
+            ondrop="onRecvDrop(event)">
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+            <p>Click or drop the transfer QR image</p>
+            <small>PNG · JPG · WEBP</small>
+          </div>
+          <input type="file" id="recv-file-input" accept="image/*" style="display:none" onchange="scanRecvFile(this.files[0])">
+        </div>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div>
+      <div class="result-panel" id="recv-result-panel">
+        <div class="res-hdr"><div class="dot" id="recv-dot"></div><span id="recv-label">AWAITING SCAN</span></div>
+        <div class="res-text empty" id="recv-text">Point camera at a transfer QR, or upload an image…</div>
+        <div id="recv-coin-detail" style="display:none">
+          <div style="font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;color:var(--t3);margin-bottom:.4rem">COIN ID RECEIVED:</div>
+          <div style="font-family:var(--mono);font-size:.7rem;color:var(--amber);word-break:break-all;line-height:1.8" id="recv-coin-id-display"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="toasts" id="toasts"></div>
+
+<!-- Hidden div for file scanning -->
+<div id="file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+<div id="send-file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+<div id="recv-file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+
+<!-- QRCode.js for generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- html5-qrcode (ZXing-powered) for camera + file scanning -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CRYPTO UTILITIES
+// ═══════════════════════════════════════════════════════
+const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+function genAlphaNum(len) {
+  let s = '';
+  const arr = new Uint8Array(len);
+  crypto.getRandomValues(arr);
+  for (let i = 0; i < len; i++) s += CHARSET[arr[i] % CHARSET.length];
+  return s;
+}
+
+function generateWalletId() { return genAlphaNum(30); }
+function generateCoinId()   { return genAlphaNum(40); }
+
+// Even-indexed characters of a wallet ID (positions 0,2,4,...,28 → 15 chars)
+function evenDigits(walletId) {
+  return walletId.split('').filter((_,i) => i % 2 === 0).join('');
+}
+
+// Transfer QR payload: coinId1 + coinId2 + … + coinIdN + N(1 digit) + evenDigits(recipientWallet)(15 chars)
+// Total length = 40×N + 16   (N = 1..5)
+function encodeTransferPayload(senderWallet, coinIds, recipientWallet) {
+  const N = coinIds.length;
+  return coinIds.join('') + String(N) + evenDigits(recipientWallet);
+}
+function decodeTransferPayload(payload) {
+  // length = 40*N + 16  →  N = (len - 16) / 40
+  if (payload.length < 56) return null;           // min 1 coin: 40+1+15 = 56
+  const coinBlock = payload.length - 16;
+  if (coinBlock % 40 !== 0) return null;
+  const N = coinBlock / 40;
+  if (N < 1 || N > 5) return null;
+  // Verify the N digit in the payload matches
+  const nChar = parseInt(payload[coinBlock]);
+  if (nChar !== N) return null;
+  const coinIds          = [];
+  for (let i = 0; i < N; i++) coinIds.push(payload.slice(i*40, i*40+40));
+  const recipientEvenDigits = payload.slice(-15);
+  return { coinIds, N, recipientEvenDigits };
+}
+
+// Mask wallet for display: show first 4 + dots + last 4
+function maskWallet(id) {
+  return id.slice(0,4) + '•'.repeat(22) + id.slice(-4);
+}
+// Fingerprint (first2 + last2)
+function walletFingerprint(id) {
+  return id.slice(0,6) + '…' + id.slice(-6);
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE (persisted to localStorage)
+// ═══════════════════════════════════════════════════════
+let walletId   = localStorage.getItem('cc_wallet') || generateWalletId();
+let coins      = JSON.parse(localStorage.getItem('cc_coins')  || '[]'); // {id, type:'mined'|'received', ts}
+let txHistory  = JSON.parse(localStorage.getItem('cc_tx')     || '[]'); // {type, coinId, ts, label}
+let sentCoins  = JSON.parse(localStorage.getItem('cc_sent')   || '[]'); // coin IDs already sent
+
+function saveState() {
+  localStorage.setItem('cc_wallet', walletId);
+  localStorage.setItem('cc_coins',  JSON.stringify(coins));
+  localStorage.setItem('cc_tx',     JSON.stringify(txHistory));
+  localStorage.setItem('cc_sent',   JSON.stringify(sentCoins));
+}
+
+// ═══════════════════════════════════════════════════════
+// WALLET REFRESH
+// ═══════════════════════════════════════════════════════
+function refreshWalletId() {
+  walletId = generateWalletId();
+  saveState();
+  renderWallet();
+  toast('🔄 Wallet ID refreshed for privacy', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// QR CODE GENERATION HELPER
+// ═══════════════════════════════════════════════════════
+function generateQR(containerId, text, size = 192, dark = '#000000', light = '#ffffff') {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const div = document.createElement('div');
+  container.appendChild(div);
+  try {
+    new QRCode(div, {
+      text, width: size, height: size,
+      colorDark: dark, colorLight: light,
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {
+    container.innerHTML = '<div style="color:var(--red);font-family:var(--mono);font-size:.65rem;text-align:center;padding:.5rem">QR generation failed</div>';
+  }
+  // Fix canvas sizing
+  setTimeout(() => {
+    const el = container.querySelector('canvas') || container.querySelector('img');
+    if (el) { el.style.width = size+'px'; el.style.height = size+'px'; el.style.maxWidth = size+'px'; el.style.maxHeight = size+'px'; }
+  }, 30);
+}
+
+function getQRCanvas(containerId) {
+  const c = document.getElementById(containerId);
+  return c ? (c.querySelector('canvas') || c.querySelector('img')) : null;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER WALLET
+// ═══════════════════════════════════════════════════════
+function renderWallet() {
+  // Generate QR of wallet ID
+  generateQR('wallet-qr-frame', walletId, 192);
+  // Masked display
+  document.getElementById('wallet-masked').textContent = maskWallet(walletId);
+  // Balances
+  const balance = coins.length;
+  const mined  = coins.filter(c => c.type === 'mined').length;
+  const recv   = coins.filter(c => c.type === 'received').length;
+  const sent   = sentCoins.length;
+  document.getElementById('wallet-balance').textContent = balance;
+  document.getElementById('hdr-balance').textContent    = balance;
+  document.getElementById('stat-mined').textContent     = mined;
+  document.getElementById('stat-sent').textContent      = sent;
+  document.getElementById('stat-recv').textContent      = recv;
+  // TX history
+  renderTxHistory();
+  // Coin count in mine tab
+  document.getElementById('coin-count').textContent = coins.length;
+  // Wallet coins grid
+  renderWalletCoins();
+}
+
+function renderTxHistory() {
+  const el = document.getElementById('tx-list');
+  if (!txHistory.length) {
+    el.innerHTML = '<div class="empty-state">No transactions yet.<br>Mine or receive coins to start.</div>';
+    return;
+  }
+  el.innerHTML = txHistory.slice().reverse().map(tx => {
+    const icons = {mined:'⛏',sent:'📤',received:'📥'};
+    const labels = {mined:'Mined',sent:'Sent',received:'Received'};
+    const cls = tx.type === 'mined' ? 'mine' : tx.type === 'sent' ? 'send' : 'recv';
+    return `<div class="tx-item">
+      <div class="tx-icon ${cls}">${icons[tx.type]||'•'}</div>
+      <div class="tx-details">
+        <div class="tx-id">${labels[tx.type]||tx.type} — ${tx.coinId ? tx.coinId.slice(0,12)+'…'+tx.coinId.slice(-8) : ''}</div>
+        <div class="tx-meta">${tx.label||''}</div>
+      </div>
+      <div class="tx-time">${ago(tx.ts)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderWalletCoins() {
+  const grid = document.getElementById('wallet-coins-grid');
+  const count = document.getElementById('wallet-coin-count');
+  count.textContent = coins.length;
+  if (!coins.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;padding:1.5rem">No coins yet. Go mine some!</div>';
+    return;
+  }
+  grid.innerHTML = coins.slice().reverse().map(c => {
+    const cls   = c.type === 'received' ? 'recv-coin' : 'mine-coin';
+    const badge = c.type === 'received' ? 'received'  : 'mined';
+    return `<div class="wallet-coin-card ${cls}">
+      <div class="wcoin-id">${c.id.match(/.{1,10}/g).join('\n')}</div>
+      <div class="wcoin-meta">
+        <div class="wcoin-badge ${badge}">${badge.toUpperCase()}</div>
+        <div class="wcoin-time">${ago(c.ts)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+
+let miningActive = false;
+
+function startMining() {
+  if (miningActive) return;
+  miningActive = true;
+  const btn = document.getElementById('mine-btn');
+  btn.classList.add('mining');
+  document.getElementById('mine-btn-text').textContent = 'MINING…';
+  document.getElementById('mine-ring').style.display = 'block';
+  document.getElementById('mine-progress').style.display = 'block';
+  document.getElementById('mine-result').style.display = 'none';
+
+  const fill   = document.getElementById('progress-fill');
+  const status = document.getElementById('mine-status');
+  const phases = [
+    [0,  20,  'Generating proof of work…'],
+    [20, 50,  'Computing hash nonce…'],
+    [50, 75,  'Verifying block header…'],
+    [75, 95,  'Broadcasting to network…'],
+    [95, 100, 'Finalizing coin ID…']
+  ];
+  let pct = 0;
+  let phaseIdx = 0;
+  fill.style.width = '0%';
+
+  const iv = setInterval(() => {
+    pct += 1.2;
+    if (pct > 100) pct = 100;
+    fill.style.width = pct + '%';
+    // Update status label based on phase
+    while (phaseIdx < phases.length - 1 && pct >= phases[phaseIdx][1]) phaseIdx++;
+    status.textContent = phases[Math.min(phaseIdx, phases.length-1)][2];
+    if (pct >= 100) {
+      clearInterval(iv);
+      finishMining();
+    }
+  }, 36);
+}
+
+function finishMining() {
+  const coinId = generateCoinId();
+  const coin = { id: coinId, type: 'mined', ts: Date.now() };
+  coins.push(coin);
+  const tx = { type: 'mined', coinId, ts: Date.now(), label: 'Block reward' };
+  txHistory.push(tx);
+  saveState();
+
+  miningActive = false;
+  const btn = document.getElementById('mine-btn');
+  btn.classList.remove('mining');
+  document.getElementById('mine-btn-text').textContent = 'MINE COIN';
+  document.getElementById('mine-ring').style.display = 'none';
+  document.getElementById('mine-progress').style.display = 'none';
+
+  document.getElementById('mine-result').style.display = 'block';
+  document.getElementById('last-mined-id').textContent = coinId;
+
+  renderWallet();
+  renderCoinList();
+  updateAvailableCount();
+  updateSendBtn();
+  toast('⛏ Coin mined! ID: ' + coinId.slice(0,8)+'…', 'ok');
+}
+
+function renderCoinList() {
+  const el = document.getElementById('coin-list');
+  document.getElementById('coin-count').textContent = coins.length;
+  if (!coins.length) {
+    el.innerHTML = '<div class="empty-state">No coins yet. Start mining!</div>';
+    return;
+  }
+  el.innerHTML = coins.slice().reverse().map(c => {
+    const cls   = c.type === 'received' ? 'recv' : '';
+    const badge = c.type === 'received' ? 'received' : 'mined';
+    return `<div class="coin-item">
+      <div class="coin-bullet ${cls}"></div>
+      <div class="coin-id-text">${c.id}</div>
+      <div class="coin-badge ${badge}">${badge.toUpperCase()}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// SEND TAB
+// ═══════════════════════════════════════════════════════
+let sendScanner = null, sendScanning = false;
+let recipientWalletId = null;
+
+function clampAmount(inp) {
+  const avail = coins.length;
+  let v = parseInt(inp.value) || 1;
+  if (v < 1)     v = 1;
+  if (v > 5)     v = 5;
+  if (v > avail) v = Math.max(1, avail);
+  inp.value = v;
+}
+function stepAmount(delta) {
+  const inp = document.getElementById('send-amount');
+  inp.value = (parseInt(inp.value)||1) + delta;
+  clampAmount(inp);
+  updateSendBtn();
+}
+function updateAvailableCount() {
+  const avail = coins.length;
+  const el = document.getElementById('send-available-count');
+  if (el) el.textContent = avail;
+  const inp = document.getElementById('send-amount');
+  if (inp) clampAmount(inp);
+}
+
+function setSendSrc(src, el) {
+  document.querySelectorAll('#panel-send .rsrc-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('send-cam-sec').style.display  = src === 'cam'  ? 'block' : 'none';
+  document.getElementById('send-file-sec').style.display = src === 'file' ? 'block' : 'none';
+  if (src === 'file') stopSendCam();
+}
+
+async function startSendCam() {
+  document.getElementById('send-cam-status').textContent = 'Requesting camera…';
+  document.getElementById('send-btn-start').disabled = true;
+  let perm;
+  try {
+    perm = await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+  } catch(e) {
+    document.getElementById('send-cam-status').textContent = 'ACCESS DENIED';
+    toast('Camera permission denied','err');
+    document.getElementById('send-btn-start').disabled = false;
+    return;
+  }
+  perm.getTracks().forEach(t=>t.stop());
+  if (sendScanner) { try{await sendScanner.stop();}catch(e){} sendScanner=null; }
+  sendScanner = new Html5Qrcode('send-camera-reader', {verbose:false});
+  try {
+    await sendScanner.start(
+      {facingMode:'environment'},
+      {fps:30, qrbox:(w,h)=>({width:w,height:h}), experimentalFeatures:{useBarCodeDetectorIfSupported:true}},
+      (text) => onSendScan(text),
+      () => {}
+    );
+    sendScanning = true;
+    document.getElementById('send-btn-start').style.display = 'none';
+    document.getElementById('send-btn-stop').style.display  = 'flex';
+    document.getElementById('send-cam-overlay').classList.add('on');
+    document.getElementById('send-cam-status').textContent = 'SCANNING… point at recipient wallet QR';
+  } catch(e) {
+    document.getElementById('send-cam-status').textContent = 'ERROR: '+e.message;
+    document.getElementById('send-btn-start').disabled = false;
+  }
+}
+
+async function stopSendCam() {
+  sendScanning = false;
+  if (sendScanner) { try{await sendScanner.stop();}catch(e){} try{sendScanner.clear();}catch(e){} sendScanner=null; }
+  document.getElementById('send-btn-start').disabled = false;
+  document.getElementById('send-btn-start').style.display = 'flex';
+  document.getElementById('send-btn-stop').style.display  = 'none';
+  document.getElementById('send-cam-overlay').classList.remove('on');
+  document.getElementById('send-camera-reader').innerHTML = '';
+  document.getElementById('send-cam-status').textContent  = 'CAMERA OFF — click START';
+}
+
+function onSendScan(text) {
+  if (text.length === 30 && /^[A-Za-z0-9]+$/.test(text)) {
+    if (text === walletId) { toast('Cannot send to yourself!','err'); return; }
+    recipientWalletId = text;
+    stopSendCam();
+    showRecipientScanned(text);
+    updateSendBtn();
+    toast('✓ Recipient wallet scanned','ok');
+  } else {
+    toast('Invalid wallet QR — must be 30 alphanumeric chars','err');
+  }
+}
+
+function showRecipientScanned(id) {
+  document.getElementById('recipient-display').style.display = 'block';
+  document.getElementById('recipient-fingerprint').textContent = walletFingerprint(id);
+  document.getElementById('send-cam-sec').style.display  = 'none';
+  document.getElementById('send-file-sec').style.display = 'none';
+}
+
+function onSendDrop(e) {
+  e.preventDefault();
+  document.getElementById('send-file-drop').classList.remove('dov');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) scanSendFile(f);
+}
+
+async function scanSendFile(file) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    const drop = document.getElementById('send-file-drop');
+    drop.innerHTML = `<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.75rem;color:var(--t3)">${file.name}</p>`;
+    drop.onclick = null;
+  };
+  fr.readAsDataURL(file);
+  const text = await decodeQRFromFile(file, 'send-file-reader-hidden');
+  if (text) onSendScan(text);
+  else toast('No valid wallet QR found','err');
+}
+
+function updateSendBtn() {
+  const amount = parseInt(document.getElementById('send-amount')?.value) || 0;
+  const ok = recipientWalletId && amount >= 1 && coins.length >= amount;
+  document.getElementById('btn-generate-transfer').disabled = !ok;
+}
+
+function generateTransferQR() {
+  if (!recipientWalletId) return;
+  const amount = Math.min(parseInt(document.getElementById('send-amount').value)||1, 5);
+  if (coins.length < amount) { toast('Not enough coins','err'); return; }
+
+  const chosen  = coins.slice(0, amount);          // pick first N coins
+  const coinIds = chosen.map(c => c.id);
+  const payload = encodeTransferPayload(walletId, coinIds, recipientWalletId);
+
+  // Show transfer QR
+  document.getElementById('transfer-qr-placeholder').style.display = 'none';
+  document.getElementById('transfer-qr-box').style.display = 'flex';
+  generateQR('transfer-qr-frame', payload, 172);
+
+  // Build preview lines
+  const preview = coinIds.map((id,i) =>
+    `COIN ${i+1}: ${id.slice(0,10)}…${id.slice(-6)}`
+  ).join('\n');
+  document.getElementById('transfer-coin-preview').textContent = preview;
+
+  // Record & remove sent coins
+  const ts = Date.now();
+  coinIds.forEach(id => {
+    sentCoins.push(id);
+    txHistory.push({ type:'sent', coinId:id, ts, label:'To '+walletFingerprint(recipientWalletId) });
+  });
+  coins = coins.filter(c => !coinIds.includes(c.id));
+  saveState();
+
+  refreshWalletId();
+  updateAvailableCount();
+  updateSendBtn();
+  toast(`Transfer QR generated! Sending ${amount} CC.`, 'ok');
+}
+
+function downloadTransferQR() {
+  const c = getQRCanvas('transfer-qr-frame');
+  if (!c) return;
+  const a = document.createElement('a');
+  a.download = 'transfer-qr-'+Date.now()+'.png';
+  a.href = c.toDataURL('image/png');
+  a.click();
+  toast('Transfer QR saved','ok');
+}
+
+function resetSend() {
+  recipientWalletId = null;
+  document.getElementById('recipient-display').style.display = 'none';
+  document.getElementById('send-cam-sec').style.display  = 'block';
+  document.getElementById('send-file-sec').style.display = 'none';
+  document.getElementById('transfer-qr-box').style.display = 'none';
+  document.getElementById('transfer-qr-placeholder').style.display = 'flex';
+  document.getElementById('send-file-drop').innerHTML = `
+    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+    <p>Click or drop recipient's wallet QR image</p><small>PNG · JPG · WEBP</small>`;
+  document.getElementById('send-file-drop').onclick = () => document.getElementById('send-file-input').click();
+  document.getElementById('send-amount').value = 1;
+  document.querySelectorAll('#panel-send .rsrc-tab').forEach((t,i) => t.classList.toggle('on', i===0));
+  updateAvailableCount();
+  updateSendBtn();
+}
+
+// ═══════════════════════════════════════════════════════
+// RECEIVE TAB
+// ═══════════════════════════════════════════════════════
+let recvScanner = null, recvScanning = false;
+let lastRecvTs = 0, lastRecvText = '';
+
+function setRecvSrc(src, el) {
+  document.querySelectorAll('#panel-receive .rsrc-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('recv-cam-sec').style.display  = src === 'cam'  ? 'block' : 'none';
+  document.getElementById('recv-file-sec').style.display = src === 'file' ? 'block' : 'none';
+  if (src === 'file') stopRecvCam();
+}
+
+async function startRecvCam() {
+  document.getElementById('recv-cam-status').textContent = 'Requesting camera…';
+  document.getElementById('recv-btn-start').disabled = true;
+  let perm;
+  try {
+    perm = await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+  } catch(e) {
+    document.getElementById('recv-cam-status').textContent = 'ACCESS DENIED';
+    toast('Camera permission denied','err');
+    document.getElementById('recv-btn-start').disabled = false;
+    return;
+  }
+  perm.getTracks().forEach(t=>t.stop());
+
+  if (recvScanner) { try{await recvScanner.stop();}catch(e){} recvScanner=null; }
+  recvScanner = new Html5Qrcode('recv-camera-reader', {verbose:false});
+  try {
+    await recvScanner.start(
+      {facingMode:'environment'},
+      {fps:30, qrbox:(w,h)=>({width:w,height:h}), experimentalFeatures:{useBarCodeDetectorIfSupported:true}},
+      (text) => onRecvScan(text, 'camera'),
+      () => {}
+    );
+    recvScanning = true;
+    document.getElementById('recv-btn-start').style.display = 'none';
+    document.getElementById('recv-btn-stop').style.display  = 'flex';
+    document.getElementById('recv-cam-overlay').classList.add('on');
+    document.getElementById('recv-cam-status').textContent  = 'SCANNING… point at transfer QR';
+  } catch(e) {
+    document.getElementById('recv-cam-status').textContent = 'ERROR: '+e.message;
+    document.getElementById('recv-btn-start').disabled = false;
+  }
+}
+
+async function stopRecvCam() {
+  recvScanning = false;
+  if (recvScanner) { try{await recvScanner.stop();}catch(e){} try{recvScanner.clear();}catch(e){} recvScanner=null; }
+  document.getElementById('recv-btn-start').disabled = false;
+  document.getElementById('recv-btn-start').style.display = 'flex';
+  document.getElementById('recv-btn-stop').style.display  = 'none';
+  document.getElementById('recv-cam-overlay').classList.remove('on');
+  document.getElementById('recv-camera-reader').innerHTML = '';
+  document.getElementById('recv-cam-status').textContent  = 'CAMERA OFF — click START';
+}
+
+function onRecvDrop(e) {
+  e.preventDefault();
+  document.getElementById('recv-file-drop').classList.remove('dov');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) scanRecvFile(f);
+}
+
+async function scanRecvFile(file) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    const drop = document.getElementById('recv-file-drop');
+    drop.innerHTML = `<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.75rem;color:var(--t3)">${file.name}</p>`;
+    drop.onclick = null;
+  };
+  fr.readAsDataURL(file);
+
+  const text = await decodeQRFromFile(file, 'recv-file-reader-hidden');
+  if (text) {
+    onRecvScan(text, 'file');
+  } else {
+    recvSetFail('No QR code found in image');
+    toast('No QR code found','err');
+  }
+}
+
+function onRecvScan(text, source) {
+  const now = Date.now();
+  if (source === 'camera' && text === lastRecvText && now - lastRecvTs < 3000) return;
+  lastRecvText = text; lastRecvTs = now;
+
+  // Validate alphanumeric
+  if (!/^[A-Za-z0-9]+$/.test(text)) {
+    recvSetFail('Invalid QR — non-alphanumeric characters found.');
+    toast('Not a valid transfer QR','err');
+    return;
+  }
+
+  // Decode multi-coin payload: 40*N + 16 chars
+  const parsed = decodeTransferPayload(text);
+  if (!parsed) {
+    recvSetFail(`Invalid QR length (${text.length} chars).\nExpected 56, 96, 136, 176, or 216 chars for 1–5 coins.`);
+    toast('Not a valid transfer QR','err');
+    return;
+  }
+
+  // Verify even-indexed chars of payload match our wallet's even chars
+  const ourEven = evenDigits(walletId);
+  if (parsed.recipientEvenDigits !== ourEven) {
+    recvSetFail('This transfer was NOT addressed to your wallet.\nEven-digit fingerprint mismatch.');
+    toast('Transfer not addressed to you!','warn');
+    return;
+  }
+
+  // Check each coin for duplicates
+  const dupes = parsed.coinIds.filter(id => coins.find(c => c.id === id));
+  if (dupes.length) {
+    recvSetFail('Duplicate coin(s) detected:\n' + dupes.map(id => id.slice(0,10)+'…').join('\n'));
+    toast('Duplicate coin(s) rejected','warn');
+    return;
+  }
+
+  // Accept all coins!
+  const ts = now;
+  parsed.coinIds.forEach(id => {
+    coins.push({ id, type: 'received', ts });
+    txHistory.push({ type:'received', coinId:id, ts, label:'Transfer verified ✓' });
+  });
+  saveState();
+
+  recvSetOK(parsed);
+  if (source === 'camera') stopRecvCam();
+  renderWallet();
+  renderCoinList();
+  updateAvailableCount();
+  updateSendBtn();
+
+  setTimeout(() => refreshWalletId(), 800);
+  toast(`📥 Received ${parsed.N} coin${parsed.N>1?'s':''}! +${parsed.N} CC`, 'ok');
+}
+
+function recvSetOK(parsed) {
+  const panel = document.getElementById('recv-result-panel');
+  panel.classList.remove('flash-err');
+  panel.classList.add('flash');
+  setTimeout(() => panel.classList.remove('flash'), 700);
+
+  document.getElementById('recv-dot').className = 'dot ok';
+  document.getElementById('recv-label').textContent = `✓ ${parsed.N} COIN${parsed.N>1?'S':''} RECEIVED`;
+  const rt = document.getElementById('recv-text');
+  rt.className = 'res-text';
+  rt.textContent = `Transfer authenticated.\nWallet fingerprint matched ✓\nCoins received: ${parsed.N}`;
+  document.getElementById('recv-coin-detail').style.display = 'block';
+  document.getElementById('recv-coin-id-display').textContent =
+    parsed.coinIds.map((id,i) => `[${i+1}] ${id}`).join('\n');
+}
+
+function recvSetFail(msg) {
+  const panel = document.getElementById('recv-result-panel');
+  panel.classList.remove('flash');
+  panel.classList.add('flash-err');
+  setTimeout(() => panel.classList.remove('flash-err'), 700);
+
+  document.getElementById('recv-dot').className = 'dot err';
+  document.getElementById('recv-label').textContent = 'VERIFICATION FAILED';
+  const rt = document.getElementById('recv-text');
+  rt.className = 'res-text err';
+  rt.textContent = msg;
+  document.getElementById('recv-coin-detail').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+// SHARED QR FILE DECODE (multi-strategy: BarcodeDetector + ZXing)
+// ═══════════════════════════════════════════════════════
+async function decodeQRFromFile(file, hiddenDivId) {
+  // Strategy 1: Native BarcodeDetector
+  if (window.BarcodeDetector) {
+    try {
+      const bd = new BarcodeDetector({formats:['qr_code']});
+      const bmp = await createImageBitmap(file);
+      let bc = await bd.detect(bmp);
+      if (bc.length && bc[0].rawValue) { bmp.close(); return bc[0].rawValue; }
+
+      // Rotation passes
+      const scale = Math.min(1, 800/Math.max(bmp.width, bmp.height));
+      const sw = Math.round(bmp.width*scale)|0, sh = Math.round(bmp.height*scale)|0;
+      const hit = await Promise.any(
+        [45,90,135,180,225,270,315].map(angle => {
+          const rad = angle*Math.PI/180;
+          const cosA = Math.abs(Math.cos(rad)), sinA = Math.abs(Math.sin(rad));
+          const cw = Math.round(sw*cosA+sh*sinA)|0, ch = Math.round(sw*sinA+sh*cosA)|0;
+          const tmp = document.createElement('canvas'); tmp.width=cw; tmp.height=ch;
+          const tc = tmp.getContext('2d',{alpha:false});
+          tc.translate(cw/2,ch/2); tc.rotate(rad); tc.drawImage(bmp,-sw/2,-sh/2,sw,sh);
+          return bd.detect(tmp).then(r => { if(r.length&&r[0].rawValue) return r[0].rawValue; return Promise.reject('none'); });
+        })
+      ).catch(()=>null);
+      bmp.close();
+      if (hit) return hit;
+    } catch(e) {}
+  }
+
+  // Strategy 2: html5-qrcode ZXing fallback
+  const fs = new Html5Qrcode(hiddenDivId, {verbose:false});
+  try {
+    const text = await fs.scanFile(file, false);
+    return text;
+  } catch(e) {
+    return null;
+  } finally {
+    try { fs.clear(); } catch(e) {}
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════
+function switchTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+  if (id !== 'send')    stopSendCam();
+  if (id !== 'receive') stopRecvCam();
+  if (id === 'wallet')  renderWallet();
+  if (id === 'mine')    renderCoinList();
+  if (id === 'send')  { updateAvailableCount(); updateSendBtn(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// TIME HELPER
+// ═══════════════════════════════════════════════════════
+function ago(ts) {
+  const d = Date.now()-ts;
+  if (d < 60e3) return 'now';
+  if (d < 36e5)  return Math.floor(d/60e3)+'m';
+  if (d < 864e5) return Math.floor(d/36e5)+'h';
+  return Math.floor(d/864e5)+'d';
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg, type='ok') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<div class="tdot"></div>${msg}`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+renderWallet();
+renderCoinList();
+updateAvailableCount();
+updateSendBtn();
+</script>
+</body>
+</html>
