@@ -888,6 +888,11 @@ body{
   align-self:center;
   overflow:hidden;
 }
+/* >600px: minimize white quiet-zone padding — the QR library bakes in its own
+   4-module quiet zone inside the canvas, so 3px CSS border is all we need.   */
+@media(min-width:601px){
+  .qr-modal-frame{padding:3px;}
+}
 .qr-modal-frame canvas,
 .qr-modal-frame img{
   width:100%!important;height:100%!important;
@@ -1556,7 +1561,7 @@ function openTransferModal(payload,coinIds){
   frame.innerHTML='';
   const wrap=document.createElement('div');
   frame.appendChild(wrap);
-  try{new QRCode(wrap,{text:payload,width:256,height:256,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+  try{new QRCode(wrap,{text:payload,width:512,height:512,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
   catch(e){frame.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;padding:.5rem;text-align:center">QR error</div>';return;}
   setTimeout(()=>{
     const el=frame.querySelector('canvas')||frame.querySelector('img');
