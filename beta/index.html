@@ -838,7 +838,7 @@ body{
           <div class="step-lbl">ENTER AMOUNT TO SEND</div>
         </div>
         <div class="amount-row">
-          <input type="number" id="send-amount" min="1" max="20" value="1"
+          <input type="number" id="send-amount" min="1" max="8" value="1"
             oninput="clampAmount(this);updateSendBtn()"
             onchange="clampAmount(this);updateSendBtn()">
           <div class="amount-unit">CC</div>
@@ -847,7 +847,7 @@ body{
             <button class="stepper" onclick="stepAmount(-1)">▼</button>
           </div>
         </div>
-        <div class="amount-hint">Max <b>20</b> per transaction · <b id="send-available-count">0</b> available</div>
+        <div class="amount-hint">Max <b>8</b> per transaction · <b id="send-available-count">0</b> available</div>
       </div>
       <!-- Step 3 -->
       <div class="step-card">
@@ -982,15 +982,19 @@ function genAlphaNum(len){let s='';const a=new Uint8Array(len);crypto.getRandomV
 function generateWalletId(){return genAlphaNum(30);}
 function generateCoinId(){return genAlphaNum(40);}
 function evenDigits(id){return id.split('').filter((_,i)=>i%2===0).join('');}
-function encodeTransferPayload(sw,coinIds,rw){return coinIds.join('')+String(coinIds.length)+evenDigits(rw);}
+function encodeTransferPayload(sw,coinIds,rw){return coinIds.join('')+rw;}
 function decodeTransferPayload(p){
-  if(p.length<56)return null;
-  const cb=p.length-16;if(cb%40!==0)return null;
-  const N=cb/40;if(N<1||N>20)return null;
-  if(parseInt(p[cb])!==N&&!(N>=10&&parseInt(p.slice(cb,cb+2))===N))return null;
-  // Re-derive N from length since digit encoding only holds 1 char for N<=9
-  const coinIds=[];for(let i=0;i<N;i++)coinIds.push(p.slice(i*40,i*40+40));
-  return{coinIds,N,recipientEvenDigits:p.slice(-15)};
+  const wl=30;const cl=40;
+  if(p.length<cl+wl)return null;             // at least 1 coin + walletId
+  const coinPart=p.length-wl;
+  if(coinPart%cl!==0)return null;            // coin section must be exact multiples of 40
+  const N=coinPart/cl;
+  if(N<1||N>8)return null;                   // 1–8 coins only
+  const coinIds=[];
+  for(let i=0;i<N;i++)coinIds.push(p.slice(i*cl,(i+1)*cl));
+  const recipientWalletId=p.slice(-wl);
+  if(!/^[A-Za-z0-9]{30}$/.test(recipientWalletId))return null;
+  return{coinIds,N,recipientWalletId};
 }
 function maskWallet(id){return id.slice(0,4)+'•'.repeat(22)+id.slice(-4);}
 function walletFingerprint(id){return id.slice(0,6)+'…'+id.slice(-6);}
@@ -1108,7 +1112,7 @@ function renderCoinList(){
 
 // ═══ SEND ═════════════════════════════════════════════
 let sendScanner=null,sendScanning=false,recipientWalletId=null;
-function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>20)v=20;if(v>av)v=Math.max(1,av);inp.value=v;}
+function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>8)v=8;if(v>av)v=Math.max(1,av);inp.value=v;}
 function stepAmount(d){const inp=document.getElementById('send-amount');inp.value=(parseInt(inp.value)||1)+d;clampAmount(inp);updateSendBtn();}
 function updateAvailableCount(){const av=coins.length;const el=document.getElementById('send-available-count');if(el)el.textContent=av;const ptb=document.getElementById('ptb-send-avail');if(ptb)ptb.textContent=av+' available';const inp=document.getElementById('send-amount');if(inp)clampAmount(inp);}
 function setSendSrc(src,el){
@@ -1170,7 +1174,7 @@ async function scanSendFile(file){
 function updateSendBtn(){const amt=parseInt(document.getElementById('send-amount')?.value)||0;document.getElementById('btn-generate-transfer').disabled=!(recipientWalletId&&amt>=1&&coins.length>=amt);}
 function generateTransferQR(){
   if(!recipientWalletId)return;
-  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,20);
+  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,8);
   if(coins.length<amt){toast('Not enough coins','err');return;}
   const coinIds=coins.slice(0,amt).map(c=>c.id);
   const payload=encodeTransferPayload(walletId,coinIds,recipientWalletId);
@@ -1286,9 +1290,12 @@ function onRecvScan(text,source){
   lastRecvText=text;lastRecvTs=now;
   if(!/^[A-Za-z0-9]+$/.test(text)){recvSetFail('Invalid QR — non-alphanumeric characters.');toast('Not a valid transfer QR','err');return;}
   const parsed=decodeTransferPayload(text);
-  if(!parsed){recvSetFail(`Invalid QR length (${text.length} chars).\nExpected 56/96/136/176/216 for 1–5 coins.`);toast('Not a valid transfer QR','err');return;}
-  const ourEven=evenDigits(walletId);
-  if(parsed.recipientEvenDigits!==ourEven){recvSetFail('Transfer NOT addressed to your wallet.\nEven-digit fingerprint mismatch.');toast('Transfer not for you!','warn');return;}
+  if(!parsed){
+    const validLens=[70,110,150,190,230,270,310,350];
+    recvSetFail(`Invalid QR (${text.length} chars).\nExpected lengths: ${validLens.join('/')} for 1–8 coins.`);
+    toast('Not a valid transfer QR','err');return;
+  }
+  if(parsed.recipientWalletId!==walletId){recvSetFail('Transfer NOT addressed to your wallet.\nWallet ID mismatch — this QR was made for a different recipient.');toast('Transfer not for you!','warn');return;}
   const dupes=parsed.coinIds.filter(id=>coins.find(c=>c.id===id));
   if(dupes.length){recvSetFail('Duplicate coin(s) detected:\n'+dupes.map(id=>id.slice(0,10)+'…').join('\n'));toast('Duplicate coin(s) rejected','warn');return;}
   const ts=now;
@@ -1306,7 +1313,7 @@ function recvSetOK(parsed){
   document.getElementById('recv-dot').className='rdot ok';
   document.getElementById('recv-label').textContent=`✓ ${parsed.N} COIN${parsed.N>1?'S':''} RECEIVED`;
   const rt=document.getElementById('recv-text');rt.className='res-body';
-  rt.textContent=`Transfer authenticated.\nWallet fingerprint matched ✓\nCoins received: ${parsed.N}`;
+  rt.textContent=`Transfer authenticated.\nWallet ID matched ✓\nCoins received: ${parsed.N}`;
   document.getElementById('recv-coin-detail').style.display='block';
   document.getElementById('recv-coin-id-display').textContent=parsed.coinIds.map((id,i)=>`[${i+1}] ${id}`).join('\n');
 }
