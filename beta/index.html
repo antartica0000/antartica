@@ -558,14 +558,17 @@ body{
   transition:opacity .22s ease;
 }
 .qr-modal-backdrop.open{opacity:1;pointer-events:all;}
+
+/* ── Default (>450px wide, normal height) ── */
 .qr-modal{
   background:var(--s2);
   border:1px solid var(--teal2);
   border-radius:var(--rxl);
   box-shadow:0 24px 80px rgba(0,0,0,.75),var(--glow-teal);
-  width:min(100%, calc(100vw - 2rem));
-  height:calc(100dvh - 2rem);
-  max-width:560px;
+  width:70vw;
+  max-width:640px;
+  height:auto;
+  max-height:calc(100dvh - 2rem);
   display:flex;flex-direction:column;align-items:center;
   gap:.7rem;padding:1.25rem 1.25rem 1.1rem;
   position:relative;
@@ -574,19 +577,97 @@ body{
   overflow:hidden;
 }
 .qr-modal-backdrop.open .qr-modal{transform:none;}
-/* ≤450px: full width, 1px gap each side, no border-radius on sides */
+
+/* ── ≤450px wide: full width, 1px gap each side ── */
 @media(max-width:450px){
   .qr-modal-backdrop{padding:0;}
   .qr-modal{
     width:calc(100vw - 2px);
     max-width:calc(100vw - 2px);
     height:100dvh;
+    max-height:100dvh;
     border-radius:0;
     gap:.5rem;
     padding:1rem .75rem .85rem;
   }
   .qr-modal-frame{border-radius:0;}
 }
+
+/* ── Low height (landscape phone / short screen) ──
+   Switch to side-by-side: QR left, info right         */
+@media(max-height:500px) and (min-width:451px){
+  .qr-modal-backdrop{padding:.5rem;}
+  .qr-modal{
+    width:96vw;
+    max-width:96vw;
+    height:calc(100dvh - 1rem);
+    max-height:calc(100dvh - 1rem);
+    flex-direction:row;
+    align-items:stretch;
+    gap:.6rem;
+    padding:.75rem;
+  }
+  .qr-modal-frame{
+    flex:none;
+    width:auto;
+    height:100%;
+    aspect-ratio:1/1;
+    align-self:stretch;
+    border-radius:10px;
+  }
+  .qr-modal-title,
+  .qr-modal-coins,
+  .qr-modal-hint,
+  .qr-modal-actions{width:100%;}
+  /* Right column stacks the text+buttons */
+  .qr-modal-right{
+    flex:1;min-width:0;
+    display:flex;flex-direction:column;
+    justify-content:space-between;
+    gap:.5rem;
+    overflow:hidden;
+  }
+  .qr-modal-close{top:.5rem;right:.5rem;}
+  .qr-modal-title{padding-right:38px;font-size:.6rem;}
+  .qr-modal-coins{font-size:.54rem;line-height:1.6;padding:.35rem .6rem;}
+  .qr-modal-hint{font-size:.54rem;}
+  .qr-modal-actions .btn{min-height:38px;font-size:.62rem;}
+}
+
+/* ── Very low height on ≤450px (landscape small phone) ── */
+@media(max-height:500px) and (max-width:450px){
+  .qr-modal-backdrop{padding:0;}
+  .qr-modal{
+    width:calc(100vw - 2px);
+    max-width:calc(100vw - 2px);
+    height:100dvh;
+    max-height:100dvh;
+    flex-direction:row;
+    align-items:stretch;
+    border-radius:0;
+    gap:.5rem;
+    padding:.6rem .5rem;
+  }
+  .qr-modal-frame{
+    flex:none;
+    width:auto;
+    height:100%;
+    aspect-ratio:1/1;
+    border-radius:0;
+  }
+  .qr-modal-right{
+    flex:1;min-width:0;
+    display:flex;flex-direction:column;
+    justify-content:space-between;
+    gap:.4rem;
+    overflow:hidden;
+  }
+  .qr-modal-title{padding-right:34px;font-size:.58rem;}
+  .qr-modal-coins{font-size:.52rem;line-height:1.55;padding:.3rem .5rem;}
+  .qr-modal-hint{display:none;}
+  .qr-modal-actions .btn{min-height:36px;font-size:.6rem;}
+}
+
 .qr-modal-close{
   position:absolute;top:.75rem;right:.75rem;
   width:32px;height:32px;border-radius:50%;
@@ -601,28 +682,26 @@ body{
   color:var(--teal);text-transform:uppercase;
   display:flex;align-items:center;gap:.5rem;
   flex-shrink:0;width:100%;justify-content:center;
-  padding-right:38px; /* avoid overlap with close btn */
+  padding-right:38px;
 }
-/* QR frame fills all remaining vertical space, capped to square */
 .qr-modal-frame{
   background:#fff;border-radius:14px;padding:12px;
   box-shadow:var(--glow-teal),var(--shadow);
   display:flex;align-items:center;justify-content:center;
   flex:1;min-height:0;
-  /* square: side = min(available-width, flex-height) via aspect-ratio + min() */
   width:100%;
   aspect-ratio:1/1;
   max-width:100%;
   align-self:center;
   overflow:hidden;
 }
-/* Force the generated canvas/img to fill the frame 100% */
 .qr-modal-frame canvas,
 .qr-modal-frame img{
   width:100%!important;height:100%!important;
   max-width:100%!important;max-height:100%!important;
   display:block;object-fit:contain;
 }
+.qr-modal-right{display:contents;} /* no-op on normal layout */
 .qr-modal-coins{
   font-family:var(--mono);font-size:.6rem;color:var(--amber);
   text-align:center;line-height:1.85;white-space:pre;
@@ -636,14 +715,6 @@ body{
 }
 .qr-modal-actions{display:flex;gap:8px;width:100%;flex-shrink:0;}
 .qr-modal-actions .btn{flex:1;min-height:44px;}
-
-/* On very small phones, tighten gaps */
-@media(max-height:600px){
-  .qr-modal{gap:.4rem;padding:1rem 1rem .85rem;}
-  .qr-modal-coins{padding:.35rem .75rem;line-height:1.65;font-size:.56rem;}
-  .qr-modal-hint{display:none;}
-  .qr-modal-actions .btn{min-height:40px;}
-}
 
 /* ══════════════════════════════════════════════════════
    1800px — maximum space, breathing room everywhere
@@ -1020,16 +1091,18 @@ body{
       TRANSFER QR CODE
     </div>
     <div class="qr-modal-frame" id="modal-qr-frame"></div>
-    <div class="qr-modal-coins" id="modal-coin-preview"></div>
-    <div class="qr-modal-hint">
-      Show this QR to the recipient.<br>Ask them to scan it in their <b style="color:var(--teal)">Receive</b> tab.
-    </div>
-    <div class="qr-modal-actions">
-      <button class="btn btn-amber" onclick="downloadModalQR()">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><path d="M8 3v10"/><path d="M2 14h12"/></svg>
-        SAVE QR
-      </button>
-      <button class="btn btn-d" onclick="closeTransferModal()">CLOSE &amp; RESET</button>
+    <div class="qr-modal-right">
+      <div class="qr-modal-coins" id="modal-coin-preview"></div>
+      <div class="qr-modal-hint">
+        Show this QR to the recipient.<br>Ask them to scan it in their <b style="color:var(--teal)">Receive</b> tab.
+      </div>
+      <div class="qr-modal-actions">
+        <button class="btn btn-amber" onclick="downloadModalQR()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><path d="M8 3v10"/><path d="M2 14h12"/></svg>
+          SAVE QR
+        </button>
+        <button class="btn btn-d" onclick="closeTransferModal()">CLOSE &amp; RESET</button>
+      </div>
     </div>
   </div>
 </div>
