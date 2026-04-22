@@ -532,6 +532,21 @@ body{
   .panel-topbar{height:60px;padding:0 2.5rem}
 }
 
+/* ── AUTO-MINE TOGGLE ── */
+.automine-wrap{display:flex;flex-direction:column;align-items:center;gap:.6rem;width:100%;max-width:320px}
+.automine-row{display:flex;align-items:center;gap:.75rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:.6rem 1rem;width:100%}
+.automine-lbl{font-family:var(--mono);font-size:.64rem;letter-spacing:.07em;color:var(--t2);flex:1}
+.automine-toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.automine-toggle input{opacity:0;width:0;height:0;position:absolute}
+.automine-slider{position:absolute;inset:0;background:var(--b2);border-radius:12px;cursor:pointer;transition:background .18s}
+.automine-slider::before{content:'';position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:var(--t3);transition:transform .18s,background .18s}
+.automine-toggle input:checked~.automine-slider{background:var(--amber);box-shadow:0 0 10px rgba(255,176,48,.3)}
+.automine-toggle input:checked~.automine-slider::before{transform:translateX(20px);background:#fff}
+.automine-counter{font-family:var(--mono);font-size:.61rem;color:var(--t3);letter-spacing:.06em}
+.automine-counter b{color:var(--amber)}
+.automine-stop{display:none}
+.automine-stop.show{display:flex}
+
 /* ── QR TRANSFER MODAL ── */
 .qr-modal-backdrop{
   position:fixed;inset:0;z-index:1000;
@@ -765,6 +780,21 @@ body{
             <div class="mine-result-id" id="last-mined-id"></div>
           </div>
         </div>
+        <div class="automine-wrap">
+          <div class="automine-row">
+            <span class="automine-lbl">⚡ AUTO-MINE (continuous)</span>
+            <label class="automine-toggle">
+              <input type="checkbox" id="automine-chk" onchange="onAutoMineToggle(this.checked)">
+              <span class="automine-slider"></span>
+            </label>
+          </div>
+          <div class="automine-counter" id="automine-counter" style="display:none">
+            Session: <b id="automine-count">0</b> coins mined automatically
+          </div>
+          <button class="btn btn-d btn-full automine-stop" id="automine-stop-btn" onclick="stopAutoMine()">
+            ■ STOP AUTO-MINING
+          </button>
+        </div>
       </div>
     </div>
     <div>
@@ -838,16 +868,17 @@ body{
           <div class="step-lbl">ENTER AMOUNT TO SEND</div>
         </div>
         <div class="amount-row">
-          <input type="number" id="send-amount" min="1" max="8" value="1"
-            oninput="clampAmount(this);updateSendBtn()"
-            onchange="clampAmount(this);updateSendBtn()">
+          <input type="number" id="send-amount" min="1" max="10" value="1"
+            oninput="updateSendBtn()"
+            onblur="clampAmount(this);updateSendBtn()"
+            onchange="updateSendBtn()">
           <div class="amount-unit">CC</div>
           <div class="amount-steppers">
             <button class="stepper" onclick="stepAmount(1)">▲</button>
             <button class="stepper" onclick="stepAmount(-1)">▼</button>
           </div>
         </div>
-        <div class="amount-hint">Max <b>8</b> per transaction · <b id="send-available-count">0</b> available</div>
+        <div class="amount-hint">Max <b>10</b> per transaction · <b id="send-available-count">0</b> available</div>
       </div>
       <!-- Step 3 -->
       <div class="step-card">
@@ -989,7 +1020,7 @@ function decodeTransferPayload(p){
   const coinPart=p.length-wl;
   if(coinPart%cl!==0)return null;            // coin section must be exact multiples of 40
   const N=coinPart/cl;
-  if(N<1||N>8)return null;                   // 1–8 coins only
+  if(N<1||N>10)return null;                   // 1–10 coins only
   const coinIds=[];
   for(let i=0;i<N;i++)coinIds.push(p.slice(i*cl,(i+1)*cl));
   const recipientWalletId=p.slice(-wl);
@@ -1063,7 +1094,19 @@ function renderWalletCoins(){
 }
 
 // ═══ MINE ═════════════════════════════════════════════
-let miningActive=false;
+let miningActive=false,autoMine=false,autoMineCount=0;
+function onAutoMineToggle(checked){
+  autoMine=checked;
+  document.getElementById('automine-counter').style.display=checked?'block':'none';
+  document.getElementById('automine-stop-btn').classList.toggle('show',checked);
+  if(checked&&!miningActive){autoMineCount=0;document.getElementById('automine-count').textContent=0;startMining();}
+}
+function stopAutoMine(){
+  autoMine=false;
+  document.getElementById('automine-chk').checked=false;
+  document.getElementById('automine-counter').style.display='none';
+  document.getElementById('automine-stop-btn').classList.remove('show');
+}
 function startMining(){
   if(miningActive)return;miningActive=true;
   const btn=document.getElementById('mine-btn');
@@ -1097,6 +1140,11 @@ function finishMining(){
   document.getElementById('last-mined-id').textContent=coinId;
   renderWallet();renderCoinList();updateAvailableCount();updateSendBtn();
   toast('⛏ Coin mined! '+coinId.slice(0,8)+'…','ok');
+  if(autoMine){
+    autoMineCount++;
+    document.getElementById('automine-count').textContent=autoMineCount;
+    setTimeout(startMining,320);
+  }
 }
 function renderCoinList(){
   const el=document.getElementById('coin-list');
@@ -1112,7 +1160,7 @@ function renderCoinList(){
 
 // ═══ SEND ═════════════════════════════════════════════
 let sendScanner=null,sendScanning=false,recipientWalletId=null;
-function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>8)v=8;if(v>av)v=Math.max(1,av);inp.value=v;}
+function clampAmount(inp){const av=coins.length;let v=parseInt(inp.value)||1;if(v<1)v=1;if(v>10)v=10;if(v>av)v=Math.max(1,av);inp.value=v;}
 function stepAmount(d){const inp=document.getElementById('send-amount');inp.value=(parseInt(inp.value)||1)+d;clampAmount(inp);updateSendBtn();}
 function updateAvailableCount(){const av=coins.length;const el=document.getElementById('send-available-count');if(el)el.textContent=av;const ptb=document.getElementById('ptb-send-avail');if(ptb)ptb.textContent=av+' available';const inp=document.getElementById('send-amount');if(inp)clampAmount(inp);}
 function setSendSrc(src,el){
@@ -1174,7 +1222,7 @@ async function scanSendFile(file){
 function updateSendBtn(){const amt=parseInt(document.getElementById('send-amount')?.value)||0;document.getElementById('btn-generate-transfer').disabled=!(recipientWalletId&&amt>=1&&coins.length>=amt);}
 function generateTransferQR(){
   if(!recipientWalletId)return;
-  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,8);
+  const amt=Math.min(parseInt(document.getElementById('send-amount').value)||1,10);
   if(coins.length<amt){toast('Not enough coins','err');return;}
   const coinIds=coins.slice(0,amt).map(c=>c.id);
   const payload=encodeTransferPayload(walletId,coinIds,recipientWalletId);
@@ -1291,8 +1339,8 @@ function onRecvScan(text,source){
   if(!/^[A-Za-z0-9]+$/.test(text)){recvSetFail('Invalid QR — non-alphanumeric characters.');toast('Not a valid transfer QR','err');return;}
   const parsed=decodeTransferPayload(text);
   if(!parsed){
-    const validLens=[70,110,150,190,230,270,310,350];
-    recvSetFail(`Invalid QR (${text.length} chars).\nExpected lengths: ${validLens.join('/')} for 1–8 coins.`);
+    const validLens=[70,110,150,190,230,270,310,350,390,430];
+    recvSetFail(`Invalid QR (${text.length} chars).\nExpected lengths: ${validLens.join('/')} for 1–10 coins.`);
     toast('Not a valid transfer QR','err');return;
   }
   if(parsed.recipientWalletId!==walletId){recvSetFail('Transfer NOT addressed to your wallet.\nWallet ID mismatch — this QR was made for a different recipient.');toast('Transfer not for you!','warn');return;}
