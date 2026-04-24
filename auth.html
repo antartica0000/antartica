@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VAULT — 2FA Authenticator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0d12'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%2300e0c7' stroke-width='1.4' opacity='.35'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%230e1219' stroke='%2300e0c7' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='5.5' r='2.1' fill='%2300e0c7'/%3E%3Ccircle cx='16' cy='26.5' r='2.1' fill='%2300e0c7'/%3E%3Ccircle cx='5.5' cy='16' r='2.1' fill='%2300e0c7'/%3E%3Ccircle cx='26.5' cy='16' r='2.1' fill='%2300e0c7'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='none' stroke='%2300e0c7' stroke-width='1.5'/%3E%3Cline x1='16' y1='12.8' x2='16' y2='16' stroke='%2300e0c7' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060809;
+  --surface: #0a0d12;
+  --panel: #0e1219;
+  --card: rgba(255,255,255,0.032);
+  --card-hover: rgba(255,255,255,0.058);
+  --card-border: rgba(255,255,255,0.065);
+  --accent: #00e0c7;
+  --accent2: #7c44f8;
+  --accent3: #39f5a0;
+  --text: #edf1ff;
+  --muted: rgba(237,241,255,0.38);
+  --muted2: rgba(237,241,255,0.16);
+  --danger: #ff3d5a;
+  --r: 14px;
+  --sidebar-w: 340px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Bricolage Grotesque',sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+button,a,[onclick],[role="button"]{touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* Static ambient glows — GPU-only, no drift */
+.bg-glow{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;transform:translateZ(0)}
+.bg-glow-1{width:600px;height:600px;background:rgba(0,224,199,.045);top:-220px;right:-180px}
+.bg-glow-2{width:420px;height:420px;background:rgba(124,68,248,.055);bottom:-120px;left:-120px}
+/* LAYOUT */
+#layout{position:relative;z-index:1;height:100dvh;width:100%;display:flex}
+/* SIDEBAR */
+#sidebar{width:100%;height:100%;display:flex;flex-direction:column;background:var(--surface);flex-shrink:0;transition:transform .12s cubic-bezier(.4,0,.2,1);position:relative;z-index:2;will-change:transform;border-right:1px solid var(--card-border)}
+/* RIGHT PANEL */
+#right-panel{flex:1;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}
+/* Mobile */
+@media(max-width:899px){
+  #right-panel{position:fixed;inset:0;z-index:10;transform:translateX(100%);transition:transform .15s cubic-bezier(.4,0,.2,1);background:var(--surface);will-change:transform}
+  #right-panel.open{transform:translateX(0)}
+  #sidebar{position:fixed;inset:0;z-index:5}
+}
+/* Desktop */
+@media(min-width:900px){
+  #sidebar{width:var(--sidebar-w)}
+  #right-panel{transform:none!important}
+  #rp-add .back-btn,#rp-detail .back-btn,#rp-welcome .back-btn{display:none!important}
+  .detail-add-btn{display:none!important}
+  .detail-settings-btn{display:none!important}
+}
+/* ── SIDEBAR HEADER ──────────────────────── */
+.sidebar-header{padding:18px 16px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--card-border)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(0,224,199,.2)}
+.brand-name{font-size:1.05rem;font-weight:800;letter-spacing:-.025em}
+.brand-tagline{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-top:1px}
+.hdr-actions{display:flex;gap:6px}
+.icon-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .08s,transform .08s;font-size:16px}
+.icon-btn:hover{background:var(--card-hover)}
+.icon-btn:active{transform:scale(.86)}
+/* ── STATS STRIP ─────────────────────────── */
+.stats-strip{display:flex;border-bottom:1px solid var(--card-border);flex-shrink:0}
+.stat-cell{flex:1;padding:11px 8px;text-align:center;border-right:1px solid var(--card-border)}
+.stat-cell:last-child{border-right:none}
+.stat-val{font-size:1.3rem;font-weight:800;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
+/* ── SEARCH ──────────────────────────────── */
+.search-wrap{padding:10px 12px;border-bottom:1px solid var(--card-border);flex-shrink:0}
+.search-input{width:100%;background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:9px 12px 9px 34px;color:var(--text);font-family:'Bricolage Grotesque',sans-serif;font-size:.84rem;outline:none;transition:border-color .08s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(237,241,255,0.28)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center}
+.search-input::placeholder{color:var(--muted2)}
+.search-input:focus{border-color:rgba(0,224,199,.35);background:rgba(0,224,199,.02)}
+/* ── ACCOUNT LIST ────────────────────────── */
+.acct-list{flex:1;overflow-y:scroll;overflow-x:hidden;padding:7px 7px 68px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;transform:translateZ(0);touch-action:pan-y}
+.acct-list::-webkit-scrollbar{display:none}
+/* ── ACCOUNT CARD ────────────────────────── */
+.acct-card{background:var(--card);border:1px solid var(--card-border);border-radius:13px;padding:11px 13px;margin-bottom:6px;cursor:pointer;transition:background .08s,border-color .08s,transform .08s;position:relative;overflow:hidden;contain:layout style;will-change:transform;touch-action:manipulation}
+.acct-card::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2.5px;background:var(--accent);border-radius:0 2px 2px 0;opacity:0;transition:opacity .08s}
+.acct-card:hover{background:var(--card-hover);border-color:rgba(255,255,255,.09)}
+.acct-card:active{transform:scale(.975)}
+.acct-card.active-card{background:rgba(0,224,199,.055);border-color:rgba(0,224,199,.2)}
+.acct-card.active-card::before{opacity:1}
+.card-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.card-av{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:-.02em}
+.card-meta{flex:1;min-width:0}
+.card-issuer{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;line-height:1}
+.card-account{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.card-chevron{color:var(--muted2);font-size:13px}
+.card-bottom{display:flex;align-items:center;justify-content:space-between}
+.card-code{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:400;letter-spacing:.14em;color:var(--text)}
+.card-ring svg{transform:rotate(-90deg);display:block}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:2.5}
+.ring-fill{fill:none;stroke-width:2.5;stroke-linecap:round;transition:stroke-dashoffset .85s linear,stroke .15s}
+.copy-flash{position:absolute;inset:0;background:rgba(0,224,199,.05);opacity:0;border-radius:13px;transition:opacity .1s;pointer-events:none}
+.acct-card.copied .copy-flash{opacity:1}
+.acct-card.copied{border-color:rgba(0,224,199,.4)}
+.copy-badge{position:absolute;top:9px;right:10px;background:rgba(0,224,199,.14);color:var(--accent);border-radius:20px;padding:2px 9px;font-size:.58rem;font-weight:700;opacity:0;transition:opacity .2s;letter-spacing:.07em}
+.acct-card.copied .copy-badge{opacity:1}
+.card-lock-icon{font-size:.64rem;opacity:.5;flex-shrink:0}
+.card-note-dot{width:4px;height:4px;border-radius:50%;background:var(--accent3);flex-shrink:0;opacity:.65}
+.card-has-creds{position:absolute;bottom:9px;right:11px;font-size:.55rem;color:var(--muted2);letter-spacing:.04em}
+/* ── EMPTY STATE ─────────────────────────── */
+.empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;text-align:center}
+.empty-icon{font-size:2.5rem;opacity:.18}
+.empty-title{font-size:.95rem;font-weight:700;opacity:.35}
+.empty-body{font-size:.74rem;color:var(--muted);line-height:1.65}
+/* ── FAB ─────────────────────────────────── */
+.fab{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--accent),#00b8a0);color:#000;font-weight:800;font-size:.72rem;letter-spacing:.02em;padding:8px 16px;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(0,224,199,.28);transition:box-shadow .08s,transform .08s;white-space:nowrap;border:none;font-family:'Bricolage Grotesque',sans-serif;touch-action:manipulation}
+.fab:hover{box-shadow:0 8px 32px rgba(0,224,199,.42);transform:translateX(-50%) translateY(-2px)}
+.fab:active{transform:translateX(-50%) scale(.93)}
+/* ── RIGHT PANEL SCREENS ─────────────────── */
+.rp-screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .12s ease,transform .12s ease;transform:translateX(10px);overflow:hidden}
+.rp-screen.rp-active{opacity:1;pointer-events:all;transform:none}
+/* ── WELCOME ─────────────────────────────── */
+#rp-welcome{align-items:center;justify-content:center;gap:16px;padding:48px 36px;text-align:center}
+.welcome-shield{font-size:4rem;opacity:.5;margin-bottom:2px}
+.welcome-title{font-size:2.5rem;font-weight:800;line-height:1;letter-spacing:-.04em}
+.welcome-title span{color:var(--accent)}
+.welcome-body{font-size:.88rem;color:var(--muted);line-height:1.7;max-width:360px}
+.welcome-pills{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--card-border);border-radius:50px;padding:7px 14px;font-size:.72rem;color:var(--muted)}
+.pill .dot{width:5px;height:5px;border-radius:50%;background:var(--accent3)}
+.welcome-cta{margin-top:4px;background:linear-gradient(135deg,var(--accent),#00b8a0);color:#000;font-weight:800;font-size:.86rem;padding:13px 28px;border-radius:12px;cursor:pointer;box-shadow:0 6px 24px rgba(0,224,199,.22);transition:box-shadow .08s,transform .08s;border:none;font-family:'Bricolage Grotesque',sans-serif;letter-spacing:.01em;touch-action:manipulation}
+.welcome-cta:hover{box-shadow:0 8px 32px rgba(0,224,199,.35);transform:translateY(-2px)}
+.welcome-cta:active{transform:scale(.95)}
+/* ── PANEL HEADER ────────────────────────── */
+.rp-header{padding:18px 20px 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:1px solid var(--card-border)}
+.back-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:background .08s,transform .08s;flex-shrink:0;touch-action:manipulation}
+.back-btn:hover{background:var(--card-hover)}
+.back-btn:active{transform:scale(.86)}
+.rp-title{font-size:1rem;font-weight:700;letter-spacing:-.02em}
+.rp-sub{font-size:.68rem;color:var(--muted);margin-top:1px}
+/* ── ADD SCREEN ──────────────────────────── */
+#rp-add .rp-body{flex:1;overflow-y:scroll;scrollbar-width:none;padding:18px 18px 32px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y}
+#rp-add .rp-body::-webkit-scrollbar{display:none}
+/* ── FORM ────────────────────────────────── */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.form-label{font-size:.63rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.form-input{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Bricolage Grotesque',sans-serif;font-size:.85rem;outline:none;transition:border-color .08s,background .08s,box-shadow .08s;width:100%}
+.form-input:focus{border-color:rgba(0,224,199,.38);background:rgba(0,224,199,.018);box-shadow:0 0 0 3px rgba(0,224,199,.09)}
+.form-input::placeholder{color:var(--muted2)}
+.form-input.mono{font-family:'JetBrains Mono',monospace;letter-spacing:.04em;font-size:.82rem}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(237,241,255,0.3)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+select.form-input option{background:#0e1219}
+.form-row{display:flex;gap:8px;margin-bottom:12px}
+.form-row .form-group{flex:1;margin-bottom:0}
+.color-row{display:flex;gap:6px}
+.color-swatch{width:30px;height:30px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:transform .08s,border-color .08s;display:flex;align-items:center;justify-content:center;font-size:11px}
+.color-swatch span{opacity:0;transition:opacity .08s}
+.color-swatch.sel{border-color:rgba(255,255,255,.75);transform:scale(1.1)}
+.color-swatch.sel span{opacity:1}
+.divider{border:none;border-top:1px solid var(--card-border);margin:16px 0}
+.submit-btn{width:100%;background:linear-gradient(135deg,var(--accent),#00b8a0);color:#000;font-weight:800;font-size:.88rem;letter-spacing:.02em;padding:12px;border-radius:11px;cursor:pointer;box-shadow:0 4px 18px rgba(0,224,199,.2);transition:box-shadow .08s,transform .08s;border:none;font-family:'Bricolage Grotesque',sans-serif;margin-top:2px;touch-action:manipulation}
+.submit-btn:hover{box-shadow:0 8px 28px rgba(0,224,199,.36);transform:translateY(-1px)}
+.submit-btn:active{transform:scale(.96)}
+/* ── PASSWORD INPUT ──────────────────────── */
+.pw-wrap{position:relative;display:flex;align-items:center}
+.pw-wrap .form-input{padding-right:42px}
+.pw-eye{position:absolute;right:12px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;line-height:1;transition:color .08s}
+.pw-eye:hover{color:var(--text)}
+/* ── TOGGLE SWITCH ───────────────────────── */
+.lock-section{background:rgba(255,255,255,.022);border:1px solid var(--card-border);border-radius:11px;padding:12px 13px;margin-bottom:12px}
+.lock-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lock-toggle-info{flex:1;min-width:0}
+.lock-toggle-title{font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:5px}
+.lock-toggle-sub{font-size:.64rem;color:var(--muted);margin-top:2px;line-height:1.4}
+.toggle-switch{flex-shrink:0;cursor:pointer;position:relative;display:inline-block;width:40px;height:22px}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:50px;transition:background .1s;border:1px solid rgba(255,255,255,.1)}
+.toggle-switch input:checked~.toggle-track{background:var(--accent);border-color:var(--accent)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform .12s cubic-bezier(.22,1,.36,1);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle-switch input:checked~.toggle-track .toggle-thumb{transform:translateX(18px)}
+.lock-pwd-wrap{margin-top:10px;display:none;flex-direction:column;gap:5px;animation:slideInUp .12s cubic-bezier(.22,1,.36,1) both}
+.lock-pwd-wrap.visible{display:flex}
+.lock-pwd-hint{font-size:.62rem;color:var(--muted);line-height:1.5}
+.lock-pwd-strength{height:2.5px;border-radius:3px;background:var(--card-border);margin-top:3px;overflow:hidden}
+.lock-pwd-strength-bar{height:100%;border-radius:3px;width:0%;transition:width .2s,background .2s}
+/* ── LOCK SCREEN ─────────────────────────── */
+#lock-screen{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;background:var(--surface);animation:fadeIn .12s ease both;gap:0}
+.lock-icon{font-size:2.8rem;margin-bottom:14px;filter:drop-shadow(0 0 18px rgba(0,224,199,.35))}
+.lock-title{font-size:1.05rem;font-weight:800;margin-bottom:3px;text-align:center;letter-spacing:-.02em}
+.lock-sub{font-size:.73rem;color:var(--muted);margin-bottom:22px;text-align:center;line-height:1.55}
+.lock-input-row{width:100%;max-width:280px;position:relative;margin-bottom:9px}
+.lock-input{width:100%;background:var(--card);border:1px solid var(--card-border);border-radius:11px;padding:12px 42px 12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.95rem;letter-spacing:.06em;outline:none;transition:border-color .08s;text-align:center}
+.lock-input:focus{border-color:rgba(0,224,199,.38)}
+.lock-input.error{border-color:var(--danger);animation:shake .28s cubic-bezier(.22,1,.36,1)}
+.lock-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;line-height:1;transition:color .08s}
+.lock-eye:hover{color:var(--text)}
+.lock-unlock-btn{width:100%;max-width:280px;background:linear-gradient(135deg,var(--accent),#00b8a0);color:#000;font-weight:800;font-size:.86rem;padding:11px;border-radius:11px;border:none;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;transition:transform .08s,box-shadow .08s;margin-bottom:12px;touch-action:manipulation}
+.lock-unlock-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,224,199,.32)}
+.lock-unlock-btn:active{transform:scale(.95)}
+.lock-back{font-size:.7rem;color:var(--muted);cursor:pointer;transition:color .08s}
+.lock-back:hover{color:var(--text)}
+.lock-err{font-size:.7rem;color:var(--danger);min-height:16px;text-align:center;margin-bottom:5px}
+.lock-attempts{font-size:.62rem;color:var(--muted2);margin-top:-3px;margin-bottom:7px}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+/* ── DETAIL SCREEN ───────────────────────── */
+#rp-detail .rp-body{flex:1;overflow-y:scroll;scrollbar-width:none;padding:20px 18px 32px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y}
+#rp-detail .rp-body::-webkit-scrollbar{display:none}
+.detail-hero{display:flex;align-items:center;gap:14px;padding-bottom:20px;border-bottom:1px solid var(--card-border);margin-bottom:18px}
+.detail-av{width:52px;height:52px;border-radius:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.detail-issuer-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.13em;margin-bottom:2px}
+.detail-name{font-size:.96rem;font-weight:700;letter-spacing:-.02em}
+.detail-acct{font-size:.72rem;color:var(--muted);margin-top:1px}
+/* ── CODE BOX ────────────────────────────── */
+.code-box{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:24px 18px 18px;text-align:center;margin-bottom:10px;cursor:pointer;transition:border-color .08s,background .08s,transform .08s,box-shadow .08s;position:relative;overflow:hidden;touch-action:manipulation}
+.code-box::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,224,199,.025),rgba(124,68,248,.025));pointer-events:none}
+.code-box:hover{border-color:rgba(0,224,199,.22);background:rgba(0,224,199,.035);transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,224,199,.08)}
+.code-box:active{transform:scale(.98)}
+.code-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:10px;position:relative;z-index:1}
+.code-num{font-family:'JetBrains Mono',monospace;font-size:2.9rem;font-weight:400;letter-spacing:.2em;color:var(--text);line-height:1;position:relative;z-index:1}
+.code-tap{font-size:.64rem;color:var(--muted2);margin-top:10px;position:relative;z-index:1}
+.code-copied-badge{position:absolute;top:10px;right:11px;background:rgba(0,224,199,.14);color:var(--accent);border-radius:20px;padding:3px 11px;font-size:.62rem;font-weight:700;opacity:0;transition:opacity .2s;z-index:2}
+.code-box.copied .code-copied-badge{opacity:1}
+/* ── TIMER ROW ───────────────────────────── */
+.timer-row{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:13px;margin-bottom:10px}
+.timer-ring-wrap{position:relative;width:42px;height:42px;flex-shrink:0}
+.timer-ring-wrap svg{transform:rotate(-90deg);display:block}
+.timer-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.76rem;font-weight:500}
+.timer-info{flex:1}
+.timer-main{font-size:.83rem;font-weight:600;letter-spacing:-.01em}
+.timer-sub{font-size:.66rem;color:var(--muted);margin-top:2px}
+/* ── META TABLE ──────────────────────────── */
+.meta-table{background:var(--card);border:1px solid var(--card-border);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.meta-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--card-border)}
+.meta-row:last-child{border-bottom:none}
+.meta-key{font-size:.7rem;color:var(--muted)}
+.meta-val{font-family:'JetBrains Mono',monospace;font-size:.76rem;font-weight:500}
+.del-btn{width:100%;background:rgba(255,61,90,.06);border:1px solid rgba(255,61,90,.18);color:var(--danger);border-radius:11px;padding:12px;text-align:center;cursor:pointer;font-weight:600;font-size:.8rem;transition:background .08s,border-color .08s,transform .08s;font-family:'Bricolage Grotesque',sans-serif;touch-action:manipulation}
+.del-btn:hover{background:rgba(255,61,90,.12);border-color:rgba(255,61,90,.32)}
+.del-btn:active{transform:scale(.97)}
+/* ── CREDENTIALS PANEL ───────────────────── */
+.creds-detail-block{background:rgba(0,224,199,.025);border:1px solid rgba(0,224,199,.1);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.creds-detail-hdr{padding:10px 14px;font-size:.62rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.13em;border-bottom:1px solid rgba(0,224,199,.1);display:flex;align-items:center;gap:6px}
+.creds-detail-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--card-border)}
+.creds-detail-row:last-child{border-bottom:none}
+.cred-key{font-size:.68rem;color:var(--muted)}
+.cred-val-wrap{display:flex;align-items:center;gap:8px}
+.cred-val{font-family:'JetBrains Mono',monospace;font-size:.76rem;font-weight:500;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cred-copy-btn{background:rgba(255,255,255,.055);border:1px solid var(--card-border);border-radius:6px;padding:3px 9px;font-size:.62rem;font-weight:700;color:var(--muted);cursor:pointer;transition:background .08s,border-color .08s,color .08s;font-family:'Bricolage Grotesque',sans-serif;white-space:nowrap}
+.cred-copy-btn:hover{background:rgba(0,224,199,.1);border-color:rgba(0,224,199,.22);color:var(--accent)}
+.cred-eye-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:3px;transition:color .08s}
+.cred-eye-btn:hover{color:var(--text)}
+/* ── EDIT BTN ────────────────────────────── */
+.edit-btn{margin-left:auto;background:rgba(0,224,199,.09);border:1px solid rgba(0,224,199,.18);color:var(--accent);border-radius:9px;padding:6px 13px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;transition:background .08s,transform .08s;letter-spacing:.02em;white-space:nowrap;touch-action:manipulation}
+.edit-btn:hover{background:rgba(0,224,199,.16);border-color:rgba(0,224,199,.32)}
+.edit-btn:active{transform:scale(.92)}
+/* ── TOAST ───────────────────────────────── */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);background:rgba(14,18,25,.96);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.09);color:var(--text);padding:9px 22px;border-radius:50px;font-size:.76rem;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .12s,transform .12s;pointer-events:none;z-index:99999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── NOTE ────────────────────────────────── */
+.form-textarea{background:var(--card);border:1px solid var(--card-border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Bricolage Grotesque',sans-serif;font-size:.82rem;outline:none;transition:border-color .08s;width:100%;resize:none;min-height:76px;line-height:1.6}
+.form-textarea:focus{border-color:rgba(0,224,199,.38)}
+.form-textarea::placeholder{color:var(--muted2)}
+.note-block{background:rgba(255,255,255,.025);border:1px solid var(--card-border);border-radius:11px;padding:12px 14px;margin-bottom:12px;position:relative}
+.note-block-hdr{font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.note-edit-btn{background:none;border:none;color:var(--muted);font-size:.65rem;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;padding:0;transition:color .08s;font-weight:700;letter-spacing:.04em}
+.note-edit-btn:hover{color:var(--accent)}
+.note-display{font-size:.79rem;color:var(--text);line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.note-inline-area{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Bricolage Grotesque',sans-serif;font-size:.79rem;line-height:1.65;resize:none;min-height:56px}
+.note-inline-area::placeholder{color:var(--muted2)}
+.note-inline-save{margin-top:7px;display:flex;gap:6px;justify-content:flex-end}
+.note-save-btn{background:rgba(0,224,199,.1);border:1px solid rgba(0,224,199,.22);color:var(--accent);border-radius:7px;padding:4px 12px;font-size:.66rem;font-weight:700;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;transition:background .08s;touch-action:manipulation}
+.note-save-btn:hover{background:rgba(0,224,199,.2)}
+.note-cancel-btn{background:var(--card);border:1px solid var(--card-border);color:var(--muted);border-radius:7px;padding:4px 10px;font-size:.66rem;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;transition:background .08s,color .08s;touch-action:manipulation}
+.note-cancel-btn:hover{color:var(--text)}
+/* ── TOS MODAL ───────────────────────────── */
+#tos-overlay{position:fixed;inset:0;z-index:99990;background:rgba(4,6,10,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:flex-end;justify-content:center;padding:0;animation:fadeIn .12s ease both}
+@media(min-width:560px){#tos-overlay{align-items:center;padding:20px}}
+#tos-modal{width:100%;max-width:460px;background:var(--panel);border:1px solid rgba(255,255,255,.09);border-radius:20px 20px 0 0;padding:0 0 env(safe-area-inset-bottom);display:flex;flex-direction:column;max-height:92dvh;animation:tosSlideUp .18s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+@media(min-width:560px){#tos-modal{border-radius:18px;max-height:88dvh}}
+@keyframes tosSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.tos-handle{width:32px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;margin:10px auto 0;flex-shrink:0}
+.tos-head{padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--card-border)}
+.tos-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,224,199,.09);border:1px solid rgba(0,224,199,.18);border-radius:20px;padding:3px 11px;font-size:.6rem;font-weight:700;color:var(--accent);letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px}
+.tos-title{font-size:1.2rem;font-weight:800;line-height:1.15;margin-bottom:3px;letter-spacing:-.025em}
+.tos-sub{font-size:.73rem;color:var(--muted);line-height:1.5}
+.tos-scroll{flex:1;overflow-y:scroll;padding:16px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tos-scroll::-webkit-scrollbar{display:none}
+.tos-section{margin-bottom:16px}
+.tos-section:last-child{margin-bottom:0}
+.tos-section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.tos-section-title::after{content:'';flex:1;height:1px;background:rgba(0,224,199,.12)}
+.tos-text{font-size:.76rem;color:var(--muted);line-height:1.7}
+.tos-text strong{color:var(--text);font-weight:600}
+.tos-foot{padding:12px 20px;flex-shrink:0;border-top:1px solid var(--card-border);display:flex;flex-direction:column;gap:9px}
+.tos-checks{display:flex;flex-direction:column;gap:7px}
+.tos-check{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+.tos-check input{appearance:none;-webkit-appearance:none;width:17px;height:17px;border-radius:5px;border:1.5px solid rgba(255,255,255,.2);background:var(--card);flex-shrink:0;margin-top:1px;cursor:pointer;transition:background .08s,border-color .08s;position:relative;touch-action:manipulation}
+.tos-check input:checked{background:var(--accent);border-color:var(--accent)}
+.tos-check input:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000;line-height:1}
+.tos-check-label{font-size:.72rem;color:var(--muted);line-height:1.5;user-select:none}
+.tos-check-label a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.tos-accept{width:100%;background:linear-gradient(135deg,var(--accent),#00b8a0);color:#000;font-weight:800;font-size:.86rem;padding:11px;border-radius:11px;border:none;font-family:'Bricolage Grotesque',sans-serif;cursor:pointer;transition:transform .08s,box-shadow .08s,opacity .1s;opacity:.35;pointer-events:none;touch-action:manipulation}
+.tos-accept.ready{opacity:1;pointer-events:auto}
+.tos-accept.ready:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,224,199,.32)}
+.tos-accept.ready:active{transform:scale(.96)}
+.tos-decline{text-align:center;font-size:.66rem;color:var(--muted2);cursor:pointer;padding:2px}
+.tos-decline:hover{color:var(--muted)}
+/* ── KEYFRAMES ───────────────────────────── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes popIn{0%{opacity:0;transform:scale(.86) translateY(8px)}70%{transform:scale(1.02)}100%{opacity:1;transform:none}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes codeFlip{0%{opacity:1;transform:translateY(0) scaleY(1)}35%{opacity:0;transform:translateY(-5px) scaleY(.7)}65%{opacity:0;transform:translateY(5px) scaleY(.7)}100%{opacity:1;transform:translateY(0) scaleY(1)}}
+@keyframes rippleOut{0%{transform:scale(0);opacity:.4}100%{transform:scale(2.8);opacity:0}}
+@keyframes statPop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+/* ── CARD ENTRANCE ───────────────────────── */
+.acct-card[data-animated]{animation:fadeUp .18s cubic-bezier(.22,1,.36,1) both}
+/* ── WELCOME STAGGER ─────────────────────── */
+#rp-welcome.rp-active .welcome-shield{animation:popIn .26s cubic-bezier(.22,1,.36,1) .01s both}
+#rp-welcome.rp-active .welcome-title{animation:slideInUp .24s cubic-bezier(.22,1,.36,1) .05s both}
+#rp-welcome.rp-active .welcome-body{animation:slideInUp .24s cubic-bezier(.22,1,.36,1) .08s both}
+#rp-welcome.rp-active .welcome-pills{animation:slideInUp .24s cubic-bezier(.22,1,.36,1) .11s both}
+#rp-welcome.rp-active .welcome-cta{animation:popIn .24s cubic-bezier(.22,1,.36,1) .14s both}
+/* ── DETAIL STAGGER ──────────────────────── */
+#rp-detail.rp-active .detail-hero{animation:slideInRight .18s cubic-bezier(.22,1,.36,1) .01s both}
+#rp-detail.rp-active .code-box{animation:popIn .2s cubic-bezier(.22,1,.36,1) .04s both}
+#rp-detail.rp-active .timer-row{animation:slideInUp .18s cubic-bezier(.22,1,.36,1) .07s both}
+#rp-detail.rp-active .creds-detail-block{animation:slideInUp .18s cubic-bezier(.22,1,.36,1) .09s both}
+#rp-detail.rp-active .meta-table{animation:slideInUp .18s cubic-bezier(.22,1,.36,1) .11s both}
+#rp-detail.rp-active .del-btn{animation:fadeIn .16s ease .13s both}
+/* ── ADD FORM STAGGER ────────────────────── */
+#rp-add.rp-active .form-group,
+#rp-add.rp-active .form-row,
+#rp-add.rp-active .divider,
+#rp-add.rp-active .submit-btn{animation:slideInUp .18s cubic-bezier(.22,1,.36,1) both}
+#rp-add.rp-active .form-group:nth-child(1){animation-delay:.02s}
+#rp-add.rp-active .form-group:nth-child(2){animation-delay:.04s}
+#rp-add.rp-active .form-group:nth-child(3){animation-delay:.06s}
+#rp-add.rp-active .form-group:nth-child(4){animation-delay:.08s}
+#rp-add.rp-active .form-row{animation-delay:.10s}
+#rp-add.rp-active .form-group:nth-last-child(2){animation-delay:.12s}
+#rp-add.rp-active .divider{animation-delay:.13s}
+#rp-add.rp-active .submit-btn{animation-delay:.15s}
+/* ── STAT POP ────────────────────────────── */
+.stat-val.popping{animation:statPop .15s cubic-bezier(.22,1,.36,1)}
+/* ── CODE REFRESH ────────────────────────── */
+.code-num.refreshing{animation:codeFlip .3s ease both}
+/* ── ACTIVE CARD GLOW ────────────────────── */
+.acct-card.copied{box-shadow:0 0 0 1px rgba(0,224,199,.28)}
+/* ── SETTINGS SCREEN ─────────────────────── */
+#rp-settings .rp-body{flex:1;overflow-y:scroll;scrollbar-width:none;padding:22px 18px 40px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y}
+#rp-settings .rp-body::-webkit-scrollbar{display:none}
+.settings-body .tos-section{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:14px 15px;margin-bottom:10px}
+.settings-body .tos-section-title{font-size:.62rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:7px}
+.settings-body .tos-text{font-size:.78rem;color:var(--muted);line-height:1.7}
+.settings-body .tos-text strong{color:var(--text);font-weight:600}
+.settings-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(0,224,199,.1),rgba(124,68,248,.1));border:1px solid rgba(0,224,199,.18);border-radius:50px;padding:6px 14px;font-size:.68rem;font-weight:700;letter-spacing:.06em;color:var(--accent);margin-bottom:8px}
+.settings-tagline{font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.settings-footer{text-align:center;font-size:.62rem;color:var(--muted2);margin-top:20px;padding-top:16px;border-top:1px solid var(--card-border);letter-spacing:.04em}
+</style>
+</head>
+<body>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<!-- ════════ TOS MODAL ════════ -->
+<div id="tos-overlay" style="display:none">
+  <div id="tos-modal" role="dialog" aria-modal="true" aria-labelledby="tos-heading">
+    <div class="tos-handle"></div>
+    <div class="tos-head">
+      <div class="tos-badge">🔐 Before you begin</div>
+      <div class="tos-title" id="tos-heading">Terms &amp; Privacy</div>
+      <div class="tos-sub">Please read and accept before using VAULT.</div>
+    </div>
+    <div class="tos-scroll">
+      <div class="tos-section">
+        <div class="tos-section-title">How it works</div>
+        <div class="tos-text">VAULT generates one-time passwords (TOTP) <strong>entirely on your device</strong>. Your secret keys and credentials are stored only in your browser's local storage. <strong>Nothing is ever transmitted to any server</strong> — we have no backend, no accounts, no cloud sync.</div>
+      </div>
+      <div class="tos-section">
+        <div class="tos-section-title">Your responsibility</div>
+        <div class="tos-text">You are solely responsible for safeguarding your secret keys. If you clear your browser data or uninstall the app, your 2FA secrets will be <strong>permanently lost</strong> unless you have backed them up. Always keep your original backup codes from each service.</div>
+      </div>
+      <div class="tos-section">
+        <div class="tos-section-title">No warranties</div>
+        <div class="tos-text">VAULT is provided <strong>"as is"</strong> without any warranty. We are not liable for account lockouts, data loss, or security incidents resulting from use of this app. Use at your own risk and always maintain backup recovery methods for every account you add.</div>
+      </div>
+      <div class="tos-section">
+        <div class="tos-section-title">Privacy</div>
+        <div class="tos-text">We collect <strong>zero personal data</strong>. No analytics, no tracking, no cookies beyond local storage. Your secrets never leave your device. This app works fully offline after first load.</div>
+      </div>
+      <div class="tos-section">
+        <div class="tos-section-title">Acceptable use</div>
+        <div class="tos-text">You agree to use VAULT only for lawful purposes and only with 2FA secrets you are <strong>authorised to use</strong>. Do not use this app to access accounts that do not belong to you.</div>
+      </div>
+    </div>
+    <div class="tos-foot">
+      <div class="tos-checks">
+        <label class="tos-check">
+          <input type="checkbox" id="tos-chk1" onchange="tosCheck()">
+          <span class="tos-check-label">I have read and agree to the <a href="#" onclick="return false">Terms of Service</a> and understand that all data is stored locally on my device.</span>
+        </label>
+        <label class="tos-check">
+          <input type="checkbox" id="tos-chk2" onchange="tosCheck()">
+          <span class="tos-check-label">I agree to the <a href="#" onclick="return false">Privacy Policy</a> and acknowledge that VAULT collects no personal data.</span>
+        </label>
+      </div>
+      <button class="tos-accept" id="tos-accept-btn" onclick="acceptTOS()">Continue to VAULT →</button>
+      <div class="tos-decline" onclick="declineTOS()">Decline &amp; exit</div>
+    </div>
+  </div>
+</div>
+<div id="layout">
+  <!-- ════════ SIDEBAR ════════ -->
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-logo">🔐</div>
+        <div>
+          <div class="brand-name">VAULT</div>
+          <div class="brand-tagline">2FA Authenticator</div>
+        </div>
+      </div>
+      <div class="hdr-actions">
+        <div class="icon-btn" onclick="openSettings()" title="Settings">⚙️</div>
+        <div class="icon-btn" onclick="openAdd()" title="Add account">＋</div>
+      </div>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-cell">
+        <div class="stat-val" id="stat-count">0</div>
+        <div class="stat-lbl">Accounts</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val" id="stat-timer" style="color:var(--accent3)">30</div>
+        <div class="stat-lbl">Next refresh</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-val" style="color:var(--accent3)">🔒</div>
+        <div class="stat-lbl">Local only</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input class="search-input" type="text" placeholder="Search accounts…" id="search-input" oninput="renderList()">
+    </div>
+    <div class="acct-list" id="acct-list">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">🛡️</div>
+        <div class="empty-title">No accounts yet</div>
+        <div class="empty-body">Add your first 2FA account by tapping + and entering your secret key.</div>
+      </div>
+    </div>
+    <button class="fab" onclick="openAdd()"><span>＋</span> Add Account</button>
+  </div>
+  <!-- ════════ RIGHT PANEL ════════ -->
+  <div id="right-panel">
+    <!-- Welcome -->
+    <div class="rp-screen rp-active" id="rp-welcome">
+      <div class="welcome-shield">🛡️</div>
+      <div class="welcome-title">VAULT<span>.</span></div>
+      <div class="welcome-body">Your ultra-secure two-factor authentication manager. All codes are generated locally — nothing ever leaves your device.</div>
+      <div class="welcome-pills">
+        <div class="pill"><div class="dot"></div>TOTP · RFC 6238</div>
+        <div class="pill"><div class="dot" style="background:var(--accent)"></div>100% Local</div>
+        <div class="pill"><div class="dot" style="background:var(--accent2)"></div>Login Storage</div>
+      </div>
+      <button class="welcome-cta" onclick="openAdd()">＋ Add First Account</button>
+    </div>
+    <!-- Add / Edit Account -->
+    <div class="rp-screen" id="rp-add">
+      <div class="rp-header">
+        <div class="back-btn" onclick="closeRight()">←</div>
+        <div>
+          <div class="rp-title" id="add-title">Add Account</div>
+          <div class="rp-sub" id="add-sub">Enter your 2FA secret key manually</div>
+        </div>
+      </div>
+      <div class="rp-body">
+        <div class="form-group">
+          <div class="form-label">Service / Issuer</div>
+          <input class="form-input" id="f-issuer" type="text" placeholder="e.g. Google, GitHub, AWS…">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Account / Email</div>
+          <input class="form-input" id="f-account" type="text" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Password <span style="color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+          <div class="pw-wrap">
+            <input class="form-input" id="f-cred-pass" type="password" placeholder="Your password">
+            <button class="pw-eye" type="button" onclick="toggleAddPw(this)" tabindex="-1">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Secret Key (2FA)</div>
+          <input class="form-input mono" id="f-secret" type="text" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Algorithm</div>
+            <select class="form-input" id="f-algo">
+              <option value="SHA1">SHA-1</option>
+              <option value="SHA256">SHA-256</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Digits</div>
+            <select class="form-input" id="f-digits">
+              <option value="6">6 digits</option>
+              <option value="8">8 digits</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Period</div>
+            <select class="form-input" id="f-period">
+              <option value="30">30 sec</option>
+              <option value="60">60 sec</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Accent Color</div>
+          <div class="color-row" id="color-row">
+            <div class="color-swatch sel" style="background:linear-gradient(135deg,#00d4ff,#009fcc)" data-color="#00d4ff" onclick="pickColor(this)"><span>✓</span></div>
+            <div class="color-swatch" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)" data-color="#7c3aed" onclick="pickColor(this)"><span>✓</span></div>
+            <div class="color-swatch" style="background:linear-gradient(135deg,#06ffa5,#059669)" data-color="#06ffa5" onclick="pickColor(this)"><span>✓</span></div>
+            <div class="color-swatch" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24)" data-color="#ff6b6b" onclick="pickColor(this)"><span>✓</span></div>
+            <div class="color-swatch" style="background:linear-gradient(135deg,#ffd32a,#f39801)" data-color="#ffd32a" onclick="pickColor(this)"><span>✓</span></div>
+            <div class="color-swatch" style="background:linear-gradient(135deg,#ff9ff3,#f368e0)" data-color="#ff9ff3" onclick="pickColor(this)"><span>✓</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Note <span style="color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></div>
+          <textarea class="form-textarea" id="f-note" placeholder="Recovery codes, backup info, reminders…" rows="3"></textarea>
+        </div>
+        <hr class="divider">
+        <div class="lock-section">
+          <div class="lock-toggle-row">
+            <div class="lock-toggle-info">
+              <div class="lock-toggle-title">🔒 Password Protection</div>
+              <div class="lock-toggle-sub">Require a password to view this account's details</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="f-lock-enabled" onchange="toggleLockInput()">
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="lock-pwd-wrap" id="lock-pwd-wrap">
+            <div class="pw-wrap" style="margin-top:0">
+              <input class="form-input mono" id="f-lock-pwd" type="password" placeholder="Enter alphanumeric password" autocomplete="new-password" maxlength="32" oninput="onLockPwdInput(this)">
+              <button class="pw-eye" type="button" onclick="toggleLockPwdVis(this)" tabindex="-1">👁</button>
+            </div>
+            <div class="lock-pwd-strength"><div class="lock-pwd-strength-bar" id="lock-strength-bar"></div></div>
+            <div class="lock-pwd-hint" id="lock-pwd-hint">Alphanumeric only (a–z, A–Z, 0–9). Min 4 characters.</div>
+          </div>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="submitForm()">Add Account →</button>
+      </div>
+    </div>
+    <!-- Detail -->
+    <div class="rp-screen" id="rp-detail">
+      <div class="rp-header">
+        <div class="back-btn" onclick="closeRight()">←</div>
+        <div style="flex:1;min-width:0">
+          <div class="rp-title">Account Details</div>
+          <div class="rp-sub">Tap the code to copy</div>
+        </div>
+        <button class="edit-btn" onclick="openEdit(activeId)">✏️ Edit</button>
+        <div class="icon-btn detail-add-btn" onclick="openAdd()" title="Add account">＋</div>
+        <div class="icon-btn detail-settings-btn" onclick="openSettings()" title="Settings">⚙️</div>
+      </div>
+      <div class="rp-body" id="detail-body"></div>
+    </div>
+    <!-- Settings -->
+    <div class="rp-screen" id="rp-settings">
+      <div class="rp-header">
+        <div class="back-btn" onclick="closeRight()">←</div>
+        <div>
+          <div class="rp-title">Settings</div>
+          <div class="rp-sub">Terms &amp; Privacy Policy</div>
+        </div>
+      </div>
+      <div class="rp-body settings-body">
+        <div class="settings-badge">🔐 VAULT</div>
+        <div class="settings-tagline">Everything stays on your device — always.</div>
+        <div class="tos-section">
+          <div class="tos-section-title">How it works</div>
+          <div class="tos-text">VAULT generates one-time passwords (TOTP) <strong>entirely on your device</strong>. Your secret keys and credentials are stored only in your browser's local storage. <strong>Nothing is ever transmitted to any server</strong> — we have no backend, no accounts, no cloud sync.</div>
+        </div>
+        <div class="tos-section">
+          <div class="tos-section-title">Your responsibility</div>
+          <div class="tos-text">You are solely responsible for safeguarding your secret keys. If you clear your browser data or uninstall the app, your 2FA secrets will be <strong>permanently lost</strong> unless you have backed them up. Always keep your original backup codes from each service.</div>
+        </div>
+        <div class="tos-section">
+          <div class="tos-section-title">No warranties</div>
+          <div class="tos-text">VAULT is provided <strong>"as is"</strong> without any warranty. We are not liable for account lockouts, data loss, or security incidents resulting from use of this app. Use at your own risk and always maintain backup recovery methods for every account you add.</div>
+        </div>
+        <div class="tos-section">
+          <div class="tos-section-title">Privacy</div>
+          <div class="tos-text">We collect <strong>zero personal data</strong>. No analytics, no tracking, no cookies beyond local storage. Your secrets never leave your device. This app works fully offline after first load.</div>
+        </div>
+        <div class="tos-section">
+          <div class="tos-section-title">Acceptable use</div>
+          <div class="tos-text">You agree to use VAULT only for lawful purposes and only with 2FA secrets you are <strong>authorised to use</strong>. Do not use this app to access accounts that do not belong to you.</div>
+        </div>
+        <div class="settings-footer">Made with 🔒 — 100% local, zero tracking</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+// ── TOTP ─────────────────────────────────
+async function generateTOTP(secret, period=30, digits=6) {
+  try {
+    const key = base32Decode(secret.replace(/\s/g,'').toUpperCase());
+    const counter = Math.floor(Date.now()/1000/period);
+    const T = new ArrayBuffer(8);
+    new DataView(T).setUint32(4, counter, false);
+    const k = await crypto.subtle.importKey('raw', key, {name:'HMAC',hash:'SHA-1'}, false, ['sign']);
+    const sig = new Uint8Array(await crypto.subtle.sign('HMAC', k, T));
+    const off = sig[19] & 0xf;
+    const code = (((sig[off]&0x7f)<<24)|((sig[off+1]&0xff)<<16)|((sig[off+2]&0xff)<<8)|(sig[off+3]&0xff)) % 10**digits;
+    return String(code).padStart(digits,'0');
+  } catch { return '------'; }
+}
+function base32Decode(s) {
+  const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits=0,val=0; const out=[];
+  for(const c of s){const i=A.indexOf(c);if(i<0)continue;val=(val<<5)|i;bits+=5;if(bits>=8){out.push((val>>>(bits-8))&255);bits-=8;}}
+  return new Uint8Array(out).buffer;
+}
+function fmtCode(c){const m=Math.ceil(c.length/2);return c.slice(0,m)+' '+c.slice(m);}
+// ── STATE ─────────────────────────────────
+let accounts = JSON.parse(localStorage.getItem('vault_accts')||'[]');
+let activeId = null;
+let editingId = null;
+let selectedColor = '#00d4ff';
+function save(){localStorage.setItem('vault_accts',JSON.stringify(accounts));}
+// ── PANEL NAV ─────────────────────────────
+function showRP(id) {
+  document.querySelectorAll('.rp-screen').forEach(s=>s.classList.remove('rp-active'));
+  document.getElementById(id).classList.add('rp-active');
+  if(window.innerWidth<900) document.getElementById('right-panel').classList.add('open');
+}
+function closeRight() {
+  if(window.innerWidth<900){
+    document.getElementById('right-panel').classList.remove('open');
+    return;
+  }
+  showRP(activeId?'rp-detail':'rp-welcome');
+}
+function openAdd() {
+  editingId=null; activeId=null;
+  document.getElementById('rp-lock-screen')?.remove();
+  document.querySelectorAll('.acct-card').forEach(c=>c.classList.remove('active-card'));
+  resetForm();
+  document.getElementById('add-title').textContent='Add Account';
+  document.getElementById('add-sub').textContent='Enter your 2FA secret key manually';
+  document.getElementById('submit-btn').textContent='Add Account →';
+  showRP('rp-add');
+}
+function openSettings() {
+  document.getElementById('rp-lock-screen')?.remove();
+  showRP('rp-settings');
+}
+function openEdit(id) {
+  const acc=accounts.find(a=>a.id===id); if(!acc)return;
+  editingId=id;
+  resetForm();
+  document.getElementById('f-issuer').value=acc.issuer||'';
+  document.getElementById('f-account').value=acc.account||'';
+  document.getElementById('f-cred-pass').value=acc.credPass||'';
+  document.getElementById('f-secret').value=acc.secret||'';
+  document.getElementById('f-algo').value=acc.algorithm||'SHA1';
+  document.getElementById('f-digits').value=acc.digits||6;
+  document.getElementById('f-period').value=acc.period||30;
+  const fn=document.getElementById('f-note'); if(fn)fn.value=acc.note||'';
+  // lock
+  const lockChk=document.getElementById('f-lock-enabled');
+  const lockWrap=document.getElementById('lock-pwd-wrap');
+  const lockHint=document.getElementById('lock-pwd-hint');
+  if(lockChk){ lockChk.checked=!!acc.lockHash; }
+  if(lockWrap){ lockWrap.classList.toggle('visible',!!acc.lockHash); }
+  if(document.getElementById('f-lock-pwd')) document.getElementById('f-lock-pwd').value='';
+  const bar=document.getElementById('lock-strength-bar'); if(bar){bar.style.width='0%';}
+  if(lockHint) lockHint.textContent=acc.lockHash?'Leave blank to keep existing password. Enter new to change it.':'Alphanumeric only (a–z, A–Z, 0–9). Min 4 characters.';
+  // set color
+  selectedColor=acc.color||'#00d4ff';
+  document.querySelectorAll('.color-swatch').forEach(s=>{
+    s.classList.toggle('sel', s.dataset.color===selectedColor);
+    s.querySelector('span').style.opacity=s.dataset.color===selectedColor?'1':'0';
+  });
+  document.getElementById('add-title').textContent='Edit Account';
+  document.getElementById('add-sub').textContent='Update your account details';
+  document.getElementById('submit-btn').textContent='Save Changes →';
+  showRP('rp-add');
+}
+function resetForm() {
+  ['f-issuer','f-account','f-secret','f-cred-pass','f-note'].forEach(id=>{
+    const el=document.getElementById(id); if(el)el.value='';
+  });
+  const pp=document.getElementById('f-cred-pass'); if(pp)pp.type='password';
+  const lc=document.getElementById('f-lock-enabled'); if(lc)lc.checked=false;
+  const lw=document.getElementById('lock-pwd-wrap'); if(lw)lw.classList.remove('visible');
+  const li=document.getElementById('f-lock-pwd'); if(li)li.value='';
+  const lb=document.getElementById('lock-strength-bar'); if(lb)lb.style.width='0%';
+  const lh=document.getElementById('lock-pwd-hint'); if(lh)lh.textContent='Alphanumeric only (a–z, A–Z, 0–9). Min 4 characters.';
+  // reset color to default
+  selectedColor='#00d4ff';
+  document.querySelectorAll('.color-swatch').forEach(s=>{
+    const isDefault=s.dataset.color==='#00d4ff';
+    s.classList.toggle('sel',isDefault);
+    s.querySelector('span').style.opacity=isDefault?'1':'0';
+  });
+}
+function openDetail(id) {
+  activeId=id; detailBuilt=null;
+  document.querySelectorAll('.acct-card').forEach(c=>c.classList.toggle('active-card',c.dataset.id===id));
+  const acc = accounts.find(a=>a.id===id);
+  if(acc && acc.lockHash && !unlockedAccounts.has(id)) {
+    showLockScreen(id);
+    return;
+  }
+  renderDetail(true); showRP('rp-detail');
+}
+function toggleAddPw(btn) {
+  const inp=document.getElementById('f-cred-pass');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+// ── LIST ──────────────────────────────────
+async function renderList(forceRebuild=false) {
+  const list = document.getElementById('acct-list');
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const filtered = accounts.filter(a=>a.issuer.toLowerCase().includes(query)||a.account.toLowerCase().includes(query));
+  document.getElementById('stat-count').textContent = accounts.length;
+  const empty = document.getElementById('empty-state');
+  empty.style.display = filtered.length?'none':'flex';
+  // Remove cards that no longer belong
+  const filteredIds = new Set(filtered.map(a=>a.id));
+  [...list.querySelectorAll('.acct-card')].forEach(c=>{
+    if(!filteredIds.has(c.dataset.id)) c.remove();
+  });
+  for(let i=0;i<filtered.length;i++){
+    const acc=filtered[i];
+    const code=await getCachedTOTP(acc);
+    const period=acc.period||30;
+    const now=Math.floor(Date.now()/1000);
+    const rem=period-(now%period);
+    const pct=rem/period;
+    const r=17,circ=2*Math.PI*r;
+    const ringColor=pct>.66?'var(--accent3)':pct>.33?'var(--accent)':'var(--danger)';
+    const initials=acc.issuer.slice(0,2).toUpperCase();
+    const hasCreds=!!(acc.credUser||acc.credPass);
+    let card=document.getElementById('card-'+acc.id);
+    if(!card || forceRebuild){
+      // Build full card HTML only when new or forced
+      if(card) card.remove();
+      card=document.createElement('div');
+      card.className='acct-card';
+      card.id='card-'+acc.id;
+      card.dataset.id=acc.id;
+      card.dataset.animated='1';
+      card.style.animationDelay=i*18+'ms';
+      card.addEventListener('animationend',()=>{ delete card.dataset.animated; card.style.animationDelay=''; },{once:true});
+      card.addEventListener('touchstart',()=>{},{passive:true}); // instant :active on iOS
+      card.onclick=()=>{copyCode(acc.id);openDetail(acc.id);};
+      card.innerHTML=`
+        <div class="card-top">
+          <div class="card-av" style="background:${acc.color}22;color:${acc.color}">${initials}</div>
+          <div class="card-meta">
+            <div class="card-issuer">${esc(acc.issuer)}</div>
+            <div class="card-account">${esc(acc.account)}</div>
+          </div>
+          ${acc.note?'<div class="card-note-dot" title="Has note"></div>':''}
+          ${acc.lockHash?'<div class="card-lock-icon" title="Password protected">🔒</div>':''}
+          <div class="card-chevron">›</div>
+        </div>
+        <div class="card-bottom">
+          <div class="card-code" data-code-el></div>
+          <div class="card-ring">
+            <svg width="36" height="36" viewBox="0 0 38 38">
+              <circle class="ring-bg" cx="19" cy="19" r="${r}"/>
+              <circle class="ring-fill" data-ring-fill cx="19" cy="19" r="${r}"
+                stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${(circ*(1-pct)).toFixed(2)}"/>
+            </svg>
+          </div>
+        </div>
+        ${hasCreds?'<div class="card-has-creds">🔑 creds saved</div>':''}
+        <div class="copy-flash"></div><div class="copy-badge">COPIED</div>`;
+      list.appendChild(card);
+    }
+    // Surgical updates every tick — no innerHTML replacement
+    card.classList.toggle('active-card', activeId===acc.id);
+    const codeEl=card.querySelector('[data-code-el]');
+    if(codeEl && codeEl.textContent!==fmtCode(code)) codeEl.textContent=fmtCode(code);
+    const ringFill=card.querySelector('[data-ring-fill]');
+    if(ringFill){
+      ringFill.setAttribute('stroke',ringColor);
+      ringFill.setAttribute('stroke-dashoffset',(circ*(1-pct)).toFixed(2));
+    }
+  }
+}
+async function copyCode(id) {
+  const acc=accounts.find(a=>a.id===id); if(!acc)return;
+  const code=await getCachedTOTP(acc);
+  try{await navigator.clipboard.writeText(code);}catch{}
+  toast('Code copied!');
+  const card=document.getElementById('card-'+id);
+  if(card){
+    card.classList.add('copied');
+    const rip=document.createElement('div');
+    rip.style.cssText='position:absolute;border-radius:50%;background:rgba(0,224,199,.16);width:80px;height:80px;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);pointer-events:none;animation:rippleOut .55s ease forwards';
+    card.appendChild(rip);
+    setTimeout(()=>{rip.remove();card.classList.remove('copied');},1600);
+  }
+}
+// ── DETAIL ────────────────────────────────
+let detailBuilt = null;
+async function renderDetail(forceRebuild=false) {
+  const acc=accounts.find(a=>a.id===activeId); if(!acc)return;
+  const code=await getCachedTOTP(acc);
+  const period=acc.period||30;
+  const now=Math.floor(Date.now()/1000);
+  const rem=period-(now%period);
+  const pct=rem/period;
+  const r=18,circ=2*Math.PI*r;
+  const ringColor=pct>.66?'var(--accent3)':pct>.33?'var(--accent)':'var(--danger)';
+  const body=document.getElementById('detail-body');
+  if(forceRebuild || detailBuilt!==acc.id){
+    detailBuilt=acc.id;
+    const initials=acc.issuer.slice(0,2).toUpperCase();
+    const hasCreds=!!(acc.credUser||acc.credPass);
+    let credsHtml='';
+    if(hasCreds){
+      credsHtml=`<div class="creds-detail-block">
+        <div class="creds-detail-hdr">🔑 Saved Credentials</div>
+        ${acc.credUser?`<div class="creds-detail-row">
+          <div class="cred-key">Username / Email</div>
+          <div class="cred-val-wrap">
+            <div class="cred-val" title="${esc(acc.credUser)}">${esc(acc.credUser)}</div>
+            <button class="cred-copy-btn" onclick="copyCred('${esc(acc.id)}','user')">Copy</button>
+          </div>
+        </div>`:''}
+        ${acc.credPass?`<div class="creds-detail-row">
+          <div class="cred-key">Password</div>
+          <div class="cred-val-wrap">
+            <div class="cred-val" id="pw-val-${esc(acc.id)}">••••••••</div>
+            <button class="cred-eye-btn" onclick="toggleDetailPw('${esc(acc.id)}')">👁</button>
+            <button class="cred-copy-btn" onclick="copyCred('${esc(acc.id)}','pass')">Copy</button>
+          </div>
+        </div>`:''}
+      </div>`;
+    }
+    body.innerHTML=`
+      <div class="detail-hero">
+        <div class="detail-av" style="background:${acc.color}22;color:${acc.color}">${initials}</div>
+        <div>
+          <div class="detail-issuer-lbl">${esc(acc.issuer)}</div>
+          <div class="detail-name">${esc(acc.account)}</div>
+          <div class="detail-acct">TOTP · ${acc.digits} digits · ${acc.period}s</div>
+        </div>
+      </div>
+      <div class="code-box" id="cbox" onclick="copyDetailCode()">
+        <div class="code-lbl">One-Time Password</div>
+        <div class="code-num" id="detail-code-num">${fmtCode(code)}</div>
+        <div class="code-tap">Tap to copy</div>
+        <div class="code-copied-badge">COPIED ✓</div>
+      </div>
+      <div class="timer-row">
+        <div class="timer-ring-wrap">
+          <svg width="42" height="42" viewBox="0 0 44 44">
+            <circle fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3" cx="22" cy="22" r="${r}"/>
+            <circle id="detail-ring" fill="none" stroke="${ringColor}" stroke-width="3" stroke-linecap="round"
+              cx="22" cy="22" r="${r}" stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${(circ*(1-pct)).toFixed(2)}"/>
+          </svg>
+          <div class="timer-center" id="detail-timer-num">${rem}</div>
+        </div>
+        <div class="timer-info">
+          <div class="timer-main">Refreshes in <strong id="detail-timer-strong">${rem}s</strong></div>
+          <div class="timer-sub">New code every ${period} seconds</div>
+        </div>
+      </div>
+      ${credsHtml}
+      ${acc.note ? `<div class="note-block" id="note-block-${acc.id}">
+        <div class="note-block-hdr">
+          <span>📝 Note</span>
+          <button class="note-edit-btn" onclick="startNoteEdit('${acc.id}')">Edit</button>
+        </div>
+        <div class="note-display" id="note-display-${acc.id}">${esc(acc.note)}</div>
+      </div>` : `<div class="note-block" id="note-block-${acc.id}" style="border-style:dashed;opacity:.6">
+        <div class="note-block-hdr">
+          <span>📝 Note</span>
+          <button class="note-edit-btn" onclick="startNoteEdit('${acc.id}')">+ Add note</button>
+        </div>
+        <div class="note-display" id="note-display-${acc.id}" style="color:var(--muted2);font-size:.74rem">Tap "Add note" to leave a reminder for this account.</div>
+      </div>`}
+      <div class="meta-table">
+        <div class="meta-row"><span class="meta-key">Algorithm</span><span class="meta-val">${acc.algorithm||'SHA1'}</span></div>
+        <div class="meta-row"><span class="meta-key">Digits</span><span class="meta-val">${acc.digits}</span></div>
+        <div class="meta-row"><span class="meta-key">Period</span><span class="meta-val">${acc.period}s</span></div>
+        <div class="meta-row"><span class="meta-key">Added</span><span class="meta-val">${new Date(acc.createdAt).toLocaleDateString()}</span></div>
+        <div class="meta-row"><span class="meta-key">Protection</span><span class="meta-val" style="color:${acc.lockHash?'var(--accent3)':'var(--muted)'}">${acc.lockHash?'🔒 Password set':'Disabled'}</span></div>
+      </div>
+      <div class="del-btn" onclick="deleteAccount('${acc.id}')">🗑 Remove Account</div>`;
+    return;
+  }
+  // Surgical updates
+  const cn=document.getElementById('detail-code-num');
+  if(cn && cn.textContent!==fmtCode(code)) cn.textContent=fmtCode(code);
+  const ring=document.getElementById('detail-ring');
+  if(ring){
+    ring.setAttribute('stroke',ringColor);
+    ring.setAttribute('stroke-dashoffset',(circ*(1-pct)).toFixed(2));
+  }
+  const tn=document.getElementById('detail-timer-num');
+  if(tn) tn.textContent=rem;
+  const ts=document.getElementById('detail-timer-strong');
+  if(ts) ts.textContent=rem+'s';
+}
+async function copyDetailCode() {
+  const acc=accounts.find(a=>a.id===activeId); if(!acc)return;
+  const code=await getCachedTOTP(acc);
+  try{await navigator.clipboard.writeText(code);}catch{}
+  toast('Code copied!');
+  const box=document.getElementById('cbox');
+  if(box){
+    box.classList.add('copied');
+    const cn=box.querySelector('.code-num');
+    if(cn){cn.classList.remove('refreshing');void cn.offsetWidth;cn.classList.add('refreshing');setTimeout(()=>cn.classList.remove('refreshing'),350);}
+    setTimeout(()=>box.classList.remove('copied'),1600);
+  }
+}
+function toggleDetailPw(id) {
+  const acc=accounts.find(a=>a.id===id); if(!acc||!acc.credPass)return;
+  const el=document.getElementById('pw-val-'+id); if(!el)return;
+  if(el.dataset.shown==='1'){el.textContent='••••••••';el.dataset.shown='0';}
+  else{el.textContent=acc.credPass;el.dataset.shown='1';}
+}
+async function copyCred(id,type) {
+  const acc=accounts.find(a=>a.id===id); if(!acc)return;
+  const val=type==='user'?acc.credUser:acc.credPass;
+  if(!val)return;
+  try{await navigator.clipboard.writeText(val);}catch{}
+  toast(type==='user'?'Username copied!':'Password copied!');
+}
+function deleteAccount(id) {
+  if(!confirm('Remove this account?'))return;
+  codeCache.delete(id);
+  accounts=accounts.filter(a=>a.id!==id);
+  save(); activeId=null; detailBuilt=null; renderList(true);
+  showRP('rp-welcome');
+  if(window.innerWidth<900)document.getElementById('right-panel').classList.remove('open');
+  toast('Account removed');
+}
+// ── ADD / EDIT ─────────────────────────────
+async function submitForm() {
+  const issuer=document.getElementById('f-issuer').value.trim();
+  const account=document.getElementById('f-account').value.trim();
+  const secret=document.getElementById('f-secret').value.trim().replace(/\s/g,'');
+  if(!issuer){toast('Enter a service name');return;}
+  if(!secret){toast('Enter the secret key');return;}
+  const credPass=document.getElementById('f-cred-pass').value;
+  const note=document.getElementById('f-note').value.trim();
+  const lockEnabled=document.getElementById('f-lock-enabled').checked;
+  const lockPwd=document.getElementById('f-lock-pwd').value;
+  if(lockEnabled && lockPwd && lockPwd.length < 4){toast('Password must be at least 4 characters');return;}
+  if(lockEnabled && lockPwd && /[^a-zA-Z0-9]/.test(lockPwd)){toast('Password must be alphanumeric only');return;}
+  let lockHash = null;
+  if(lockEnabled) {
+    if(lockPwd) {
+      lockHash = await hashPassword(lockPwd);
+    } else if(editingId) {
+      const existing = accounts.find(a=>a.id===editingId);
+      lockHash = existing?.lockHash || null;
+      if(!lockHash){toast('Enter a password to enable protection');return;}
+    } else {
+      toast('Enter a password to enable protection');return;
+    }
+  }
+  if(editingId) {
+    const idx=accounts.findIndex(a=>a.id===editingId);
+    if(idx===-1)return;
+    if(accounts[idx].lockHash !== lockHash) unlockedAccounts.delete(editingId);
+    accounts[idx]={
+      ...accounts[idx],
+      issuer, account:account||issuer, secret,
+      algorithm:document.getElementById('f-algo').value,
+      digits:+document.getElementById('f-digits').value,
+      period:+document.getElementById('f-period').value,
+      color:selectedColor,
+      credUser:account||'',
+      credPass:credPass||'',
+      note:note||'',
+      lockHash
+    };
+    codeCache.delete(editingId);
+    save(); renderList(true);
+    toast(`✓ ${issuer} updated`);
+    activeId=editingId; editingId=null; detailBuilt=null;
+    renderDetail(true); showRP('rp-detail');
+  } else {
+    addAccount({
+      issuer, account:account||issuer, secret,
+      algorithm:document.getElementById('f-algo').value,
+      digits:+document.getElementById('f-digits').value,
+      period:+document.getElementById('f-period').value,
+      color:selectedColor,
+      credUser:account||'',
+      credPass:credPass||'',
+      note:note||'',
+      lockHash
+    });
+  }
+}
+function addAccount(data) {
+  const acc={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),...data,createdAt:Date.now()};
+  accounts.push(acc); save(); renderList(true);
+  toast(`✓ ${acc.issuer} added`);
+  activeId=acc.id; resetForm(); openDetail(acc.id);
+}
+function pickColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel'); selectedColor=el.dataset.color;
+}
+// ── TOTP CODE CACHE ────────────────────────
+const codeCache = new Map();
+async function getCachedTOTP(acc) {
+  const now = Math.floor(Date.now() / 1000);
+  const periodStart = now - (now % (acc.period || 30));
+  const cached = codeCache.get(acc.id);
+  if (cached && cached.periodStart === periodStart) return cached.code;
+  const code = await generateTOTP(acc.secret, acc.period, acc.digits);
+  codeCache.set(acc.id, { code, periodStart });
+  return code;
+}
+// ── TICK ──────────────────────────────────
+let lastSec = -1;
+let tickPending = false;
+async function tick() {
+  tickPending = false;
+  const now = Math.floor(Date.now() / 1000);
+  const period = 30;
+  const newVal = period - (now % period);
+  const timerEl = document.getElementById('stat-timer');
+  if (timerEl && timerEl.textContent != String(newVal)) {
+    timerEl.textContent = newVal;
+    timerEl.classList.remove('popping');
+    void timerEl.offsetWidth;
+    timerEl.classList.add('popping');
+    setTimeout(() => timerEl.classList.remove('popping'), 300);
+  }
+  if (now !== lastSec) {
+    lastSec = now;
+    if (accounts.length > 0) renderList();
+    if (activeId && document.getElementById('rp-detail').classList.contains('rp-active')) {
+      if (now % 30 === 0) {
+        const cn = document.getElementById('detail-code-num');
+        if (cn) { cn.classList.remove('refreshing'); void cn.offsetWidth; cn.classList.add('refreshing'); setTimeout(() => cn.classList.remove('refreshing'), 350); }
+      }
+      renderDetail();
+    }
+  }
+}
+function scheduleNextTick() {
+  setTimeout(() => {
+    if (!tickPending) {
+      tickPending = true;
+      requestAnimationFrame(() => tick().finally(scheduleNextTick));
+    }
+  }, 200);
+}
+tick().finally(scheduleNextTick);
+function toast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// ── ACCOUNT LOCK ──────────────────────────
+const unlockedAccounts = new Set();
+async function hashPassword(pwd) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function filterAlphanumeric(input) {
+  input.value = input.value.replace(/[^a-zA-Z0-9]/g, '');
+}
+function onLockPwdInput(input) {
+  filterAlphanumeric(input);
+  const v = input.value;
+  const bar = document.getElementById('lock-strength-bar');
+  const hint = document.getElementById('lock-pwd-hint');
+  if(!bar) return;
+  const score = v.length < 4 ? 0 : v.length < 7 ? 1 : /[a-z]/.test(v) && /[A-Z]/.test(v) && /[0-9]/.test(v) ? 3 : 2;
+  const colors = ['var(--danger)','var(--danger)','var(--accent)','var(--accent3)'];
+  const widths = ['0%','33%','66%','100%'];
+  const labels = ['Too short (min 4 chars)','Weak — mix upper, lower & numbers','Good password','Strong password ✓'];
+  bar.style.width = v.length ? widths[score] : '0%';
+  bar.style.background = colors[score];
+  if(hint) hint.textContent = v.length ? labels[score] : 'Alphanumeric only (a–z, A–Z, 0–9). Min 4 characters.';
+}
+function toggleLockInput() {
+  const en = document.getElementById('f-lock-enabled').checked;
+  const wrap = document.getElementById('lock-pwd-wrap');
+  wrap.classList.toggle('visible', en);
+  if(!en){ const i=document.getElementById('f-lock-pwd'); i.value=''; onLockPwdInput(i); }
+  else setTimeout(()=>document.getElementById('f-lock-pwd').focus(), 80);
+}
+function toggleLockPwdVis(btn) {
+  const inp = document.getElementById('f-lock-pwd');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  btn.textContent = inp.type==='password' ? '👁' : '🙈';
+}
+function showLockScreen(id) {
+  const acc = accounts.find(a=>a.id===id); if(!acc) return;
+  document.getElementById('rp-lock-screen')?.remove();
+  const panel = document.getElementById('right-panel');
+  const div = document.createElement('div');
+  div.id = 'rp-lock-screen';
+  div.style.cssText = 'position:absolute;inset:0;z-index:20';
+  div.innerHTML = `
+    <div id="lock-screen">
+      <div class="lock-icon">🔒</div>
+      <div class="lock-title">${esc(acc.issuer)}</div>
+      <div class="lock-sub">This account is password protected.<br>Enter your password to view details.</div>
+      <div class="lock-input-row">
+        <input class="lock-input" id="lock-input-field" type="password" placeholder="Your password"
+          maxlength="32" autocomplete="off" oninput="filterAlphanumeric(this)"
+          onkeydown="if(event.key==='Enter')tryUnlock('${id}')">
+        <button class="lock-eye" onclick="toggleLockInputVis()">👁</button>
+      </div>
+      <div class="lock-err" id="lock-err"></div>
+      <button class="lock-unlock-btn" onclick="tryUnlock('${id}')">Unlock →</button>
+      <div class="lock-back" onclick="closeLockScreen()">← Back</div>
+    </div>`;
+  panel.appendChild(div);
+  if(window.innerWidth < 900) panel.classList.add('open');
+  setTimeout(()=>document.getElementById('lock-input-field')?.focus(), 120);
+}
+function toggleLockInputVis() {
+  const inp = document.getElementById('lock-input-field'); if(!inp) return;
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  const btn = inp.nextElementSibling;
+  if(btn) btn.textContent = inp.type==='password' ? '👁' : '🙈';
+}
+async function tryUnlock(id) {
+  const acc = accounts.find(a=>a.id===id); if(!acc) return;
+  const inp = document.getElementById('lock-input-field'); if(!inp) return;
+  if(!inp.value){ const e=document.getElementById('lock-err'); if(e)e.textContent='Enter your password'; return; }
+  const hash = await hashPassword(inp.value);
+  if(hash === acc.lockHash) {
+    unlockedAccounts.add(id);
+    document.getElementById('rp-lock-screen')?.remove();
+    detailBuilt = null;
+    renderDetail(true);
+    showRP('rp-detail');
+  } else {
+    inp.value = '';
+    inp.classList.remove('error'); void inp.offsetWidth; inp.classList.add('error');
+    const e = document.getElementById('lock-err');
+    if(e) e.textContent = 'Incorrect password — try again';
+    setTimeout(()=>{ inp.classList.remove('error'); if(e)e.textContent=''; }, 1400);
+    inp.focus();
+  }
+}
+function closeLockScreen() {
+  document.getElementById('rp-lock-screen')?.remove();
+  if(window.innerWidth < 900) document.getElementById('right-panel').classList.remove('open');
+}
+// ── NOTE INLINE EDIT ──────────────────────
+function startNoteEdit(id) {
+  const acc = accounts.find(a => a.id === id); if(!acc) return;
+  const block = document.getElementById('note-block-' + id);
+  const display = document.getElementById('note-display-' + id);
+  if(!block || !display) return;
+  block.style.opacity = '1';
+  block.style.borderStyle = 'solid';
+  const prev = acc.note || '';
+  display.innerHTML = `<textarea class="note-inline-area" id="note-area-${id}" placeholder="Recovery codes, backup info, reminders…" rows="4">${esc(prev)}</textarea>
+    <div class="note-inline-save">
+      <button class="note-cancel-btn" onclick="cancelNoteEdit('${id}')">Cancel</button>
+      <button class="note-save-btn" onclick="saveNote('${id}')">Save note</button>
+    </div>`;
+  const ta = document.getElementById('note-area-' + id);
+  if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  block.querySelector('.note-block-hdr').innerHTML = '<span>📝 Note</span>';
+}
+function saveNote(id) {
+  const acc = accounts.find(a => a.id === id); if(!acc) return;
+  const ta = document.getElementById('note-area-' + id);
+  const val = ta ? ta.value.trim() : '';
+  acc.note = val;
+  save();
+  detailBuilt = null;
+  renderDetail(true);
+  renderList(true);
+  toast(val ? '📝 Note saved' : 'Note cleared');
+}
+function cancelNoteEdit(id) {
+  detailBuilt = null;
+  renderDetail(true);
+}
+// ── TERMS OF SERVICE ──────────────────────
+function tosCheck() {
+  const ok = document.getElementById('tos-chk1').checked && document.getElementById('tos-chk2').checked;
+  document.getElementById('tos-accept-btn').classList.toggle('ready', ok);
+}
+function acceptTOS() {
+  localStorage.setItem('vault_tos','1');
+  const overlay = document.getElementById('tos-overlay');
+  overlay.style.transition = 'opacity .2s ease';
+  overlay.style.opacity = '0';
+  setTimeout(() => overlay.remove(), 220);
+}
+function declineTOS() {
+  const modal = document.getElementById('tos-modal');
+  modal.innerHTML = `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:48px 28px;text-align:center">
+    <div style="font-size:2.2rem">🔒</div>
+    <div style="font-size:.98rem;font-weight:700">Access Denied</div>
+    <div style="font-size:.76rem;color:var(--muted);line-height:1.65;max-width:280px">You must accept the Terms &amp; Privacy Policy to use VAULT. You may close this tab.</div>
+  </div>`;
+}
+if (!localStorage.getItem('vault_tos')) {
+  document.getElementById('tos-overlay').style.display = 'flex';
+}
+renderList(true);
+</script>
+</body>
+</html>
