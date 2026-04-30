@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>VerifyID — Issuer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#07090e;
+  --s1:#0d1117;--s2:#131720;--s3:#191e2a;--s4:#1f2535;
+  --b1:#1e2540;--b2:#263050;--b3:#2e3a60;
+  --violet:#7c6af7;--violet2:#6655e0;--violet3:rgba(124,106,247,.1);--violet4:rgba(124,106,247,.22);
+  --emerald:#00c896;--emerald2:rgba(0,200,150,.1);
+  --amber:#ffb030;--amber2:rgba(255,176,48,.1);
+  --red:#ff4d6a;--teal:#00d4aa;
+  --t1:#e8edf8;--t2:#8892b0;--t3:#4a5270;
+  --mono:'Space Mono',monospace;--sans:'Inter',sans-serif;
+  --r:12px;--rl:18px;--rxl:24px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --nav-h:68px;--hdr-h:60px;
+  --shadow:0 8px 32px rgba(0,0,0,.45);
+  --glow:0 0 24px rgba(124,106,247,.22);
+}
+html{height:100%;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);min-height:100%;display:flex;flex-direction:column;padding-bottom:calc(var(--nav-h) + var(--safe-bottom));-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* HEADER */
+.app-header{height:var(--hdr-h);padding:0 1rem 0 1.1rem;display:flex;align-items:center;gap:.75rem;position:sticky;top:0;z-index:300;background:rgba(7,9,14,.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);}
+.app-logo{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--violet),var(--teal));display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:var(--glow)}
+.app-title{font-family:var(--mono);font-size:.92rem;letter-spacing:.04em}
+.app-title em{color:var(--violet);font-style:normal}
+.app-badge{margin-left:auto;font-family:var(--mono);font-size:.56rem;color:var(--violet);border:1px solid rgba(124,106,247,.35);padding:3px 10px;border-radius:20px;letter-spacing:.08em;white-space:nowrap;flex-shrink:0}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;height:calc(var(--nav-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);background:rgba(13,17,23,.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--b1);display:flex;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .16s;border:none;background:none;padding:.4rem 0 0;color:var(--t3);position:relative;}
+.nav-item.on{color:var(--violet)}
+.nav-item:active{transform:scale(.91)}
+.nav-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .16s}
+.nav-item.on .nav-icon{background:var(--violet3);box-shadow:0 0 10px rgba(124,106,247,.18)}
+.nav-label{font-family:var(--mono);font-size:.56rem;letter-spacing:.07em;font-weight:700}
+
+/* MAIN */
+.app-main{flex:1;width:100%;max-width:560px;margin:0 auto;padding:1.1rem 1rem 1.5rem}
+.panel{display:none;animation:fadeUp .2s ease}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+/* CARDS */
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
+.step-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.1rem;margin-bottom:.9rem}
+.sec-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-bottom:.7rem}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:0 20px;border-radius:var(--r);font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;cursor:pointer;border:1px solid;transition:all .14s;white-space:nowrap;font-weight:700;-webkit-user-select:none;user-select:none}
+.btn-full{width:100%}
+.btn-p{background:var(--violet);color:#fff;border-color:var(--violet)}
+.btn-p:hover{background:var(--violet2);box-shadow:var(--glow)}
+.btn-g{background:var(--s3);color:var(--t2);border-color:var(--b2)}
+.btn-g:hover{background:var(--s4);color:var(--t1)}
+.btn-d{background:transparent;color:var(--red);border-color:rgba(255,77,106,.4)}
+.btn-d:hover{background:rgba(255,77,106,.07)}
+.btn-amber{background:var(--amber);color:#100800;border-color:var(--amber);font-weight:700}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.28;cursor:not-allowed;transform:none!important;pointer-events:none}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:.85rem}
+.btn-row .btn{flex:1;min-width:90px}
+
+/* ISSUE PANEL */
+.issue-hero{display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:.5rem 0}
+.issue-qr-card{background:linear-gradient(160deg,var(--s2),rgba(124,106,247,.04));border:1px solid var(--b1);border-radius:var(--rxl);padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%;margin-bottom:1rem}
+.qr-frame{background:#fff;border-radius:14px;padding:3px;box-shadow:var(--glow),var(--shadow);display:flex;align-items:center;justify-content:center;width:200px;height:200px;flex-shrink:0}
+.qr-frame canvas,.qr-frame img{width:194px!important;height:194px!important;max-width:194px!important;max-height:194px!important;display:block}
+.id-display-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--t3);text-align:center;text-transform:uppercase}
+.id-display{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--violet);letter-spacing:.18em;text-align:center;background:var(--s3);border:1px solid var(--b1);border-radius:8px;padding:.7rem 1.2rem;word-break:break-all}
+.id-placeholder{text-align:center;padding:2.5rem 1.5rem;border:2px dashed var(--b2);border-radius:var(--rxl);display:flex;flex-direction:column;align-items:center;gap:1rem;color:var(--t3);margin-bottom:1rem}
+.id-ph-icon{font-size:2.5rem;opacity:.4}
+.id-ph-txt{font-family:var(--mono);font-size:.67rem;letter-spacing:.1em;line-height:1.8}
+.issue-btn-area{width:100%;display:flex;flex-direction:column;gap:.7rem}
+
+/* ID LIST */
+.issued-list{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.issued-item{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;transition:all .14s}
+.issued-item:hover{border-color:var(--violet);background:var(--s4)}
+.issued-item.verified-flash{border-color:var(--emerald);box-shadow:0 0 0 2px rgba(0,200,150,.15)}
+.iid-dot{width:9px;height:9px;border-radius:50%;background:var(--violet);box-shadow:0 0 6px rgba(124,106,247,.4);flex-shrink:0}
+.iid-id{font-family:var(--mono);font-size:.72rem;color:var(--t1);letter-spacing:.1em;flex:1}
+.iid-time{font-family:var(--mono);font-size:.58rem;color:var(--t3);flex-shrink:0}
+.iid-badge{font-family:var(--mono);font-size:.52rem;padding:2px 8px;border-radius:20px;flex-shrink:0}
+.iid-badge.used{background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.25);color:var(--emerald)}
+.iid-badge.active{background:var(--violet3);border:1px solid rgba(124,106,247,.2);color:var(--violet)}
+
+/* VERIFY PANEL */
+.verify-result{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;display:flex;flex-direction:column;gap:.85rem;transition:border-color .24s,box-shadow .24s;margin-bottom:1rem}
+.verify-result.ok{border-color:var(--emerald);box-shadow:0 0 0 2px rgba(0,200,150,.12)}
+.verify-result.fail{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,77,106,.1)}
+.vr-hdr{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;color:var(--t3)}
+.vr-dot{width:9px;height:9px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.vr-dot.ok{background:var(--emerald);box-shadow:0 0 8px var(--emerald)}
+.vr-dot.fail{background:var(--red)}
+.vr-body{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:1rem;font-family:var(--mono);font-size:.74rem;line-height:1.7;word-break:break-all;white-space:pre-wrap}
+.vr-body.empty{color:var(--t3);font-style:italic}
+.vr-body.ok-text{color:var(--emerald)}
+.vr-body.fail-text{color:var(--red)}
+.vr-id-chip{display:flex;align-items:center;gap:10px;background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.22);border-radius:var(--r);padding:.8rem 1rem;margin-top:.2rem}
+.vic-check{width:28px;height:28px;border-radius:50%;background:var(--emerald);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#030e09;font-weight:900}
+.vic-info{flex:1;min-width:0}
+.vic-name{font-family:var(--mono);font-size:.65rem;color:var(--emerald);letter-spacing:.08em}
+.vic-id{font-family:var(--mono);font-size:.77rem;color:var(--t1);letter-spacing:.18em;font-weight:700;margin-top:2px}
+
+/* CAMERA / FILE */
+.src-tabs{display:flex;gap:6px;margin-bottom:.85rem}
+.src-tab{flex:1;min-height:44px;padding:0 10px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;color:var(--t3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .14s}
+.src-tab:hover{border-color:var(--b2);color:var(--t2)}
+.src-tab.on{border-color:var(--violet);color:var(--violet);background:var(--violet3)}
+.cam-wrap{border-radius:var(--r);overflow:hidden;background:#000;border:1px solid var(--b1);position:relative;min-height:220px}
+.cam-wrap video{width:100%!important;height:auto!important;display:block!important}
+.cam-wrap img{display:none!important}
+.cam-overlay{position:absolute;inset:0;pointer-events:none;display:none;z-index:5}
+.cam-overlay.on{display:block}
+.sf{position:absolute;top:5%;left:4%;right:4%;bottom:5%}
+.sf::before,.sf::after,.sf>span::before,.sf>span::after{content:'';position:absolute;width:22px;height:22px;border-color:var(--violet);border-style:solid}
+.sf::before{top:0;left:0;border-width:2px 0 0 2px}
+.sf::after{top:0;right:0;border-width:2px 2px 0 0}
+.sf>span::before{bottom:0;left:0;border-width:0 0 2px 2px}
+.sf>span::after{bottom:0;right:0;border-width:0 2px 2px 0}
+.sline{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--violet),#a78bfa,var(--violet),transparent);animation:scanmove 2s ease-in-out infinite;opacity:.9}
+@keyframes scanmove{0%{top:5%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:95%;opacity:0}}
+.cam-status{background:rgba(0,0,0,.75);padding:7px 12px;text-align:center;font-family:var(--mono);font-size:.61rem;letter-spacing:.08em;color:var(--violet);border:1px solid var(--b1);border-top:none;border-radius:0 0 var(--r) var(--r)}
+.file-drop{border:2px dashed var(--b2);border-radius:var(--r);min-height:150px;padding:1.4rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;cursor:pointer;text-align:center;transition:all .16s;background:var(--s3)}
+.file-drop:hover,.file-drop.dov{border-color:var(--violet);background:var(--violet3)}
+.file-drop p{font-size:.84rem;color:var(--t2)}
+.file-drop small{font-family:var(--mono);font-size:.61rem;color:var(--t3)}
+.file-prev-img{max-width:100%;max-height:120px;border-radius:8px;object-fit:contain;border:1px solid var(--b1)}
+
+/* TOASTS */
+.toasts{position:fixed;bottom:calc(var(--nav-h) + var(--safe-bottom) + .75rem);left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;z-index:999;width:calc(100% - 2rem);max-width:400px}
+.toast{background:var(--s2);border:1px solid var(--b2);color:var(--t1);padding:11px 16px;border-radius:var(--r);font-size:.79rem;font-family:var(--mono);animation:tin .22s ease,tout .28s ease 2.7s forwards;display:flex;align-items:center;gap:9px;box-shadow:0 6px 28px rgba(0,0,0,.55)}
+.toast.ok{border-color:var(--emerald)}.toast.err{border-color:var(--red)}.toast.warn{border-color:var(--amber)}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.toast.ok .tdot{background:var(--emerald)}.toast.err .tdot{background:var(--red)}.toast.warn .tdot{background:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{from{opacity:1}to{opacity:0;transform:translateY(-4px)}}
+.empty-state{text-align:center;padding:2rem 1rem;color:var(--t3);font-family:var(--mono);font-size:.7rem;line-height:1.8}
+
+/* DESKTOP */
+@media(min-width:1024px){
+  :root{--nav-h:0px;--hdr-h:0px;--sidebar-w:200px}
+  body{flex-direction:row;height:100vh;overflow:hidden;padding-bottom:0}
+  .app-header{display:none}
+  .bottom-nav{position:relative;width:var(--sidebar-w);height:100vh;flex-direction:column;justify-content:flex-start;border-top:none;border-right:1px solid var(--b1);padding:0;gap:0;flex-shrink:0;overflow:hidden;background:var(--s1);}
+  .nav-logo-slot{height:64px;display:flex!important;align-items:center;gap:.8rem;padding:0 1.1rem 0 1.2rem;border-bottom:1px solid var(--b1);flex-shrink:0;justify-content:flex-start;}
+  .nav-logo-inner{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--violet),var(--teal));display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--glow);}
+  .nav-logo-label{font-family:var(--mono);font-size:.78rem;letter-spacing:.03em;color:var(--t1)}
+  .nav-logo-label em{color:var(--violet);font-style:normal}
+  .nav-item{width:100%;height:54px;flex:none;flex-direction:row;justify-content:flex-start;padding:0 1.2rem;gap:.9rem;border-radius:0;position:relative;}
+  .nav-item.on{background:rgba(124,106,247,.05);color:var(--violet)}
+  .nav-item.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--violet);border-radius:0 2px 2px 0;}
+  .nav-icon{width:32px;height:32px;border-radius:10px;flex-shrink:0}
+  .nav-label{font-size:.66rem;letter-spacing:.07em}
+  .sidebar-info{display:flex;flex-direction:column;gap:.3rem;margin-top:auto;padding:1rem 1.2rem;border-top:1px solid var(--b1);background:rgba(0,0,0,.15);}
+  .si-lbl{font-family:var(--mono);font-size:.52rem;color:var(--t3);letter-spacing:.12em;text-transform:uppercase}
+  .si-val{font-family:var(--mono);font-size:.75rem;color:var(--violet);font-weight:700}
+  .app-main{flex:1;height:100vh;overflow-y:auto;padding:1.5rem 2rem 2rem;max-width:none;margin:0;}
+  .toasts{left:auto;right:1.5rem;bottom:1.5rem;transform:none;width:auto;max-width:360px}
+  .issue-qr-card{flex-direction:row;align-items:flex-start;gap:1.5rem}
+  .qr-frame{width:160px;height:160px;flex-shrink:0}
+  .qr-frame canvas,.qr-frame img{width:154px!important;height:154px!important;max-width:154px!important;max-height:154px!important}
+  .issue-right{flex:1;display:flex;flex-direction:column;gap:.75rem}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-logo">🛡</div>
+  <div class="app-title">Verify<em>ID</em></div>
+  <div class="app-badge">ISSUER</div>
+</header>
+
+<nav class="bottom-nav">
+  <div class="nav-logo-slot" id="nav-logo-slot" style="display:none">
+    <div class="nav-logo-inner">🛡</div>
+    <span class="nav-logo-label">Verify<em>ID</em> <span style="color:var(--t3)">·</span> Issuer</span>
+  </div>
+  <button class="nav-item on" onclick="switchTab('issue',this)">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M7 10h6"/><path d="M10 7v6"/></svg>
+    </div>
+    <span class="nav-label">ISSUE ID</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('verify',this)">
+    <div class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 12l2 2 4-4"/><path d="M10 2a8 8 0 100 16A8 8 0 0010 2z"/></svg>
+    </div>
+    <span class="nav-label">VERIFY</span>
+  </button>
+  <div class="sidebar-info" id="sidebar-info" style="display:none">
+    <div class="si-lbl">IDs Issued</div>
+    <div class="si-val" id="sb-count">0</div>
+    <div class="si-lbl" style="margin-top:.4rem">Role</div>
+    <div class="si-val" style="color:var(--teal)">ISSUER</div>
+  </div>
+</nav>
+
+<main class="app-main">
+
+<!-- ISSUE TAB -->
+<div id="panel-issue" class="panel on">
+  <div class="sec-label">NEW IDENTITY</div>
+
+  <!-- QR card or placeholder -->
+  <div class="issue-qr-card" id="issue-qr-card" style="display:none">
+    <div class="qr-frame" id="issue-qr-frame"></div>
+    <div class="issue-right">
+      <div class="id-display-lbl">ISSUED USER ID</div>
+      <div class="id-display" id="issue-id-display">——————————</div>
+      <div style="font-family:var(--mono);font-size:.59rem;color:var(--t3);line-height:1.7">Show or send this QR to the user. They scan it in the <b style="color:var(--violet)">Client App</b> to register their identity.</div>
+      <div class="btn-row" style="margin-top:.2rem">
+        <button class="btn btn-amber" onclick="downloadIssueQR()">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><path d="M8 3v10"/><path d="M2 14h12"/></svg>
+          SAVE QR
+        </button>
+        <button class="btn btn-g" onclick="clearIssueQR()">CLEAR</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="id-placeholder" id="issue-placeholder">
+    <div class="id-ph-icon">🪪</div>
+    <div class="id-ph-txt">Issue a new unique identity ID.<br>Each ID is a 10-character code.</div>
+  </div>
+
+  <button class="btn btn-p btn-full" onclick="issueNewId()" style="margin-bottom:1rem">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="10" height="10" rx="1.5"/><path d="M6 8h4"/><path d="M8 6v4"/></svg>
+    ISSUE NEW IDENTITY ID
+  </button>
+
+  <!-- Issued list -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <div class="sec-label" style="margin:0">ISSUED IDs &nbsp;<span id="issued-count" style="color:var(--violet)">0</span></div>
+      <button class="btn btn-d" style="min-height:32px;font-size:.58rem;padding:0 12px" onclick="clearAll()" id="clear-all-btn" disabled>CLEAR ALL</button>
+    </div>
+    <div class="issued-list" id="issued-list">
+      <div class="empty-state">No IDs issued yet.<br>Press "Issue New Identity ID" to begin.</div>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFY TAB -->
+<div id="panel-verify" class="panel">
+  <div class="sec-label">SCAN & VERIFY IDENTITY</div>
+
+  <div class="verify-result" id="verify-result-panel">
+    <div class="vr-hdr"><div class="vr-dot" id="vr-dot"></div><span id="vr-label">AWAITING SCAN</span></div>
+    <div class="vr-body empty" id="vr-text">Point camera at a user's identity QR, or upload an image…</div>
+    <div id="vr-chip" style="display:none">
+      <div class="vr-id-chip">
+        <div class="vic-check">✓</div>
+        <div class="vic-info">
+          <div class="vic-name">IDENTITY VERIFIED</div>
+          <div class="vic-id" id="vr-chip-id"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-card">
+    <div class="src-tabs">
+      <button class="src-tab on" onclick="setVerifySrc('cam',this)">📷 CAMERA</button>
+      <button class="src-tab" onclick="setVerifySrc('file',this)">📁 FILE</button>
+    </div>
+    <div id="verify-cam-sec">
+      <div class="cam-wrap">
+        <div id="verify-camera-reader"></div>
+        <div class="cam-overlay" id="verify-cam-overlay"><div class="sf"><span></span><div class="sline"></div></div></div>
+      </div>
+      <div class="cam-status" id="verify-cam-status">CAMERA OFF — tap START</div>
+      <div class="btn-row">
+        <button class="btn btn-p" id="verify-btn-start" onclick="startVerifyCam()">▶ START</button>
+        <button class="btn btn-d" id="verify-btn-stop" onclick="stopVerifyCam()" style="display:none">■ STOP</button>
+      </div>
+    </div>
+    <div id="verify-file-sec" style="display:none">
+      <div class="file-drop" id="verify-file-drop"
+        onclick="document.getElementById('verify-file-input').click()"
+        ondragover="event.preventDefault();this.classList.add('dov')"
+        ondragleave="this.classList.remove('dov')"
+        ondrop="onVerifyDrop(event)">
+        <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+        <p>Tap or drop user's identity QR image</p><small>PNG · JPG · WEBP</small>
+      </div>
+      <input type="file" id="verify-file-input" accept="image/*" style="display:none" onchange="scanVerifyFile(this.files[0])">
+    </div>
+  </div>
+</div>
+
+</main>
+
+<div class="toasts" id="toasts"></div>
+<div id="verify-file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+// Desktop sidebar
+const mq=window.matchMedia('(min-width:1024px)');
+function applyLayout(e){
+  document.getElementById('nav-logo-slot').style.display=e.matches?'flex':'none';
+  const si=document.getElementById('sidebar-info');if(si)si.style.display=e.matches?'flex':'none';
+}
+applyLayout(mq);mq.addEventListener('change',applyLayout);
+
+// ═══ CONSTANTS ═══════════════════════════════════════
+const ID_PREFIX='VERID:';
+const ID_LEN=10;
+const CHARSET='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+// ═══ STATE ════════════════════════════════════════════
+let issuedIds=JSON.parse(localStorage.getItem('vi_issued')||'[]');
+let currentIssuedId=null;
+
+function saveState(){localStorage.setItem('vi_issued',JSON.stringify(issuedIds));}
+
+// ═══ ID GENERATION ════════════════════════════════════
+function generateId(){
+  const a=new Uint8Array(ID_LEN);
+  crypto.getRandomValues(a);
+  return Array.from(a).map(b=>CHARSET[b%CHARSET.length]).join('');
+}
+
+// ═══ QR HELPER ════════════════════════════════════════
+function generateQR(cid,text,size=400){
+  const c=document.getElementById(cid);c.innerHTML='';
+  const d=document.createElement('div');c.appendChild(d);
+  try{new QRCode(d,{text,width:size,height:size,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+  catch(e){c.innerHTML='<div style="color:var(--red);font-family:var(--mono);font-size:.6rem;text-align:center;padding:.5rem">QR error</div>';return;}
+  setTimeout(()=>{const el=c.querySelector('canvas')||c.querySelector('img');if(el){el.style.width='100%';el.style.height='100%';el.style.maxWidth='100%';el.style.maxHeight='100%';}},30);
+}
+
+// ═══ ISSUE ════════════════════════════════════════════
+function issueNewId(){
+  const id=generateId();
+  currentIssuedId=id;
+  issuedIds.push({id,ts:Date.now(),verifiedCount:0});
+  saveState();
+  // Show QR
+  document.getElementById('issue-placeholder').style.display='none';
+  document.getElementById('issue-qr-card').style.display='flex';
+  generateQR('issue-qr-frame',ID_PREFIX+id,400);
+  document.getElementById('issue-id-display').textContent=id;
+  renderIssuedList();
+  updateSidebarCount();
+  toast('🪪 New ID issued: '+id,'ok');
+}
+
+function clearIssueQR(){
+  currentIssuedId=null;
+  document.getElementById('issue-qr-card').style.display='none';
+  document.getElementById('issue-placeholder').style.display='flex';
+}
+
+function clearAll(){
+  if(!issuedIds.length)return;
+  if(!confirm('Clear all issued IDs? This cannot be undone.'))return;
+  issuedIds=[];currentIssuedId=null;
+  saveState();clearIssueQR();renderIssuedList();updateSidebarCount();
+  toast('All IDs cleared','warn');
+}
+
+function downloadIssueQR(){
+  const frame=document.getElementById('issue-qr-frame');
+  const c=frame.querySelector('canvas')||frame.querySelector('img');
+  if(!c){toast('QR not ready','err');return;}
+  const cv=document.createElement('canvas');
+  cv.width=c.naturalWidth||c.width||400;cv.height=c.naturalHeight||c.height||400;
+  cv.getContext('2d').drawImage(c,0,0);
+  const a=document.createElement('a');
+  a.download='ID-'+currentIssuedId+'.png';
+  a.href=cv.toDataURL('image/png');
+  a.click();toast('QR saved','ok');
+}
+
+function renderIssuedList(){
+  const el=document.getElementById('issued-list');
+  const cnt=document.getElementById('issued-count');
+  cnt.textContent=issuedIds.length;
+  document.getElementById('clear-all-btn').disabled=!issuedIds.length;
+  if(!issuedIds.length){
+    el.innerHTML='<div class="empty-state">No IDs issued yet.<br>Press "Issue New Identity ID" to begin.</div>';
+    return;
+  }
+  el.innerHTML=issuedIds.slice().reverse().map(item=>{
+    const badge=item.verifiedCount>0?`<div class="iid-badge used">VERIFIED ×${item.verifiedCount}</div>`:`<div class="iid-badge active">ACTIVE</div>`;
+    return`<div class="issued-item" id="iitem-${item.id}" onclick="showIssuedQR('${item.id}')">
+      <div class="iid-dot"></div>
+      <div class="iid-id">${item.id}</div>
+      ${badge}
+      <div class="iid-time">${ago(item.ts)}</div>
+    </div>`;
+  }).join('');
+}
+
+function showIssuedQR(id){
+  const item=issuedIds.find(i=>i.id===id);if(!item)return;
+  currentIssuedId=id;
+  document.getElementById('issue-placeholder').style.display='none';
+  document.getElementById('issue-qr-card').style.display='flex';
+  generateQR('issue-qr-frame',ID_PREFIX+id,400);
+  document.getElementById('issue-id-display').textContent=id;
+  switchTab('issue',document.querySelector('.nav-item'));
+  toast('Showing QR for '+id,'ok');
+}
+
+function updateSidebarCount(){
+  const el=document.getElementById('sb-count');if(el)el.textContent=issuedIds.length;
+}
+
+// ═══ VERIFY ═══════════════════════════════════════════
+let verifyScanner=null,lastVerifyTs=0,lastVerifyText='';
+
+function setVerifySrc(src,el){
+  document.querySelectorAll('.src-tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');
+  document.getElementById('verify-cam-sec').style.display=src==='cam'?'block':'none';
+  document.getElementById('verify-file-sec').style.display=src==='file'?'block':'none';
+  if(src==='file')stopVerifyCam();
+}
+
+async function startVerifyCam(){
+  document.getElementById('verify-cam-status').textContent='Requesting camera…';
+  document.getElementById('verify-btn-start').disabled=true;
+  let perm;
+  try{perm=await navigator.mediaDevices.getUserMedia({video:true,audio:false});}
+  catch(e){document.getElementById('verify-cam-status').textContent='ACCESS DENIED';toast('Camera permission denied','err');document.getElementById('verify-btn-start').disabled=false;return;}
+  perm.getTracks().forEach(t=>t.stop());
+  if(verifyScanner){try{await verifyScanner.stop();}catch(e){}verifyScanner=null;}
+  verifyScanner=new Html5Qrcode('verify-camera-reader',{verbose:false});
+  try{
+    await verifyScanner.start({facingMode:'environment'},{fps:30,qrbox:(w,h)=>({width:w,height:h}),experimentalFeatures:{useBarCodeDetectorIfSupported:true}},text=>onVerifyScan(text,'camera'),()=>{});
+    document.getElementById('verify-btn-start').style.display='none';
+    document.getElementById('verify-btn-stop').style.display='flex';
+    document.getElementById('verify-cam-overlay').classList.add('on');
+    document.getElementById('verify-cam-status').textContent='SCANNING… point at user identity QR';
+  }catch(e){document.getElementById('verify-cam-status').textContent='ERROR: '+e.message;document.getElementById('verify-btn-start').disabled=false;}
+}
+
+async function stopVerifyCam(){
+  if(verifyScanner){try{await verifyScanner.stop();}catch(e){}try{verifyScanner.clear();}catch(e){}verifyScanner=null;}
+  document.getElementById('verify-btn-start').disabled=false;
+  document.getElementById('verify-btn-start').style.display='flex';
+  document.getElementById('verify-btn-stop').style.display='none';
+  document.getElementById('verify-cam-overlay').classList.remove('on');
+  document.getElementById('verify-camera-reader').innerHTML='';
+  document.getElementById('verify-cam-status').textContent='CAMERA OFF — tap START';
+}
+
+function onVerifyDrop(e){e.preventDefault();document.getElementById('verify-file-drop').classList.remove('dov');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))scanVerifyFile(f);}
+async function scanVerifyFile(file){
+  if(!file)return;
+  const fr=new FileReader();
+  fr.onload=ev=>{const d=document.getElementById('verify-file-drop');d.innerHTML=`<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.75rem;color:var(--t3)">${file.name}</p>`;d.onclick=null;};
+  fr.readAsDataURL(file);
+  const text=await decodeQRFromFile(file,'verify-file-reader-hidden');
+  if(text)onVerifyScan(text,'file');
+  else{verifySetFail('No QR code found in image.');toast('No QR code found','err');}
+}
+
+function onVerifyScan(text,source){
+  const now=Date.now();
+  if(source==='camera'&&text===lastVerifyText&&now-lastVerifyTs<3000)return;
+  lastVerifyText=text;lastVerifyTs=now;
+
+  // Extract ID
+  if(!text.startsWith(ID_PREFIX)){
+    verifySetFail('Not an identity QR.\nExpected prefix: '+ID_PREFIX);
+    toast('Invalid QR format','err');return;
+  }
+  const id=text.slice(ID_PREFIX.length);
+  if(id.length!==ID_LEN||!/^[A-Z0-9]+$/.test(id)){
+    verifySetFail('Malformed ID: "'+id+'"');
+    toast('Malformed ID in QR','err');return;
+  }
+  const item=issuedIds.find(i=>i.id===id);
+  if(!item){
+    verifySetFail('ID NOT FOUND in issued records.\nID: '+id+'\n\nThis identity was not issued by this verifier.');
+    toast('❌ Unknown ID — not issued','err');return;
+  }
+  // Valid!
+  item.verifiedCount=(item.verifiedCount||0)+1;
+  item.lastVerified=now;
+  saveState();renderIssuedList();
+  // Flash issued item
+  const el=document.getElementById('iitem-'+id);
+  if(el){el.classList.add('verified-flash');setTimeout(()=>el.classList.remove('verified-flash'),1800);}
+  verifySetOK(id,item);
+  if(source==='camera')stopVerifyCam();
+  toast('✅ Identity verified: '+id,'ok');
+}
+
+function verifySetOK(id,item){
+  const p=document.getElementById('verify-result-panel');
+  p.className='verify-result ok';
+  document.getElementById('vr-dot').className='vr-dot ok';
+  document.getElementById('vr-label').textContent='✓ IDENTITY VERIFIED';
+  document.getElementById('vr-text').className='vr-body ok-text';
+  document.getElementById('vr-text').textContent=`Issued by this verifier ✓\nVerification count: ${item.verifiedCount}\nIssued: ${new Date(item.ts).toLocaleString()}`;
+  document.getElementById('vr-chip').style.display='block';
+  document.getElementById('vr-chip-id').textContent=id;
+}
+
+function verifySetFail(msg){
+  const p=document.getElementById('verify-result-panel');
+  p.className='verify-result fail';
+  document.getElementById('vr-dot').className='vr-dot fail';
+  document.getElementById('vr-label').textContent='VERIFICATION FAILED';
+  document.getElementById('vr-text').className='vr-body fail-text';
+  document.getElementById('vr-text').textContent=msg;
+  document.getElementById('vr-chip').style.display='none';
+}
+
+// ═══ FILE QR DECODE ════════════════════════════════════
+async function decodeQRFromFile(file,hidId){
+  if(window.BarcodeDetector){
+    try{
+      const bd=new BarcodeDetector({formats:['qr_code']});
+      const bmp=await createImageBitmap(file);
+      let bc=await bd.detect(bmp);
+      if(bc.length&&bc[0].rawValue){bmp.close();return bc[0].rawValue;}
+      const scale=Math.min(1,800/Math.max(bmp.width,bmp.height));
+      const sw=Math.round(bmp.width*scale),sh=Math.round(bmp.height*scale);
+      const hit=await Promise.any([45,90,135,180,225,270,315].map(angle=>{
+        const rad=angle*Math.PI/180,cA=Math.abs(Math.cos(rad)),sA=Math.abs(Math.sin(rad));
+        const cw=Math.round(sw*cA+sh*sA),ch=Math.round(sw*sA+sh*cA);
+        const tmp=document.createElement('canvas');tmp.width=cw;tmp.height=ch;
+        const tc=tmp.getContext('2d',{alpha:false});
+        tc.translate(cw/2,ch/2);tc.rotate(rad);tc.drawImage(bmp,-sw/2,-sh/2,sw,sh);
+        return bd.detect(tmp).then(r=>{if(r.length&&r[0].rawValue)return r[0].rawValue;return Promise.reject('none');});
+      })).catch(()=>null);
+      bmp.close();if(hit)return hit;
+    }catch(e){}
+  }
+  const fs=new Html5Qrcode(hidId,{verbose:false});
+  try{return await fs.scanFile(file,false);}
+  catch(e){return null;}
+  finally{try{fs.clear();}catch(e){}}
+}
+
+// ═══ TABS ═════════════════════════════════════════════
+function switchTab(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('on'));
+  document.getElementById('panel-'+id).classList.add('on');
+  el.classList.add('on');
+  if(id!=='verify')stopVerifyCam();
+}
+
+// ═══ HELPERS ══════════════════════════════════════════
+function ago(ts){const d=Date.now()-ts;if(d<60e3)return'now';if(d<36e5)return Math.floor(d/60e3)+'m';if(d<864e5)return Math.floor(d/36e5)+'h';return Math.floor(d/864e5)+'d';}
+function toast(msg,type='ok'){const w=document.getElementById('toasts');const el=document.createElement('div');el.className='toast '+type;el.innerHTML=`<div class="tdot"></div>${msg}`;w.appendChild(el);setTimeout(()=>el.remove(),3200);}
+
+// ═══ INIT ═════════════════════════════════════════════
+renderIssuedList();updateSidebarCount();
+</script>
+</body>
+</html>
