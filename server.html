@@ -168,6 +168,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 /* photo in result */
 .result-photo{width:72px;height:72px;border-radius:10px;object-fit:cover;border:2px solid var(--g1);box-shadow:0 0 12px rgba(0,230,118,.2);flex-shrink:0}
 
+/* ── AUTHENTICATED IDENTITY PROFILE ── */
+.auth-profile{display:none;align-items:center;gap:1rem;padding:.85rem 1rem;background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.2);border-radius:var(--r);margin-top:.75rem}
+.auth-profile.show{display:flex}
+.auth-profile-photo{width:64px;height:64px;border-radius:10px;object-fit:cover;border:2px solid var(--g1);box-shadow:0 0 14px rgba(0,230,118,.25);flex-shrink:0}
+.auth-profile-photo-placeholder{width:64px;height:64px;border-radius:10px;background:var(--s3);border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.auth-profile-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.auth-profile-name{font-family:var(--mono);font-size:.88rem;font-weight:700;color:var(--g1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.auth-profile-gender{font-family:var(--mono);font-size:.6rem;color:var(--t2);letter-spacing:.08em}
+.auth-profile-id{font-family:var(--mono);font-size:.58rem;color:var(--t3);letter-spacing:.05em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.auth-profile-badge{display:inline-flex;align-items:center;gap:5px;background:var(--g3);border:1px solid rgba(0,230,118,.3);border-radius:20px;padding:3px 10px;font-family:var(--mono);font-size:.54rem;color:var(--g1);letter-spacing:.07em;margin-top:2px;width:fit-content}
+
 /* ── TOTP SECRET ── */
 .totp-secret-box{background:var(--s3);border:1px solid var(--b2);border-radius:var(--r);padding:.7rem .9rem;text-align:center}
 .totp-secret-lbl{font-size:.54rem;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:.4rem}
@@ -340,6 +351,15 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div class="vlbl" id="vlbl">Awaiting scan</div>
     </div>
     <div class="vbody" id="vbody">Point camera at a client 2FA QR, or upload an image to authenticate.</div>
+    <div class="auth-profile" id="auth-profile">
+      <div id="auth-photo-wrap"></div>
+      <div class="auth-profile-info">
+        <div class="auth-profile-name" id="auth-profile-name"></div>
+        <div class="auth-profile-gender" id="auth-profile-gender"></div>
+        <div class="auth-profile-id" id="auth-profile-id"></div>
+        <div class="auth-profile-badge">✓ IDENTITY VERIFIED</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -744,12 +764,13 @@ async function onVerifyScan(text, src) {
 
   // ALL CHECKS PASSED
   setVerifyResult('ok', `✓ AUTHENTICATED`,
-    `Name:    ${entry.name}\nID:      ${fmtId(entry.id)}\nIssued:  ${new Date(entry.ts).toLocaleString()}\nStatus:  ACTIVE ✓\n2FA:     VERIFIED ✓\n\nIdentity + 2FA code verified and authenticated.`);
+    `Name:    ${entry.name}\nID:      ${fmtId(entry.id)}\nIssued:  ${new Date(entry.ts).toLocaleString()}\nStatus:  ACTIVE ✓\n2FA:     VERIFIED ✓\n\nIdentity + 2FA code verified and authenticated.`,
+    entry);
   if (src === 'camera') stopVerifyCam();
   toast(`✓ Authenticated: ${entry.name}`, 'ok');
 }
 
-function setVerifyResult(type, label, body) {
+function setVerifyResult(type, label, body, entry) {
   const card = document.getElementById('verify-result');
   card.className = 'verify-result ' + type;
   document.getElementById('vdot').className = 'vdot ' + type;
@@ -759,6 +780,24 @@ function setVerifyResult(type, label, body) {
   b.textContent = body;
   setTimeout(() => { card.classList.remove(type); }, 900);
   card.className = 'verify-result ' + type;
+
+  // Show identity profile only on successful auth
+  const profile = document.getElementById('auth-profile');
+  if (type === 'ok' && entry) {
+    const genderLabels = { male: '♂ Male', female: '♀ Female', other: '⊕ Other' };
+    const photoWrap = document.getElementById('auth-photo-wrap');
+    if (entry.photo) {
+      photoWrap.innerHTML = `<img class="auth-profile-photo" src="${entry.photo}" alt="">`;
+    } else {
+      photoWrap.innerHTML = `<div class="auth-profile-photo-placeholder">👤</div>`;
+    }
+    document.getElementById('auth-profile-name').textContent   = entry.name;
+    document.getElementById('auth-profile-gender').textContent = entry.gender ? genderLabels[entry.gender] || entry.gender : 'Gender not recorded';
+    document.getElementById('auth-profile-id').textContent     = fmtId(entry.id);
+    profile.classList.add('show');
+  } else {
+    profile.classList.remove('show');
+  }
 }
 
 // ══════════════════════════════════════════════
