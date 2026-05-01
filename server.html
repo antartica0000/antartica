@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuthNode — Server Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#040c08;--s1:#07110a;--s2:#0d1810;--s3:#122016;--s4:#1a2a1e;
+  --b1:#1e3425;--b2:#264430;--b3:#2e5438;
+  --g1:#00e676;--g2:#00c853;--g3:rgba(0,230,118,.09);--g4:rgba(0,230,118,.2);
+  --amber:#ffab40;--red:#ff5252;--purple:#b388ff;
+  --t1:#e0f0e8;--t2:#7aab8a;--t3:#3a5a44;
+  --mono:'JetBrains Mono',monospace;--disp:'Syne',sans-serif;
+  --r:10px;--rl:16px;--rxl:20px;
+}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.025) 3px,rgba(0,0,0,.025) 4px);pointer-events:none;z-index:9999}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ── HEADER ── */
+.hdr{height:60px;padding:0 1.2rem;display:flex;align-items:center;gap:.8rem;position:sticky;top:0;z-index:200;background:rgba(4,12,8,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1)}
+.hdr-logo{width:38px;height:38px;border-radius:9px;background:var(--g1);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-size:1.1rem;font-weight:800;color:var(--bg);box-shadow:0 0 22px rgba(0,230,118,.35);flex-shrink:0}
+.hdr-text{display:flex;flex-direction:column;gap:1px}
+.hdr-title{font-family:var(--disp);font-size:1rem;font-weight:700;line-height:1}
+.hdr-title em{color:var(--g1);font-style:normal}
+.hdr-sub{font-size:.54rem;letter-spacing:.14em;color:var(--t3)}
+.hdr-pill{margin-left:auto;font-size:.55rem;letter-spacing:.12em;color:var(--g1);border:1px solid rgba(0,230,118,.3);padding:4px 11px;border-radius:20px;background:var(--g3);display:flex;align-items:center;gap:5px}
+.hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--g1);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px var(--g1)}50%{opacity:.4;box-shadow:none}}
+
+/* ── TABS ── */
+.tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--b1)}
+.tab{flex:1;padding:.7rem 0;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--t3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .16s;text-align:center}
+.tab:hover{color:var(--t2);background:rgba(0,230,118,.03)}
+.tab.on{color:var(--g1);border-bottom-color:var(--g1);background:var(--g3)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--g4);color:var(--g1);border-radius:10px;font-size:.52rem;padding:1px 6px;margin-left:4px;min-width:18px}
+
+/* ── CONTENT ── */
+.content{max-width:560px;margin:0 auto;padding:1.25rem 1rem 3rem}
+.panel{display:none}.panel.on{display:block;animation:fadein .18s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ── CARDS ── */
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
+.card-inset{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:1rem}
+
+/* ── LABELS ── */
+.lbl{font-size:.58rem;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-bottom:.6rem}
+.sec-lbl{font-size:.58rem;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;margin-bottom:.75rem}
+
+/* ── FIELD ── */
+.field{width:100%;background:var(--s3);border:1px solid var(--b2);border-radius:var(--r);padding:.8rem 1rem;font-family:var(--mono);font-size:.84rem;color:var(--t1);outline:none;transition:border-color .15s,box-shadow .15s}
+.field:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,230,118,.07)}
+.field::placeholder{color:var(--t3)}
+.field-hint{font-size:.6rem;color:var(--t3);margin-top:.4rem}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:0 20px;border-radius:var(--r);font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;cursor:pointer;border:1px solid;transition:all .14s;font-weight:700;-webkit-user-select:none;user-select:none;white-space:nowrap}
+.btn-full{width:100%}
+.btn-p{background:var(--g1);color:var(--bg);border-color:var(--g1)}
+.btn-p:hover{background:var(--g2);box-shadow:0 0 24px rgba(0,230,118,.25)}
+.btn-g{background:var(--s3);color:var(--t2);border-color:var(--b2)}
+.btn-g:hover{background:var(--s4);color:var(--t1)}
+.btn-d{background:transparent;color:var(--red);border-color:rgba(255,82,82,.35)}
+.btn-d:hover{background:rgba(255,82,82,.07)}
+.btn-amber{background:var(--amber);color:#0a0600;border-color:var(--amber)}
+.btn-amber:hover{background:#e89a30}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
+.btn-row{display:flex;gap:8px;margin-top:.85rem;flex-wrap:wrap}
+.btn-row .btn{flex:1;min-width:90px}
+
+/* ── QR FRAME ── */
+.qr-frame{background:#fff;border-radius:12px;padding:4px;box-shadow:0 0 32px rgba(0,230,118,.18),0 8px 32px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;width:220px;height:220px;flex-shrink:0}
+.qr-frame canvas,.qr-frame img{width:212px!important;height:212px!important;max-width:212px!important;max-height:212px!important;display:block}
+
+/* ── ISSUE RESULT ── */
+.issue-result{display:none;flex-direction:column;align-items:center;gap:1.1rem;padding:1.5rem;background:linear-gradient(160deg,var(--s2),rgba(0,230,118,.04));border:1px solid var(--b2);border-radius:var(--rxl);margin-bottom:1rem;animation:fadein .22s ease}
+.issue-result.show{display:flex}
+.id-display{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--g1);letter-spacing:.14em;text-align:center;word-break:break-all}
+.id-name-disp{font-family:var(--disp);font-size:1.1rem;font-weight:600;color:var(--t1);text-align:center}
+.id-ts-disp{font-size:.6rem;color:var(--t3);text-align:center}
+.id-status-row{display:flex;align-items:center;gap:7px;background:var(--g3);border:1px solid var(--g4);border-radius:20px;padding:4px 14px;font-size:.6rem;color:var(--g1);letter-spacing:.08em}
+.id-status-dot{width:7px;height:7px;border-radius:50%;background:var(--g1);box-shadow:0 0 8px var(--g1)}
+
+/* ── VERIFY CARD ── */
+.verify-result{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rl);padding:1.25rem;transition:border-color .25s,box-shadow .25s}
+.verify-result.ok{border-color:var(--g1);box-shadow:0 0 0 2px rgba(0,230,118,.13)}
+.verify-result.fail{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,82,82,.1)}
+.verify-result.warn{border-color:var(--amber);box-shadow:0 0 0 2px rgba(255,171,64,.1)}
+.vhdr{display:flex;align-items:center;gap:9px;margin-bottom:.85rem}
+.vdot{width:10px;height:10px;border-radius:50%;background:var(--t3);flex-shrink:0;transition:all .3s}
+.vdot.ok{background:var(--g1);box-shadow:0 0 10px var(--g1)}
+.vdot.fail{background:var(--red)}
+.vdot.warn{background:var(--amber)}
+.vlbl{font-size:.65rem;letter-spacing:.1em;color:var(--t2);font-weight:700;text-transform:uppercase}
+.vbody{font-size:.76rem;color:var(--t1);line-height:1.75;white-space:pre-wrap;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:.85rem 1rem}
+.vbody.ok{color:var(--g1)}.vbody.fail{color:var(--red)}.vbody.warn{color:var(--amber)}
+
+/* ── CAMERA ── */
+.src-tabs{display:flex;gap:6px;margin-bottom:.85rem}
+.src-tab{flex:1;min-height:42px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;color:var(--t3);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .14s}
+.src-tab:hover{border-color:var(--b2);color:var(--t2)}
+.src-tab.on{border-color:var(--g1);color:var(--g1);background:var(--g3)}
+.cam-wrap{border-radius:var(--r);overflow:hidden;background:#000;border:1px solid var(--b1);position:relative;min-height:200px}
+.cam-wrap video{width:100%!important;height:auto!important;display:block!important}
+.cam-status{background:rgba(0,0,0,.85);padding:7px 12px;text-align:center;font-size:.62rem;letter-spacing:.08em;color:var(--g1);border:1px solid var(--b1);border-top:none;border-radius:0 0 var(--r) var(--r)}
+.cam-overlay{position:absolute;inset:0;pointer-events:none;display:none;z-index:5}
+.cam-overlay.on{display:block}
+.sf{position:absolute;top:8%;left:6%;right:6%;bottom:8%}
+.sf::before,.sf::after,.sf>span::before,.sf>span::after{content:'';position:absolute;width:22px;height:22px;border-color:var(--g1);border-style:solid}
+.sf::before{top:0;left:0;border-width:2px 0 0 2px}.sf::after{top:0;right:0;border-width:2px 2px 0 0}
+.sf>span::before{bottom:0;left:0;border-width:0 0 2px 2px}.sf>span::after{bottom:0;right:0;border-width:0 2px 2px 0}
+.sline{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--g1),var(--g2),var(--g1),transparent);animation:scanmove 2s ease-in-out infinite;opacity:.9}
+@keyframes scanmove{0%{top:8%;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:92%;opacity:0}}
+
+/* ── FILE DROP ── */
+.file-drop{border:2px dashed var(--b2);border-radius:var(--r);min-height:140px;padding:1.25rem 1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-align:center;transition:all .16s;background:var(--s3)}
+.file-drop:hover,.file-drop.dov{border-color:var(--g1);background:var(--g3)}
+.file-drop p{font-size:.82rem;color:var(--t2)}.file-drop small{font-size:.6rem;color:var(--t3)}
+.file-prev-img{max-width:100%;max-height:100px;border-radius:6px;object-fit:contain;border:1px solid var(--b1)}
+
+/* ── REGISTRY ── */
+.search-wrap{position:relative;margin-bottom:.85rem}
+.search-icon{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--t3);font-size:.9rem;pointer-events:none}
+.search-field{width:100%;padding:.65rem 1rem .65rem 2.4rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);font-family:var(--mono);font-size:.75rem;color:var(--t1);outline:none;transition:border-color .15s}
+.search-field:focus{border-color:var(--g1)}.search-field::placeholder{color:var(--t3)}
+.reg-count{font-size:.62rem;color:var(--t3);margin-bottom:.75rem}
+.reg-count b{color:var(--g1)}
+.reg-item{display:flex;align-items:center;gap:10px;padding:.75rem 1rem;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:6px;transition:border-color .15s}
+.reg-item:hover{border-color:var(--b2)}
+.reg-dot{width:8px;height:8px;border-radius:50%;background:var(--g1);flex-shrink:0;box-shadow:0 0 6px var(--g1)}
+.reg-dot.revoked{background:var(--red);box-shadow:none}
+.reg-body{flex:1;min-width:0}
+.reg-name{font-size:.78rem;color:var(--t1);font-weight:500}
+.reg-id{font-size:.6rem;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.04em}
+.reg-ts{font-size:.58rem;color:var(--t3);flex-shrink:0;text-align:right}
+.reg-revoke{font-size:.58rem;color:var(--red);border:1px solid rgba(255,82,82,.3);padding:3px 9px;border-radius:6px;cursor:pointer;background:none;font-family:var(--mono);transition:all .12s;flex-shrink:0}
+.reg-revoke:hover{background:rgba(255,82,82,.08);border-color:rgba(255,82,82,.6)}
+.reg-revoked-badge{font-size:.56rem;color:var(--red);opacity:.55;flex-shrink:0;letter-spacing:.06em}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--t3);font-size:.7rem;line-height:2}
+.reg-actions{display:flex;gap:8px;margin-bottom:.85rem}
+
+/* ── TOTP SECRET ── */
+.totp-secret-box{background:var(--s3);border:1px solid var(--b2);border-radius:var(--r);padding:.7rem .9rem;text-align:center}
+.totp-secret-lbl{font-size:.54rem;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:.4rem}
+.totp-secret-val{font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--amber);letter-spacing:.18em;cursor:pointer;word-break:break-all;padding:.25rem 0;transition:opacity .15s}
+.totp-secret-val:hover{opacity:.7}
+.totp-secret-hint{font-size:.54rem;color:var(--t3);margin-top:.25rem}
+
+/* ── INFO BOX ── */
+.info-box{background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);padding:.85rem 1rem;font-size:.65rem;color:var(--t3);line-height:1.9;margin-top:.75rem}
+.info-box span{color:var(--g1)}
+
+/* ── TOASTS ── */
+.toasts{position:fixed;bottom:1.25rem;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:6px;width:calc(100% - 2rem);max-width:400px;pointer-events:none}
+.toast{background:var(--s2);border:1px solid var(--b2);color:var(--t1);padding:10px 15px;border-radius:var(--r);font-size:.74rem;display:flex;align-items:center;gap:8px;box-shadow:0 6px 24px rgba(0,0,0,.6);animation:tin .2s ease,tout .28s ease 2.5s forwards;pointer-events:auto}
+.toast.ok{border-color:var(--g1)}.toast.err{border-color:var(--red)}.toast.warn{border-color:var(--amber)}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.toast.ok .tdot{background:var(--g1)}.toast.err .tdot{background:var(--red)}.toast.warn .tdot{background:var(--amber)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tout{from{opacity:1}to{opacity:0;transform:translateY(-4px)}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">A</div>
+  <div class="hdr-text">
+    <div class="hdr-title">Auth<em>Node</em></div>
+    <div class="hdr-sub">AUTHENTICATION SERVER</div>
+  </div>
+  <div class="hdr-pill">
+    <div class="hdr-dot"></div>
+    LIVE
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="switchTab('issue',this)">⊕ ISSUE ID</button>
+  <button class="tab" onclick="switchTab('verify',this)">⌬ AUTHENTICATE</button>
+  <button class="tab" onclick="switchTab('registry',this)">≡ REGISTRY <span class="tab-badge" id="reg-badge">0</span></button>
+</div>
+
+<div class="content">
+
+<!-- ① ISSUE -->
+<div class="panel on" id="panel-issue">
+  <div class="sec-lbl">CREATE NEW IDENTITY</div>
+  <div class="card">
+    <div class="lbl">FULL NAME</div>
+    <input class="field" id="issue-name" type="text" placeholder="Enter user's full name…" maxlength="60"
+      oninput="document.getElementById('issue-btn').disabled=!this.value.trim()"
+      onkeydown="if(event.key==='Enter'&&!document.getElementById('issue-btn').disabled)issueId()">
+    <div class="field-hint">Name will be embedded in the issued QR credential</div>
+    <div class="btn-row">
+      <button class="btn btn-p btn-full" id="issue-btn" onclick="issueId()" disabled>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+        GENERATE &amp; ISSUE ID
+      </button>
+    </div>
+  </div>
+
+  <div class="issue-result" id="issue-result">
+    <div class="id-status-row">
+      <div class="id-status-dot"></div>
+      ID ISSUED SUCCESSFULLY
+    </div>
+    <div class="qr-frame" id="issue-qr-frame">
+      <div style="color:#aaa;font-size:.6rem;font-family:monospace">gen…</div>
+    </div>
+    <div style="width:100%">
+      <div class="id-name-disp" id="issue-disp-name"></div>
+      <div class="id-display" id="issue-disp-id" style="margin:.5rem 0"></div>
+      <div class="id-ts-disp" id="issue-disp-ts"></div>
+      <div class="totp-secret-box" style="margin-top:.9rem">
+        <div class="totp-secret-lbl">2FA SECRET  <span class="totp-secret-hint">— share this alongside the QR for manual setup</span></div>
+        <div class="totp-secret-val" id="issue-disp-secret" onclick="copySecret(this)">—</div>
+        <div class="totp-secret-hint">tap to copy · stored in registry</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin:0;width:100%;justify-content:center">
+      <button class="btn btn-amber" onclick="downloadIssueQR()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 9 8 13 12 9"/><line x1="8" y1="3" x2="8" y2="13"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+        SAVE QR
+      </button>
+      <button class="btn btn-g" onclick="resetIssue()">NEW ISSUE</button>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <span>•</span> IDs are 20 alphanumeric characters with a unique 2FA secret per user<br>
+    <span>•</span> Give the issued QR to the user — they scan it in the Client App to register<br>
+    <span>•</span> The Client App generates a new 6-digit 2FA code every 30 seconds<br>
+    <span>•</span> Authentication requires a valid ID <span>+</span> name <span>+</span> live 2FA code — impossible to forge<br>
+    <span>•</span> The 2FA secret is also shown above for manual sharing / recovery
+  </div>
+</div>
+
+<!-- ② AUTHENTICATE -->
+<div class="panel" id="panel-verify">
+  <div class="sec-lbl">SCAN CLIENT 2FA IDENTITY QR</div>
+  <div class="card">
+    <div class="src-tabs">
+      <button class="src-tab on" onclick="setVerifySrc('cam',this)">📷 CAMERA</button>
+      <button class="src-tab" onclick="setVerifySrc('file',this)">📁 FILE</button>
+    </div>
+
+    <div id="vcam-sec">
+      <div class="cam-wrap">
+        <div id="vcam-reader"></div>
+        <div class="cam-overlay" id="vcam-overlay"><div class="sf"><span></span><div class="sline"></div></div></div>
+      </div>
+      <div class="cam-status" id="vcam-status">CAMERA OFF — tap START CAMERA</div>
+      <div class="btn-row">
+        <button class="btn btn-p" id="vcam-start-btn" onclick="startVerifyCam()">▶ START CAMERA</button>
+        <button class="btn btn-d" id="vcam-stop-btn" onclick="stopVerifyCam()" style="display:none">■ STOP</button>
+      </div>
+    </div>
+
+    <div id="vfile-sec" style="display:none">
+      <div class="file-drop" id="vfile-drop"
+        onclick="document.getElementById('vfile-input').click()"
+        ondragover="event.preventDefault();this.classList.add('dov')"
+        ondragleave="this.classList.remove('dov')"
+        ondrop="onVerifyDrop(event)">
+        <svg width="34" height="34" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="8" y="6" width="32" height="36" rx="3"/><polyline points="28 6 28 16 38 16"/><polyline points="18 28 24 22 30 28"/><line x1="24" y1="22" x2="24" y2="36"/></svg>
+        <p>Drop or tap to upload client QR image</p>
+        <small>PNG · JPG · WEBP · GIF</small>
+      </div>
+      <input type="file" id="vfile-input" accept="image/*" style="display:none" onchange="scanVerifyFile(this.files[0])">
+    </div>
+  </div>
+
+  <div class="verify-result" id="verify-result">
+    <div class="vhdr">
+      <div class="vdot" id="vdot"></div>
+      <div class="vlbl" id="vlbl">Awaiting scan</div>
+    </div>
+    <div class="vbody" id="vbody">Point camera at a client 2FA QR, or upload an image to authenticate.</div>
+  </div>
+</div>
+
+<!-- ③ REGISTRY -->
+<div class="panel" id="panel-registry">
+  <div class="reg-actions">
+    <div class="search-wrap" style="flex:1;margin:0">
+      <span class="search-icon">⌕</span>
+      <input class="search-field" id="reg-search" type="text" placeholder="Search by name or ID…" oninput="renderRegistry()">
+    </div>
+    <button class="btn btn-d" style="min-height:42px;padding:0 14px;font-size:.62rem" onclick="clearRegistry()">CLEAR ALL</button>
+  </div>
+  <div class="reg-count" id="reg-count"></div>
+  <div id="reg-list"></div>
+</div>
+
+</div><!-- /content -->
+
+<div id="file-reader-hidden" style="display:none;width:1px;height:1px;overflow:hidden;position:absolute;left:-9999px"></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONSTANTS & ENCODING
+// ══════════════════════════════════════════════
+const PREFIX   = 'CCAUTH';
+const ID_LEN   = 20;
+const CHARSET  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const B32      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+const REG_KEY  = 'ccauth_server_registry';
+
+function genId() {
+  const a = new Uint8Array(ID_LEN);
+  crypto.getRandomValues(a);
+  return Array.from(a, b => CHARSET[b % CHARSET.length]).join('');
+}
+
+function genTotpSecret() {
+  // 20 random base32 chars = 100 bits of entropy
+  const a = new Uint8Array(20);
+  crypto.getRandomValues(a);
+  return Array.from(a, b => B32[b % 32]).join('');
+}
+
+function fmtId(id) {
+  return id.match(/.{1,4}/g).join('-');
+}
+
+// Server → Client  (issue QR)
+function encodeIssuePayload(id, name, secret) {
+  return `${PREFIX}|ISSUE|${id}|${name}|${secret}`;
+}
+
+// Client → Server  (auth QR — contains live TOTP code)
+function decodeClientPayload(raw) {
+  const tag = PREFIX + '|AUTH|';
+  if (!raw || !raw.startsWith(tag)) return null;
+  const rest = raw.slice(tag.length);
+  const id   = rest.slice(0, ID_LEN);
+  if (id.length !== ID_LEN || !/^[A-Z0-9]+$/.test(id)) return null;
+  if (rest[ID_LEN] !== '|') return null;
+  const afterId  = rest.slice(ID_LEN + 1);
+  const pipeIdx  = afterId.lastIndexOf('|');
+  if (pipeIdx < 0) return null;
+  const name = afterId.slice(0, pipeIdx).trim();
+  const code = afterId.slice(pipeIdx + 1);
+  if (!name || !/^\d{6}$/.test(code)) return null;
+  return { id, name, code };
+}
+
+// ══════════════════════════════════════════════
+//  TOTP (RFC 6238)
+// ══════════════════════════════════════════════
+function b32Decode(s) {
+  s = s.toUpperCase().replace(/=+$/, '');
+  let bits = 0, val = 0;
+  const out = [];
+  for (let i = 0; i < s.length; i++) {
+    const idx = B32.indexOf(s[i]);
+    if (idx < 0) continue;
+    val = (val << 5) | idx;
+    bits += 5;
+    if (bits >= 8) { out.push((val >>> (bits - 8)) & 0xff); bits -= 8; }
+  }
+  return new Uint8Array(out);
+}
+
+async function hmacSha1(keyBytes, msgBytes) {
+  const key = await crypto.subtle.importKey(
+    'raw', keyBytes, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']
+  );
+  return new Uint8Array(await crypto.subtle.sign('HMAC', key, msgBytes));
+}
+
+async function getTotpCode(secret, step) {
+  if (step === undefined) step = Math.floor(Date.now() / 30000);
+  const ctr = new Uint8Array(8);
+  let s = step;
+  for (let i = 7; i >= 0; i--) { ctr[i] = s & 0xff; s = Math.floor(s / 256); }
+  const h   = await hmacSha1(b32Decode(secret), ctr);
+  const off = h[19] & 0xf;
+  const num = ((h[off] & 0x7f) << 24) | ((h[off+1] & 0xff) << 16) |
+              ((h[off+2] & 0xff) << 8)  |  (h[off+3] & 0xff);
+  return String(num % 1000000).padStart(6, '0');
+}
+
+async function verifyTotp(secret, code) {
+  const step = Math.floor(Date.now() / 30000);
+  for (let d = -1; d <= 1; d++) {
+    if (await getTotpCode(secret, step + d) === code) return true;
+  }
+  return false;
+}
+
+// ══════════════════════════════════════════════
+//  REGISTRY (localStorage)
+// ══════════════════════════════════════════════
+function getReg() {
+  return JSON.parse(localStorage.getItem(REG_KEY) || '[]');
+}
+function saveReg(r) {
+  localStorage.setItem(REG_KEY, JSON.stringify(r));
+  updateRegBadge();
+}
+function updateRegBadge() {
+  const n = getReg().filter(r => r.status === 'active').length;
+  document.getElementById('reg-badge').textContent = n;
+}
+
+// ══════════════════════════════════════════════
+//  QR GENERATION
+// ══════════════════════════════════════════════
+function genQR(containerId, text, size) {
+  size = size || 512;
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  const d = document.createElement('div');
+  c.appendChild(d);
+  try {
+    new QRCode(d, { text, width: size, height: size, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  } catch(e) {
+    c.innerHTML = '<div style="color:red;font-family:monospace;font-size:.6rem;text-align:center;padding:.5rem">QR error</div>';
+    return;
+  }
+  setTimeout(() => {
+    const el = c.querySelector('canvas') || c.querySelector('img');
+    if (el) { el.style.width = '100%'; el.style.height = '100%'; el.style.maxWidth = '100%'; el.style.maxHeight = '100%'; }
+  }, 30);
+}
+
+// ══════════════════════════════════════════════
+//  ISSUE TAB
+// ══════════════════════════════════════════════
+let _lastIssuedId = '', _lastIssuedName = '';
+
+function issueId() {
+  const name = document.getElementById('issue-name').value.trim();
+  if (!name) return;
+  const id     = genId();
+  const secret = genTotpSecret();
+  const ts     = Date.now();
+  const reg    = getReg();
+  reg.push({ id, name, ts, status: 'active', secret });
+  saveReg(reg);
+  _lastIssuedId   = id;
+  _lastIssuedName = name;
+
+  // ⚠  Show the result container BEFORE generating QR
+  // (canvas rendering fails in display:none elements)
+  document.getElementById('issue-result').classList.add('show');
+  document.getElementById('issue-disp-name').textContent = name;
+  document.getElementById('issue-disp-id').textContent   = fmtId(id);
+  document.getElementById('issue-disp-ts').textContent   = 'Issued ' + new Date(ts).toLocaleString();
+  document.getElementById('issue-disp-secret').textContent = secret;
+
+  // toDataURL works off-DOM — no visibility timing issue
+  genQR('issue-qr-frame', encodeIssuePayload(id, name, secret));
+
+  document.getElementById('issue-name').value = '';
+  document.getElementById('issue-btn').disabled = true;
+  toast(`✓ ID + 2FA secret issued for ${name}`, 'ok');
+}
+
+function copySecret(el) {
+  const txt = el.textContent;
+  if (!txt || txt === '—') return;
+  navigator.clipboard.writeText(txt).then(() => toast('2FA secret copied', 'ok')).catch(() => {});
+}
+
+function resetIssue() {
+  document.getElementById('issue-result').classList.remove('show');
+  document.getElementById('issue-name').value = '';
+  document.getElementById('issue-btn').disabled = true;
+  document.getElementById('issue-disp-secret').textContent = '—';
+}
+
+function downloadIssueQR() {
+  const frame = document.getElementById('issue-qr-frame');
+  const src   = frame.querySelector('canvas') || frame.querySelector('img');
+  if (!src) { toast('QR not ready', 'err'); return; }
+  const cv = document.createElement('canvas');
+  cv.width = 600; cv.height = 600;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, 600, 600);
+  ctx.drawImage(src, 0, 0, 600, 600);
+  const a = document.createElement('a');
+  a.download = `authnode-id-${_lastIssuedName.replace(/\s+/g,'-')}.png`;
+  a.href = cv.toDataURL('image/png');
+  a.click();
+  toast('QR image saved', 'ok');
+}
+
+// ══════════════════════════════════════════════
+//  VERIFY TAB
+// ══════════════════════════════════════════════
+let _vScanner = null;
+let _lastVText = '', _lastVTs = 0;
+
+function setVerifySrc(src, el) {
+  document.querySelectorAll('#panel-verify .src-tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('vcam-sec').style.display  = src === 'cam'  ? 'block' : 'none';
+  document.getElementById('vfile-sec').style.display = src === 'file' ? 'block' : 'none';
+  if (src === 'file') stopVerifyCam();
+}
+
+async function startVerifyCam() {
+  document.getElementById('vcam-status').textContent = 'Requesting camera access…';
+  document.getElementById('vcam-start-btn').disabled = true;
+  let perm;
+  try { perm = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+  catch(e) {
+    document.getElementById('vcam-status').textContent = 'CAMERA ACCESS DENIED';
+    toast('Camera permission denied', 'err');
+    document.getElementById('vcam-start-btn').disabled = false;
+    return;
+  }
+  perm.getTracks().forEach(t => t.stop());
+  if (_vScanner) { try { await _vScanner.stop(); } catch(e) {} _vScanner = null; }
+  _vScanner = new Html5Qrcode('vcam-reader', { verbose: false });
+  try {
+    await _vScanner.start(
+      { facingMode: 'environment' },
+      { fps: 30, qrbox: (w, h) => ({ width: w, height: h }),
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true } },
+      text => onVerifyScan(text, 'camera'),
+      () => {}
+    );
+    document.getElementById('vcam-start-btn').style.display = 'none';
+    document.getElementById('vcam-stop-btn').style.display  = 'flex';
+    document.getElementById('vcam-overlay').classList.add('on');
+    document.getElementById('vcam-status').textContent = 'SCANNING — point at client 2FA identity QR';
+  } catch(e) {
+    document.getElementById('vcam-status').textContent = 'ERROR: ' + e.message;
+    document.getElementById('vcam-start-btn').disabled = false;
+  }
+}
+
+async function stopVerifyCam() {
+  if (_vScanner) { try { await _vScanner.stop(); } catch(e) {} try { _vScanner.clear(); } catch(e) {} _vScanner = null; }
+  document.getElementById('vcam-start-btn').disabled = false;
+  document.getElementById('vcam-start-btn').style.display = 'flex';
+  document.getElementById('vcam-stop-btn').style.display  = 'none';
+  document.getElementById('vcam-overlay').classList.remove('on');
+  document.getElementById('vcam-reader').innerHTML = '';
+  document.getElementById('vcam-status').textContent = 'CAMERA OFF — tap START CAMERA';
+}
+
+function onVerifyDrop(e) {
+  e.preventDefault();
+  document.getElementById('vfile-drop').classList.remove('dov');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) scanVerifyFile(f);
+}
+
+async function scanVerifyFile(file) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = ev => {
+    const d = document.getElementById('vfile-drop');
+    d.innerHTML = `<img src="${ev.target.result}" class="file-prev-img" alt=""><p style="font-size:.72rem;color:var(--t3)">${file.name}</p>`;
+    d.onclick = null;
+  };
+  fr.readAsDataURL(file);
+  const text = await decodeQRFromFile(file);
+  if (text) onVerifyScan(text, 'file');
+  else setVerifyResult('fail', 'SCAN FAILED', 'No QR code could be decoded from the image.\nPlease try a clearer photo.');
+}
+
+async function onVerifyScan(text, src) {
+  const now = Date.now();
+  if (src === 'camera' && text === _lastVText && now - _lastVTs < 4000) return;
+  _lastVText = text; _lastVTs = now;
+
+  const parsed = decodeClientPayload(text);
+  if (!parsed) {
+    setVerifyResult('fail', '✗ INVALID FORMAT',
+      `The scanned QR is not a valid AuthNode 2FA credential.\n\nExpected format: CCAUTH|AUTH|{20-char ID}|{name}|{6-digit code}\nScanned: ${text.slice(0, 80)}${text.length > 80 ? '…' : ''}`);
+    toast('Not a valid AuthNode 2FA QR', 'err');
+    return;
+  }
+
+  const reg   = getReg();
+  const entry = reg.find(r => r.id === parsed.id);
+
+  if (!entry) {
+    setVerifyResult('fail', '✗ NOT IN REGISTRY',
+      `ID: ${fmtId(parsed.id)}\nName in QR: ${parsed.name}\n\nThis ID was NOT issued by this server.\nAuthentication REJECTED.`);
+    toast('ID not found in registry', 'warn');
+    return;
+  }
+
+  if (entry.status === 'revoked') {
+    setVerifyResult('warn', '⚠ CREDENTIAL REVOKED',
+      `Name: ${entry.name}\nID: ${fmtId(entry.id)}\nIssued: ${new Date(entry.ts).toLocaleString()}\n\nThis credential has been REVOKED.\nAccess denied.`);
+    toast('Credential is revoked', 'warn');
+    return;
+  }
+
+  if (entry.name.toLowerCase() !== parsed.name.toLowerCase()) {
+    setVerifyResult('fail', '✗ NAME MISMATCH',
+      `Registry name: ${entry.name}\nQR name: ${parsed.name}\nID: ${fmtId(entry.id)}\n\nName does not match registry record.\nAuthentication REJECTED.`);
+    toast('Name mismatch detected', 'err');
+    return;
+  }
+
+  if (!entry.secret) {
+    setVerifyResult('fail', '✗ NO 2FA SECRET',
+      `ID: ${fmtId(entry.id)}\n\nThis credential was issued without a TOTP secret.\nPlease re-issue the ID to enable 2FA.\nAuthentication REJECTED.`);
+    toast('No 2FA secret — re-issue this ID', 'err');
+    return;
+  }
+
+  // Async TOTP verification
+  setVerifyResult('warn', '⏳ VERIFYING 2FA…', 'Checking one-time code…');
+  const valid = await verifyTotp(entry.secret, parsed.code);
+
+  if (!valid) {
+    setVerifyResult('fail', '✗ INVALID 2FA CODE',
+      `Name: ${entry.name}\nID: ${fmtId(entry.id)}\n\nThe 6-digit 2FA code is expired or incorrect.\nAsk the user to show a freshly generated QR.\nAuthentication REJECTED.`);
+    toast('2FA code invalid or expired', 'err');
+    return;
+  }
+
+  // ALL CHECKS PASSED
+  setVerifyResult('ok', `✓ AUTHENTICATED`,
+    `Name:    ${entry.name}\nID:      ${fmtId(entry.id)}\nIssued:  ${new Date(entry.ts).toLocaleString()}\nStatus:  ACTIVE ✓\n2FA:     VERIFIED ✓\n\nIdentity + 2FA code verified and authenticated.`);
+  if (src === 'camera') stopVerifyCam();
+  toast(`✓ Authenticated: ${entry.name}`, 'ok');
+}
+
+function setVerifyResult(type, label, body) {
+  const card = document.getElementById('verify-result');
+  card.className = 'verify-result ' + type;
+  document.getElementById('vdot').className = 'vdot ' + type;
+  document.getElementById('vlbl').textContent = label;
+  const b = document.getElementById('vbody');
+  b.className = 'vbody ' + type;
+  b.textContent = body;
+  setTimeout(() => { card.classList.remove(type); }, 900);
+  card.className = 'verify-result ' + type;
+}
+
+// ══════════════════════════════════════════════
+//  REGISTRY TAB
+// ══════════════════════════════════════════════
+function renderRegistry() {
+  const q   = (document.getElementById('reg-search').value || '').trim().toLowerCase();
+  const all = getReg();
+  const reg = q ? all.filter(r =>
+    r.name.toLowerCase().includes(q) ||
+    r.id.toLowerCase().includes(q) ||
+    fmtId(r.id).toLowerCase().includes(q)
+  ) : all;
+
+  document.getElementById('reg-count').innerHTML =
+    `Showing <b>${reg.length}</b> of <b>${all.length}</b> identities`;
+
+  const el = document.getElementById('reg-list');
+  if (!reg.length) {
+    el.innerHTML = '<div class="empty">No identities found.<br>Issue IDs from the ⊕ ISSUE ID tab.</div>';
+    return;
+  }
+  el.innerHTML = reg.slice().reverse().map(r => `
+    <div class="reg-item">
+      <div class="reg-dot ${r.status === 'revoked' ? 'revoked' : ''}"></div>
+      <div class="reg-body">
+        <div class="reg-name">${escHtml(r.name)}</div>
+        <div class="reg-id">${fmtId(r.id)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <div class="reg-ts">${ago(r.ts)}</div>
+        <div style="font-size:.5rem;color:${r.secret ? 'var(--g1)' : 'var(--red)'};letter-spacing:.05em">${r.secret ? '2FA ✓' : '2FA —'}</div>
+        ${r.status === 'revoked'
+          ? `<div class="reg-revoked-badge">REVOKED</div>`
+          : `<button class="reg-revoke" onclick="revokeId('${r.id}')">REVOKE</button>`}
+      </div>
+    </div>
+  `).join('');
+}
+
+function revokeId(id) {
+  const entry = getReg().find(r => r.id === id);
+  if (!entry) return;
+  if (!confirm(`Revoke credential for "${entry.name}"?\n\nThis will immediately block authentication.`)) return;
+  const reg = getReg();
+  const e   = reg.find(r => r.id === id);
+  if (e) { e.status = 'revoked'; saveReg(reg); renderRegistry(); toast(`Revoked: ${e.name}`, 'warn'); }
+}
+
+function clearRegistry() {
+  const n = getReg().length;
+  if (!n) { toast('Registry is already empty', 'warn'); return; }
+  if (!confirm(`Clear all ${n} identit${n === 1 ? 'y' : 'ies'} from the registry? This cannot be undone.`)) return;
+  saveReg([]);
+  renderRegistry();
+  toast('Registry cleared', 'warn');
+}
+
+// ══════════════════════════════════════════════
+//  FILE QR DECODE
+// ══════════════════════════════════════════════
+async function decodeQRFromFile(file) {
+  if (window.BarcodeDetector) {
+    try {
+      const bd  = new BarcodeDetector({ formats: ['qr_code'] });
+      const bmp = await createImageBitmap(file);
+      const res = await bd.detect(bmp);
+      bmp.close();
+      if (res.length && res[0].rawValue) return res[0].rawValue;
+    } catch(e) {}
+  }
+  const s = new Html5Qrcode('file-reader-hidden', { verbose: false });
+  try { return await s.scanFile(file, false); }
+  catch(e) { return null; }
+  finally { try { s.clear(); } catch(e) {} }
+}
+
+// ══════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════
+function switchTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('panel-' + id).classList.add('on');
+  el.classList.add('on');
+  if (id !== 'verify') stopVerifyCam();
+  if (id === 'registry') renderRegistry();
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function ago(ts) {
+  const d = Date.now() - ts;
+  if (d < 60e3)  return 'just now';
+  if (d < 36e5)  return Math.floor(d / 60e3) + 'm ago';
+  if (d < 864e5) return Math.floor(d / 36e5) + 'h ago';
+  return new Date(ts).toLocaleDateString();
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type = 'ok') {
+  const w  = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = `<div class="tdot"></div>${msg}`;
+  w.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ── INIT ──
+updateRegBadge();
+renderRegistry();
+</script>
+</body>
+</html>
