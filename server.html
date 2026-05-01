@@ -243,6 +243,14 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
     <div class="field-hint">Stored only on this device — never transmitted</div>
 
+    <div class="lbl" style="margin-top:1rem">DATE OF BIRTH</div>
+    <input class="field" id="issue-dob" type="date" oninput="checkIssueBtn()">
+    <div class="field-hint">Stored only on this device — never transmitted</div>
+
+    <div class="lbl" style="margin-top:1rem">EMAIL ADDRESS</div>
+    <input class="field" id="issue-email" type="email" placeholder="Enter email address…" maxlength="120" oninput="checkIssueBtn()">
+    <div class="field-hint">Stored only on this device — never transmitted</div>
+
     <div class="lbl" style="margin-top:1rem">ID HOLDER PHOTO <span style="color:var(--red)">*</span></div>
     <div class="photo-upload-zone" id="photo-zone"
       onclick="document.getElementById('photo-input').click()"
@@ -282,6 +290,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div style="flex:1;min-width:0">
           <div class="id-name-disp" id="issue-disp-name"></div>
           <div style="font-family:var(--mono);font-size:.58rem;color:var(--t3);margin-top:3px" id="issue-disp-gender"></div>
+          <div style="font-family:var(--mono);font-size:.58rem;color:var(--t3);margin-top:2px" id="issue-disp-dob"></div>
+          <div style="font-family:var(--mono);font-size:.58rem;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="issue-disp-email"></div>
         </div>
       </div>
       <div class="id-display" id="issue-disp-id" style="margin:.5rem 0"></div>
@@ -357,6 +367,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
         <div class="auth-profile-name" id="auth-profile-name"></div>
         <div class="auth-profile-gender" id="auth-profile-gender"></div>
         <div class="auth-profile-id" id="auth-profile-id"></div>
+        <div class="auth-profile-gender" id="auth-profile-dob"></div>
+        <div class="auth-profile-gender" id="auth-profile-email" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
         <div class="auth-profile-badge">✓ IDENTITY VERIFIED</div>
       </div>
     </div>
@@ -526,7 +538,9 @@ function selectGender(val, el) {
 
 function checkIssueBtn() {
   const name  = document.getElementById('issue-name').value.trim();
-  document.getElementById('issue-btn').disabled = !(name && _selectedGender && _photoDataUrl);
+  const dob   = document.getElementById('issue-dob').value.trim();
+  const email = document.getElementById('issue-email').value.trim();
+  document.getElementById('issue-btn').disabled = !(name && _selectedGender && dob && email && _photoDataUrl);
 }
 
 function onPhotoDrop(e) {
@@ -541,11 +555,9 @@ function onPhotoSelected(file) {
   const reader = new FileReader();
   reader.onload = ev => {
     _photoDataUrl = ev.target.result;
-    // Show preview
     const zone = document.getElementById('photo-zone');
     zone.innerHTML = `<img class="photo-preview" src="${_photoDataUrl}" alt="Photo preview">`;
     zone.onclick = () => document.getElementById('photo-input').click();
-    // Update badge
     const badge = document.getElementById('photo-badge');
     badge.className = 'photo-req-badge ok';
     badge.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 8 7 12 13 4"/></svg> PHOTO READY`;
@@ -554,23 +566,32 @@ function onPhotoSelected(file) {
   reader.readAsDataURL(file);
 }
 
+function fmtDob(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d} ${months[parseInt(m,10)-1]} ${y}`;
+}
+
 function issueId() {
-  const name = document.getElementById('issue-name').value.trim();
-  if (!name || !_selectedGender || !_photoDataUrl) return;
+  const name  = document.getElementById('issue-name').value.trim();
+  const dob   = document.getElementById('issue-dob').value.trim();
+  const email = document.getElementById('issue-email').value.trim();
+  if (!name || !_selectedGender || !dob || !email || !_photoDataUrl) return;
   const id     = genId();
   const secret = genTotpSecret();
   const ts     = Date.now();
   const reg    = getReg();
-  // photo + gender stored locally only — never leave the device
-  reg.push({ id, name, gender: _selectedGender, photo: _photoDataUrl, ts, status: 'active', secret });
+  // All personal details stored locally only — never leave the device
+  reg.push({ id, name, gender: _selectedGender, dob, email, photo: _photoDataUrl, ts, status: 'active', secret });
   saveReg(reg);
   _lastIssuedId   = id;
   _lastIssuedName = name;
 
   document.getElementById('issue-result').classList.add('show');
-  document.getElementById('issue-disp-name').textContent = name;
-  document.getElementById('issue-disp-id').textContent   = fmtId(id);
-  document.getElementById('issue-disp-ts').textContent   = 'Issued ' + new Date(ts).toLocaleString();
+  document.getElementById('issue-disp-name').textContent  = name;
+  document.getElementById('issue-disp-id').textContent    = fmtId(id);
+  document.getElementById('issue-disp-ts').textContent    = 'Issued ' + new Date(ts).toLocaleString();
   document.getElementById('issue-disp-secret').textContent = secret;
 
   const photoEl = document.getElementById('issue-disp-photo');
@@ -579,10 +600,14 @@ function issueId() {
 
   const genderLabels = { male: '♂ Male', female: '♀ Female', other: '⊕ Other' };
   document.getElementById('issue-disp-gender').textContent = genderLabels[_selectedGender] || _selectedGender;
+  document.getElementById('issue-disp-dob').textContent   = '🎂 ' + fmtDob(dob);
+  document.getElementById('issue-disp-email').textContent = '✉ ' + email;
 
   genQR('issue-qr-frame', encodeIssuePayload(id, name, secret));
 
-  document.getElementById('issue-name').value = '';
+  document.getElementById('issue-name').value  = '';
+  document.getElementById('issue-dob').value   = '';
+  document.getElementById('issue-email').value = '';
   document.getElementById('issue-btn').disabled = true;
   toast(`✓ ID issued for ${name}`, 'ok');
 }
@@ -597,13 +622,13 @@ function resetIssue() {
   _selectedGender = '';
   _photoDataUrl   = '';
   document.getElementById('issue-result').classList.remove('show');
-  document.getElementById('issue-name').value = '';
+  document.getElementById('issue-name').value  = '';
+  document.getElementById('issue-dob').value   = '';
+  document.getElementById('issue-email').value = '';
   document.getElementById('issue-btn').disabled = true;
   document.getElementById('issue-disp-secret').textContent = '—';
   document.getElementById('issue-disp-photo').style.display = 'none';
-  // Reset gender buttons
   document.querySelectorAll('.gender-opt').forEach(b => b.classList.remove('on'));
-  // Reset photo zone
   const zone = document.getElementById('photo-zone');
   zone.innerHTML = `<svg width="32" height="32" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"><circle cx="24" cy="20" r="8"/><path d="M6 42c0-9.94 8.06-18 18-18s18 8.06 18 18"/></svg><p>Tap to upload photo</p><small>JPG · PNG · WEBP</small>`;
   zone.onclick = () => document.getElementById('photo-input').click();
@@ -794,6 +819,8 @@ function setVerifyResult(type, label, body, entry) {
     document.getElementById('auth-profile-name').textContent   = entry.name;
     document.getElementById('auth-profile-gender').textContent = entry.gender ? genderLabels[entry.gender] || entry.gender : 'Gender not recorded';
     document.getElementById('auth-profile-id').textContent     = fmtId(entry.id);
+    document.getElementById('auth-profile-dob').textContent    = entry.dob   ? '🎂 ' + fmtDob(entry.dob)   : '';
+    document.getElementById('auth-profile-email').textContent  = entry.email ? '✉ '  + entry.email          : '';
     profile.classList.add('show');
   } else {
     profile.classList.remove('show');
@@ -828,7 +855,8 @@ function renderRegistry() {
       <div class="reg-body">
         <div class="reg-name">${escHtml(r.name)}</div>
         <div class="reg-id">${fmtId(r.id)}</div>
-        ${r.gender ? `<div class="reg-gender">${r.gender === 'male' ? '♂ Male' : r.gender === 'female' ? '♀ Female' : '⊕ Other'}</div>` : ''}
+        ${r.gender ? `<div class="reg-gender">${r.gender === 'male' ? '♂ Male' : r.gender === 'female' ? '♀ Female' : '⊕ Other'}${r.dob ? '  ·  🎂 ' + fmtDob(r.dob) : ''}</div>` : ''}
+        ${r.email  ? `<div class="reg-gender" style="color:var(--t3)">✉ ${escHtml(r.email)}</div>` : ''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
         <div class="reg-ts">${ago(r.ts)}</div>
