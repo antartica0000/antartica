@@ -146,6 +146,28 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .empty{text-align:center;padding:2.5rem 1rem;color:var(--t3);font-size:.7rem;line-height:2}
 .reg-actions{display:flex;gap:8px;margin-bottom:.85rem}
 
+/* ── GENDER SELECT ── */
+.gender-row{display:flex;gap:8px;margin-top:.85rem}
+.gender-opt{flex:1;min-height:44px;background:var(--s3);border:1.5px solid var(--b2);border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:.63rem;letter-spacing:.06em;color:var(--t3);display:flex;align-items:center;justify-content:center;gap:5px;transition:all .14s;-webkit-user-select:none;user-select:none}
+.gender-opt:hover{border-color:var(--g1);color:var(--t2)}
+.gender-opt.on{border-color:var(--g1);color:var(--g1);background:var(--g3)}
+
+/* ── PHOTO UPLOAD ── */
+.photo-upload-zone{border:2px dashed var(--b2);border-radius:var(--r);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-align:center;transition:all .16s;background:var(--s3);position:relative;overflow:hidden}
+.photo-upload-zone:hover,.photo-upload-zone.dov{border-color:var(--g1);background:var(--g3)}
+.photo-upload-zone p{font-size:.8rem;color:var(--t2);pointer-events:none}
+.photo-upload-zone small{font-family:var(--mono);font-size:.58rem;color:var(--t3);pointer-events:none}
+.photo-preview{width:100%;height:130px;object-fit:cover;display:block;border-radius:calc(var(--r) - 2px)}
+.photo-req-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.54rem;color:var(--amber);background:rgba(255,171,64,.1);border:1px solid rgba(255,171,64,.3);border-radius:20px;padding:2px 9px;margin-top:.35rem}
+.photo-req-badge.ok{color:var(--g1);background:var(--g3);border-color:rgba(0,230,118,.3)}
+/* photo thumb in registry */
+.reg-photo{width:36px;height:36px;border-radius:8px;object-fit:cover;border:1px solid var(--b2);flex-shrink:0}
+.reg-photo-placeholder{width:36px;height:36px;border-radius:8px;background:var(--s3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+/* gender badge in registry */
+.reg-gender{font-family:var(--mono);font-size:.5rem;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+/* photo in result */
+.result-photo{width:72px;height:72px;border-radius:10px;object-fit:cover;border:2px solid var(--g1);box-shadow:0 0 12px rgba(0,230,118,.2);flex-shrink:0}
+
 /* ── TOTP SECRET ── */
 .totp-secret-box{background:var(--s3);border:1px solid var(--b2);border-radius:var(--r);padding:.7rem .9rem;text-align:center}
 .totp-secret-lbl{font-size:.54rem;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:.4rem}
@@ -195,11 +217,38 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <div class="panel on" id="panel-issue">
   <div class="sec-lbl">CREATE NEW IDENTITY</div>
   <div class="card">
+
     <div class="lbl">FULL NAME</div>
     <input class="field" id="issue-name" type="text" placeholder="Enter user's full name…" maxlength="60"
-      oninput="document.getElementById('issue-btn').disabled=!this.value.trim()"
+      oninput="checkIssueBtn()"
       onkeydown="if(event.key==='Enter'&&!document.getElementById('issue-btn').disabled)issueId()">
     <div class="field-hint">Name will be embedded in the issued QR credential</div>
+
+    <div class="lbl" style="margin-top:1rem">GENDER</div>
+    <div class="gender-row" id="gender-row">
+      <button class="gender-opt" onclick="selectGender('male',this)">♂ MALE</button>
+      <button class="gender-opt" onclick="selectGender('female',this)">♀ FEMALE</button>
+      <button class="gender-opt" onclick="selectGender('other',this)">⊕ OTHER</button>
+    </div>
+    <div class="field-hint">Stored only on this device — never transmitted</div>
+
+    <div class="lbl" style="margin-top:1rem">ID HOLDER PHOTO <span style="color:var(--red)">*</span></div>
+    <div class="photo-upload-zone" id="photo-zone"
+      onclick="document.getElementById('photo-input').click()"
+      ondragover="event.preventDefault();this.classList.add('dov')"
+      ondragleave="this.classList.remove('dov')"
+      ondrop="onPhotoDrop(event)">
+      <svg width="32" height="32" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"><circle cx="24" cy="20" r="8"/><path d="M6 42c0-9.94 8.06-18 18-18s18 8.06 18 18"/></svg>
+      <p>Tap to upload photo</p>
+      <small>JPG · PNG · WEBP</small>
+    </div>
+    <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhotoSelected(this.files[0])">
+    <div class="photo-req-badge" id="photo-badge">
+      <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="11" x2="8" y2="11"/></svg>
+      PHOTO REQUIRED
+    </div>
+    <div class="field-hint">Photo stored locally on this device only — never leaves your browser</div>
+
     <div class="btn-row">
       <button class="btn btn-p btn-full" id="issue-btn" onclick="issueId()" disabled>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
@@ -217,7 +266,13 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
       <div style="color:#aaa;font-size:.6rem;font-family:monospace">gen…</div>
     </div>
     <div style="width:100%">
-      <div class="id-name-disp" id="issue-disp-name"></div>
+      <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.5rem">
+        <img id="issue-disp-photo" class="result-photo" src="" alt="" style="display:none">
+        <div style="flex:1;min-width:0">
+          <div class="id-name-disp" id="issue-disp-name"></div>
+          <div style="font-family:var(--mono);font-size:.58rem;color:var(--t3);margin-top:3px" id="issue-disp-gender"></div>
+        </div>
+      </div>
       <div class="id-display" id="issue-disp-id" style="margin:.5rem 0"></div>
       <div class="id-ts-disp" id="issue-disp-ts"></div>
       <div class="totp-secret-box" style="margin-top:.9rem">
@@ -439,33 +494,77 @@ function genQR(containerId, text, size) {
 //  ISSUE TAB
 // ══════════════════════════════════════════════
 let _lastIssuedId = '', _lastIssuedName = '';
+let _selectedGender = '';
+let _photoDataUrl   = '';   // base64 data URL, stored locally only
+
+function selectGender(val, el) {
+  _selectedGender = val;
+  document.querySelectorAll('.gender-opt').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  checkIssueBtn();
+}
+
+function checkIssueBtn() {
+  const name  = document.getElementById('issue-name').value.trim();
+  document.getElementById('issue-btn').disabled = !(name && _selectedGender && _photoDataUrl);
+}
+
+function onPhotoDrop(e) {
+  e.preventDefault();
+  document.getElementById('photo-zone').classList.remove('dov');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) onPhotoSelected(f);
+}
+
+function onPhotoSelected(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _photoDataUrl = ev.target.result;
+    // Show preview
+    const zone = document.getElementById('photo-zone');
+    zone.innerHTML = `<img class="photo-preview" src="${_photoDataUrl}" alt="Photo preview">`;
+    zone.onclick = () => document.getElementById('photo-input').click();
+    // Update badge
+    const badge = document.getElementById('photo-badge');
+    badge.className = 'photo-req-badge ok';
+    badge.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 8 7 12 13 4"/></svg> PHOTO READY`;
+    checkIssueBtn();
+  };
+  reader.readAsDataURL(file);
+}
 
 function issueId() {
   const name = document.getElementById('issue-name').value.trim();
-  if (!name) return;
+  if (!name || !_selectedGender || !_photoDataUrl) return;
   const id     = genId();
   const secret = genTotpSecret();
   const ts     = Date.now();
   const reg    = getReg();
-  reg.push({ id, name, ts, status: 'active', secret });
+  // photo + gender stored locally only — never leave the device
+  reg.push({ id, name, gender: _selectedGender, photo: _photoDataUrl, ts, status: 'active', secret });
   saveReg(reg);
   _lastIssuedId   = id;
   _lastIssuedName = name;
 
-  // ⚠  Show the result container BEFORE generating QR
-  // (canvas rendering fails in display:none elements)
   document.getElementById('issue-result').classList.add('show');
   document.getElementById('issue-disp-name').textContent = name;
   document.getElementById('issue-disp-id').textContent   = fmtId(id);
   document.getElementById('issue-disp-ts').textContent   = 'Issued ' + new Date(ts).toLocaleString();
   document.getElementById('issue-disp-secret').textContent = secret;
 
-  // toDataURL works off-DOM — no visibility timing issue
+  const photoEl = document.getElementById('issue-disp-photo');
+  photoEl.src = _photoDataUrl;
+  photoEl.style.display = 'block';
+
+  const genderLabels = { male: '♂ Male', female: '♀ Female', other: '⊕ Other' };
+  document.getElementById('issue-disp-gender').textContent = genderLabels[_selectedGender] || _selectedGender;
+
   genQR('issue-qr-frame', encodeIssuePayload(id, name, secret));
 
   document.getElementById('issue-name').value = '';
   document.getElementById('issue-btn').disabled = true;
-  toast(`✓ ID + 2FA secret issued for ${name}`, 'ok');
+  toast(`✓ ID issued for ${name}`, 'ok');
 }
 
 function copySecret(el) {
@@ -475,10 +574,23 @@ function copySecret(el) {
 }
 
 function resetIssue() {
+  _selectedGender = '';
+  _photoDataUrl   = '';
   document.getElementById('issue-result').classList.remove('show');
   document.getElementById('issue-name').value = '';
   document.getElementById('issue-btn').disabled = true;
   document.getElementById('issue-disp-secret').textContent = '—';
+  document.getElementById('issue-disp-photo').style.display = 'none';
+  // Reset gender buttons
+  document.querySelectorAll('.gender-opt').forEach(b => b.classList.remove('on'));
+  // Reset photo zone
+  const zone = document.getElementById('photo-zone');
+  zone.innerHTML = `<svg width="32" height="32" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"><circle cx="24" cy="20" r="8"/><path d="M6 42c0-9.94 8.06-18 18-18s18 8.06 18 18"/></svg><p>Tap to upload photo</p><small>JPG · PNG · WEBP</small>`;
+  zone.onclick = () => document.getElementById('photo-input').click();
+  const badge = document.getElementById('photo-badge');
+  badge.className = 'photo-req-badge';
+  badge.innerHTML = `<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="11" x2="8" y2="11"/></svg> PHOTO REQUIRED`;
+  document.getElementById('photo-input').value = '';
 }
 
 function downloadIssueQR() {
@@ -671,10 +783,13 @@ function renderRegistry() {
   }
   el.innerHTML = reg.slice().reverse().map(r => `
     <div class="reg-item">
-      <div class="reg-dot ${r.status === 'revoked' ? 'revoked' : ''}"></div>
+      ${r.photo
+        ? `<img class="reg-photo" src="${r.photo}" alt="">`
+        : `<div class="reg-photo-placeholder">👤</div>`}
       <div class="reg-body">
         <div class="reg-name">${escHtml(r.name)}</div>
         <div class="reg-id">${fmtId(r.id)}</div>
+        ${r.gender ? `<div class="reg-gender">${r.gender === 'male' ? '♂ Male' : r.gender === 'female' ? '♀ Female' : '⊕ Other'}</div>` : ''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
         <div class="reg-ts">${ago(r.ts)}</div>
