@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Chronicle — Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0e0c;
+  --surface: #1a1916;
+  --surface2: #232220;
+  --surface3: #2e2c29;
+  --border: #3a3834;
+  --accent: #e8a045;
+  --accent2: #c47d20;
+  --accent-glow: rgba(232,160,69,0.15);
+  --text: #f0ede8;
+  --text2: #a09d97;
+  --text3: #5e5c58;
+  --red: #e05c5c;
+  --green: #5cb87a;
+  --blue: #5c8fe0;
+  --purple: #9b5ce0;
+  --teal: #5cbdb8;
+  --sidebar-w: 280px;
+  --header-h: 60px;
+  --bottom-nav-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+body{display:flex;flex-direction:column;height:100dvh;}
+
+/* HEADER */
+.app-header{height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:100;}
+.menu-btn{display:none;background:none;border:none;color:var(--text2);cursor:pointer;width:40px;height:40px;border-radius:10px;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;}
+.menu-btn:active{background:var(--surface3);}
+.menu-btn svg{display:block;}
+.logo{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--accent);letter-spacing:-0.01em;flex-shrink:0;}
+.header-center{display:flex;align-items:center;gap:6px;margin-left:10px;}
+.nav-btn{background:none;border:1px solid var(--border);color:var(--text2);cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:1rem;line-height:1;}
+.nav-btn:hover{background:var(--surface3);border-color:var(--accent);color:var(--accent);}
+.nav-btn:active{transform:scale(0.92);}
+.current-label{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:600;color:var(--text);min-width:155px;text-align:center;cursor:pointer;transition:color .15s;}
+.current-label:hover{color:var(--accent);}
+.today-btn{background:none;border:1px solid var(--border);color:var(--text2);cursor:pointer;padding:5px 12px;border-radius:8px;font-size:0.74rem;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:.04em;text-transform:uppercase;transition:all .15s;flex-shrink:0;}
+.today-btn:hover{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);}
+.view-switcher{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px;margin-left:auto;}
+.view-btn{background:none;border:none;color:var(--text3);cursor:pointer;padding:5px 13px;border-radius:7px;font-size:0.74rem;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:.03em;transition:all .15s;}
+.view-btn.active{background:var(--accent);color:#1a1400;font-weight:700;}
+.view-btn:not(.active):hover{background:var(--surface3);color:var(--text2);}
+
+/* BODY */
+.app-body{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:min(var(--sidebar-w), 88vw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.sidebar-section{padding:16px 14px 10px;}
+.mini-cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.mini-cal-title{font-size:0.76rem;font-weight:700;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;}
+.mini-nav{display:flex;gap:2px;}
+.mini-nav button{background:none;border:none;color:var(--text3);cursor:pointer;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .12s;}
+.mini-nav button:hover{background:var(--surface3);color:var(--accent);}
+.mini-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;}
+.mini-day-label{text-align:center;font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.06em;padding:4px 0;text-transform:uppercase;}
+.mini-day{text-align:center;font-size:.72rem;padding:5px 1px;border-radius:6px;cursor:pointer;color:var(--text2);transition:all .12s;position:relative;}
+.mini-day:hover{background:var(--surface3);color:var(--text);}
+.mini-day.other-month{color:var(--text3);}
+.mini-day.today{color:var(--accent);font-weight:700;}
+.mini-day.selected{background:var(--accent);color:#1a1400!important;font-weight:700;}
+.mini-day.has-events::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--accent);}
+.mini-day.selected.has-events::after{background:#1a1400;}
+.sidebar-label{font-size:.67rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.category-list{display:flex;flex-direction:column;gap:2px;}
+.category-item{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background .12s;}
+.category-item:hover{background:var(--surface2);}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cat-name{font-size:.8rem;color:var(--text2);font-weight:500;}
+.cat-count{margin-left:auto;font-size:.67rem;color:var(--text3);background:var(--surface3);padding:1px 7px;border-radius:10px;}
+.upcoming-list{display:flex;flex-direction:column;gap:4px;}
+.upcoming-item{display:flex;align-items:flex-start;gap:9px;padding:9px 8px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:all .15s;}
+.upcoming-item:hover{background:var(--surface2);border-color:var(--border);}
+.upcoming-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.upcoming-info{flex:1;min-width:0;}
+.upcoming-title{font-size:.77rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.upcoming-time{font-size:.68rem;color:var(--text3);margin-top:1px;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* MONTH VIEW */
+.month-view{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.month-dow-row{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.month-dow{padding:9px 4px;font-size:.67rem;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;text-align:center;}
+.month-dow.weekend{color:var(--accent2);}
+.month-grid{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(115px,auto);overflow-y:auto;overflow-x:hidden;}
+.month-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px 5px;display:flex;flex-direction:column;cursor:pointer;position:relative;overflow:hidden;transition:background .12s;user-select:none;}
+.month-cell:nth-child(7n){border-right:none;}
+.month-cell:hover{background:rgba(232,160,69,0.06);}
+.month-cell:active{background:rgba(232,160,69,0.1);}
+.month-cell.other-month{background:rgba(0,0,0,0.12);}
+.month-cell.other-month .cell-num{color:var(--text3);}
+.month-cell.today{background:var(--accent-glow);}
+.month-cell.today::after{content:'';position:absolute;inset:0;border:1.5px solid var(--accent);pointer-events:none;}
+.cell-num{font-size:.78rem;font-weight:600;color:var(--text2);width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;transition:all .12s;}
+.month-cell.today .cell-num{background:var(--accent);color:#1a1400;font-weight:800;}
+.event-chip{border-radius:4px;padding:2px 6px;font-size:.66rem;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:filter .12s;line-height:1.5;flex-shrink:0;}
+.event-chip:hover{filter:brightness(1.2);}
+.more-chip{font-size:.61rem;color:var(--text3);padding:1px 3px;cursor:pointer;}
+.more-chip:hover{color:var(--accent);}
+/* Scrollable events container (desktop) */
+.cell-events{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;min-height:0;padding-right:1px;margin-top:1px;}
+.cell-events::-webkit-scrollbar{width:2px;}
+.cell-events::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:1px;}
+.cell-events::-webkit-scrollbar-track{background:transparent;}
+/* Cell header row for desktop (date num + add hint side by side) */
+.cell-header-row{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;margin-bottom:1px;}
+.dot-row{display:none;gap:3px;flex-wrap:wrap;padding:1px 0;}
+.ev-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+/* Tap-hint ripple on month cell */
+.month-cell::before{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity .15s;pointer-events:none;border-radius:0;}
+.month-cell:active::before{opacity:0.05;}
+
+/* WEEK VIEW */
+.week-view{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.week-header{display:grid;grid-template-columns:50px repeat(7,1fr);border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.week-time-gutter{border-right:1px solid var(--border);}
+.week-day-header{padding:8px 4px;text-align:center;border-left:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.week-day-header:hover{background:var(--surface2);}
+.week-day-name{font-size:.6rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.week-day-num{font-size:1.1rem;font-weight:700;color:var(--text);width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin:3px auto 0;transition:all .12s;}
+.week-day-header.today .week-day-num{background:var(--accent);color:#1a1400;}
+.week-day-header.today .week-day-name{color:var(--accent);}
+.week-body{flex:1;display:flex;overflow-y:auto;position:relative;}
+.week-times{width:50px;flex-shrink:0;border-right:1px solid var(--border);position:sticky;left:0;z-index:5;background:var(--bg);}
+.week-time-slot{height:56px;display:flex;align-items:flex-start;padding:3px 6px 0 0;justify-content:flex-end;}
+.week-time-label{font-size:.59rem;color:var(--text3);font-weight:600;}
+.week-days-area{flex:1;display:grid;grid-template-columns:repeat(7,1fr);position:relative;}
+.week-day-col{border-left:1px solid var(--border);position:relative;cursor:pointer;}
+.week-hour-line{position:absolute;left:0;right:0;border-top:1px solid var(--border);pointer-events:none;}
+.week-hour-line.half{border-top:1px dashed rgba(255,255,255,0.04);}
+.week-event{position:absolute;left:1px;right:1px;border-radius:6px;padding:3px 5px;font-size:.65rem;font-weight:600;cursor:pointer;overflow:hidden;transition:filter .12s;line-height:1.4;z-index:2;}
+.week-event:hover{filter:brightness(1.15);z-index:3;}
+.week-event-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.week-event-time{opacity:.7;font-size:.57rem;}
+
+/* DAY VIEW */
+.day-view{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.day-header{padding:13px 16px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;display:flex;align-items:center;gap:12px;}
+.back-btn{display:none;background:var(--surface3);border:none;color:var(--text2);width:36px;height:36px;border-radius:10px;cursor:pointer;align-items:center;justify-content:center;font-size:1.1rem;transition:all .15s;flex-shrink:0;}
+.back-btn:hover{background:var(--border);color:var(--text);}
+.back-btn:active{transform:scale(0.92);}
+.day-header-left{display:flex;align-items:baseline;gap:10px;}
+.day-header-num{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:700;color:var(--text);line-height:1;}
+.day-header-info{display:flex;flex-direction:column;gap:1px;}
+.day-header-name{font-size:.94rem;font-weight:600;color:var(--accent);}
+.day-header-month{font-size:.73rem;color:var(--text3);}
+.today-badge{background:var(--accent);color:#1a1400;font-size:.63rem;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-left:auto;}
+.day-body{flex:1;display:flex;overflow-y:auto;}
+.day-times{width:56px;flex-shrink:0;border-right:1px solid var(--border);}
+.day-time-slot{height:60px;display:flex;align-items:flex-start;padding:4px 8px 0 0;justify-content:flex-end;}
+.day-time-label{font-size:.62rem;color:var(--text3);font-weight:600;}
+.day-events-col{flex:1;position:relative;cursor:pointer;}
+.day-hour-line{position:absolute;left:0;right:0;border-top:1px solid var(--border);pointer-events:none;}
+.day-hour-line.half{border-top:1px dashed rgba(255,255,255,0.04);}
+.day-event{position:absolute;left:8px;right:8px;border-radius:10px;padding:8px 12px;font-size:.8rem;cursor:pointer;overflow:hidden;transition:filter .12s;z-index:2;}
+.day-event:hover{filter:brightness(1.15);z-index:3;}
+.day-event-title{font-weight:700;margin-bottom:2px;}
+.day-event-time{font-size:.7rem;opacity:.8;}
+.day-event-desc{font-size:.7rem;opacity:.65;margin-top:4px;line-height:1.4;}
+.empty-day{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text3);pointer-events:none;}
+.empty-day svg{opacity:.22;}
+.empty-day span{font-size:.8rem;opacity:.45;}
+
+/* TIME INDICATOR */
+.time-indicator{position:absolute;left:0;right:0;z-index:10;pointer-events:none;}
+.time-indicator-line{position:absolute;left:0;right:0;height:2px;background:var(--red);}
+.time-indicator-dot{position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red);}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(var(--bottom-nav-h) + 18px + var(--safe-bottom));right:18px;z-index:200;width:58px;height:58px;border-radius:18px;background:var(--accent);border:none;color:#1a1400;font-size:1.7rem;font-weight:300;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(232,160,69,0.45),0 2px 8px rgba(0,0,0,0.4);transition:all .18s;line-height:1;}
+.fab:active{transform:scale(0.9);}
+.fab:hover{background:#f0aa55;}
+
+/* BOTTOM NAV */
+.bottom-nav{display:none;height:calc(var(--bottom-nav-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;z-index:100;align-items:stretch;}
+.bnav-btn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text3);font-size:.6rem;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .15s;padding:8px 0;-webkit-tap-highlight-color:transparent;}
+.bnav-btn svg{transition:transform .15s;}
+.bnav-btn.active{color:var(--accent);}
+.bnav-btn.active svg{transform:scale(1.12);}
+.bnav-btn:active{opacity:.7;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:440px;box-shadow:0 32px 80px rgba(0,0,0,0.6);transform:translateY(20px) scale(0.96);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden;max-height:90dvh;display:flex;flex-direction:column;}
+.modal-overlay.open .modal{transform:none;}
+.modal-drag-handle{display:none;width:36px;height:4px;border-radius:2px;background:var(--border);margin:10px auto 0;}
+.modal-header{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.12rem;font-weight:700;color:var(--text);}
+.modal-close{background:var(--surface3);border:none;color:var(--text2);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.88rem;transition:all .12s;}
+.modal-close:hover{background:var(--red);color:#fff;}
+.modal-body{padding:14px 20px 16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:.67rem;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:10px 13px;outline:none;width:100%;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.form-select{cursor:pointer;}
+.form-textarea{resize:none;min-height:60px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.color-picker{display:flex;gap:7px;flex-wrap:wrap;}
+.color-swatch{width:30px;height:30px;border-radius:8px;cursor:pointer;border:2.5px solid transparent;transition:all .12s;}
+.color-swatch:hover{transform:scale(1.12);}
+.color-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,0.4);transform:scale(1.12);}
+.modal-footer{padding:0 20px 16px;display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+.btn{padding:10px 18px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:600;cursor:pointer;transition:all .15s;min-height:42px;}
+.btn-ghost{background:var(--surface3);color:var(--text2);}
+.btn-ghost:hover{background:var(--border);color:var(--text);}
+.btn-danger{background:rgba(224,92,92,0.12);color:var(--red);border:1px solid rgba(224,92,92,0.28);}
+.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-primary{background:var(--accent);color:#1a1400;box-shadow:0 0 14px var(--accent-glow);flex:1;}
+.btn-primary:hover{background:#f0aa55;}
+.btn-primary:active{transform:scale(0.96);}
+
+/* EVENT POPUP */
+.event-popup{position:fixed;z-index:999;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;width:252px;box-shadow:0 20px 60px rgba(0,0,0,0.55);transform:scale(0.9);opacity:0;pointer-events:none;transition:all .16s cubic-bezier(.4,0,.2,1);}
+.event-popup.open{transform:scale(1);opacity:1;pointer-events:all;}
+.popup-color-bar{height:3px;border-radius:2px;margin-bottom:10px;}
+.popup-title{font-weight:700;font-size:.88rem;color:var(--text);margin-bottom:3px;}
+.popup-time{font-size:.71rem;color:var(--text3);margin-bottom:3px;}
+.popup-category{font-size:.68rem;color:var(--text3);margin-bottom:8px;}
+.popup-desc{font-size:.74rem;color:var(--text2);margin-bottom:10px;line-height:1.5;}
+.popup-actions{display:flex;gap:6px;}
+.popup-btn{flex:1;padding:8px;border-radius:8px;border:none;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .12s;min-height:36px;}
+.popup-edit{background:var(--surface2);color:var(--text2);border:1px solid var(--border);}
+.popup-edit:hover{background:var(--accent);color:#1a1400;border-color:var(--accent);}
+.popup-del{background:rgba(224,92,92,0.1);color:var(--red);}
+.popup-del:hover{background:var(--red);color:#fff;}
+.popup-close{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:.82rem;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:5px;transition:all .12s;}
+.popup-close:hover{background:var(--surface3);color:var(--text);}
+.popup-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;opacity:0;pointer-events:none;transition:opacity .2s;}
+.popup-backdrop.open{opacity:1;pointer-events:all;}
+
+/* SIDEBAR OVERLAY */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:149;opacity:0;pointer-events:none;transition:opacity .25s;}
+.sidebar-overlay.open{opacity:1;pointer-events:all;}
+
+/* Hamburger → X animation */
+.menu-btn .bar1,.menu-btn .bar2,.menu-btn .bar3{transition:transform .25s ease,opacity .25s ease;transform-origin:center;}
+body.sidebar-open .menu-btn .bar1{transform:translateY(5px) rotate(45deg);}
+body.sidebar-open .menu-btn .bar2{opacity:0;transform:scaleX(0);}
+body.sidebar-open .menu-btn .bar3{transform:translateY(-5px) rotate(-45deg);}
+
+/* DESKTOP NEW EVENT BUTTON */
+.new-event-btn{background:var(--accent);border:none;color:#1a1400;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;padding:7px 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;flex-shrink:0;letter-spacing:.01em;}
+.new-event-btn:hover{background:#f0aa55;box-shadow:0 0 18px var(--accent-glow);}
+.new-event-btn:active{transform:scale(0.95);}
+.new-event-btn svg{flex-shrink:0;}
+/* hide on mobile (shown via FAB instead) */
+@media(max-width:1199px){.new-event-btn{display:none;}}
+
+/* Month cell hover add indicator (desktop only) */
+@media(min-width:1200px){
+  .month-cell:hover .cell-add-hint{opacity:1;}
+}
+.cell-add-hint{width:18px;height:18px;border-radius:5px;background:var(--accent);color:#1a1400;font-size:.9rem;font-weight:500;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;flex-shrink:0;line-height:1;}
+
+/* Month grid mobile row height */
+@media(max-width:1199px){
+  .month-grid{grid-auto-rows:minmax(80px,auto);}
+}
+
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px;}
+
+/* ANIM */
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
+.month-grid,.week-days-area,.day-events-col{animation:fadeSlideIn .2s ease both;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1199px){
+  .menu-btn{display:flex;}
+  .logo{font-size:1.1rem;}
+  .today-btn{display:none;}
+  .current-label{min-width:unset;font-size:.9rem;}
+  .header-center{margin-left:4px;gap:4px;}
+  .view-switcher{display:none;}
+  .bottom-nav{display:flex;}
+  .fab{display:flex;}
+
+  /* Sidebar off-canvas */
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:150;transform:translateX(-100%);box-shadow:10px 0 40px rgba(0,0,0,0.4);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{display:block;}
+
+  /* Month — base mobile */
+  .month-cell{min-height:50px;padding:5px 3px;}
+  .cell-num{font-size:.75rem;width:26px;height:26px;}
+  .more-chip{display:none;}
+  .month-dow{padding:8px 2px;font-size:.58rem;}
+
+  /* Week — column count & gutter width set inline by JS */
+  .week-time-label{font-size:.52rem;}
+  .week-day-num{font-size:.85rem;width:26px;height:26px;border-radius:7px;}
+  .week-day-name{font-size:.6rem;}
+  .week-time-slot{height:56px;}
+  .week-event{font-size:.57rem;padding:2px 3px;}
+  .week-event-time{display:none;}
+
+  /* Day mobile */
+  .back-btn{display:flex;}
+  .day-header{padding:11px 12px;gap:10px;}
+  .day-header-num{font-size:2rem;}
+  .day-times{width:44px;}
+  .day-time-label{font-size:.57rem;}
+  .day-event{left:5px;right:5px;padding:7px 10px;border-radius:8px;}
+  .day-event-title{font-size:.77rem;}
+
+  /* Modal → bottom sheet */
+  .modal-overlay{align-items:flex-end;padding:0;}
+  .modal{max-width:100%;border-radius:20px 20px 0 0;max-height:93dvh;transform:translateY(100%);border-bottom:none;}
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal-drag-handle{display:block;}
+  .modal-body{padding-bottom:calc(8px + var(--safe-bottom));}
+  .modal-footer{padding-bottom:calc(12px + var(--safe-bottom));}
+  .btn-primary{font-size:.9rem;min-height:46px;}
+  .form-input,.form-select,.form-textarea{font-size:16px;} /* prevent zoom on iOS */
+
+  /* Popup → centered on mobile */
+  .event-popup{position:fixed;top:50%!important;left:50%!important;transform:translate(-50%,-50%) scale(0.9)!important;width:min(310px,calc(100vw - 32px));}
+  .event-popup.open{transform:translate(-50%,-50%) scale(1)!important;}
+  .popup-backdrop{display:block;}
+  .popup-btn{min-height:44px;font-size:.78rem;}
+}
+
+@media(max-width:380px){
+  .cell-num{font-size:.68rem;width:22px;height:22px;}
+  .month-cell{padding:3px 2px;min-height:44px;}
+  .ev-dot{width:5px;height:5px;}
+  .nav-btn{width:28px;height:28px;font-size:.85rem;}
+  .current-label{font-size:.82rem;}
+}
+
+/* ── < 450px: header tightening + compact week/month ──────── */
+@media(max-width:449px){
+  :root{--header-h:56px;}
+  .logo{font-size:1rem;letter-spacing:0;}
+  .header-center{margin-left:2px;gap:2px;}
+  .nav-btn{width:28px;height:28px;font-size:.85rem;}
+  .current-label{font-size:.78rem;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  /* Week view column headers at 3-col on tiny screens */
+  .week-day-name{font-size:.55rem!important;}
+  .week-day-num{font-size:.78rem!important;width:24px!important;height:24px!important;border-radius:6px!important;margin-top:2px!important;}
+  .week-time-label{font-size:.46rem;}
+  .week-event{font-size:.56rem;padding:2px 3px;}
+  .week-day-header{padding:5px 2px;}
+  /* Month cells */
+  .month-cell{min-height:48px;padding:4px 2px;}
+  .cell-num{font-size:.7rem;width:22px;height:22px;}
+  .month-dow{font-size:.55rem;padding:6px 1px;}
+  .ev-dot{width:5px;height:5px;}
+  /* Bottom nav tighter */
+  .bnav-btn{font-size:.55rem;gap:2px;}
+}
+
+/* ── SUB-BREAKPOINT GRID LAYOUTS ─────────────────────────────
+   These fine-tune the month + week grid as screen width decreases.
+   JS also re-renders at each threshold via resize listener.
+──────────────────────────────────────────────────────────────*/
+
+/* Large tablet 900–1199px: chips visible, medium cells */
+@media(max-width:1199px) and (min-width:900px){
+  .month-grid{grid-auto-rows:minmax(95px,auto);}
+  .event-chip{display:block;font-size:.62rem;}
+  .cell-events{gap:2px;}
+  .week-day-name{font-size:.65rem;}
+  .week-day-num{font-size:.9rem;width:28px;height:28px;}
+  .week-event{font-size:.6rem;padding:2px 4px;}
+  .week-event-time{display:block;font-size:.54rem;}
+}
+
+/* Small tablet 600–899px: chips visible, compact cells */
+@media(max-width:899px) and (min-width:600px){
+  .month-grid{grid-auto-rows:minmax(75px,auto);}
+  .event-chip{display:block;font-size:.59rem;padding:1px 4px;}
+  .cell-events{gap:1px;}
+  .week-day-name{font-size:.6rem;}
+  .week-event{font-size:.58rem;padding:2px 3px;}
+}
+
+/* Phone 400–599px: dots only, very compact cells */
+@media(max-width:599px){
+  .month-grid{grid-auto-rows:minmax(56px,auto);}
+  .cell-header-row{display:none;}   /* JS renders plain cell-num instead */
+  .cell-events{display:none;}       /* safety-net: JS won't render chips here */
+  .dot-row{display:flex;}
+  .cell-num{font-size:.72rem;width:24px;height:24px;}
+}
+
+/* Tiny phone <400px */
+@media(max-width:399px){
+  .month-grid{grid-auto-rows:minmax(46px,auto);}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line class="bar1" x1="2" y1="5" x2="18" y2="5"/>
+      <line class="bar2" x1="2" y1="10" x2="18" y2="10"/>
+      <line class="bar3" x1="2" y1="15" x2="18" y2="15"/>
+    </svg>
+  </button>
+  <div class="logo">Chronicle</div>
+  <div class="header-center">
+    <button class="nav-btn" id="prevBtn">&#8249;</button>
+    <span class="current-label" id="currentLabel"></span>
+    <button class="nav-btn" id="nextBtn">&#8250;</button>
+    <button class="today-btn" id="todayBtn">Today</button>
+  </div>
+  <div class="view-switcher">
+    <button class="view-btn" data-view="month">Month</button>
+    <button class="view-btn" data-view="week">Week</button>
+    <button class="view-btn" data-view="day">Day</button>
+  </div>
+  <button class="new-event-btn" id="newEventBtn">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+    New Event
+  </button>
+</header>
+
+<div class="app-body">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="mini-cal-header">
+        <span class="mini-cal-title" id="miniCalTitle"></span>
+        <div class="mini-nav">
+          <button id="miniPrev">&#8249;</button>
+          <button id="miniNext">&#8250;</button>
+        </div>
+      </div>
+      <div class="mini-grid" id="miniGrid"></div>
+    </div>
+    <div class="sidebar-section" style="border-top:1px solid var(--border);padding-top:14px">
+      <div class="sidebar-label">Categories</div>
+      <div class="category-list" id="categoryList"></div>
+    </div>
+    <div class="sidebar-section" style="border-top:1px solid var(--border);padding-top:14px">
+      <div class="sidebar-label">Upcoming</div>
+      <div class="upcoming-list" id="upcomingList"></div>
+    </div>
+  </aside>
+  <main class="main" id="mainArea"></main>
+</div>
+
+<!-- Bottom nav (mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bnav-btn" data-view="month">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="3" width="18" height="17" rx="3"/><line x1="2" y1="8" x2="20" y2="8"/>
+      <line x1="7" y1="1" x2="7" y2="5"/><line x1="15" y1="1" x2="15" y2="5"/>
+    </svg>
+    Month
+  </button>
+  <button class="bnav-btn" data-view="week">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <rect x="2" y="3" width="18" height="17" rx="3"/><line x1="2" y1="8" x2="20" y2="8"/>
+      <line x1="8" y1="1" x2="8" y2="5"/><line x1="14" y1="1" x2="14" y2="5"/>
+      <line x1="6" y1="13" x2="16" y2="13"/><line x1="6" y1="17" x2="13" y2="17"/>
+    </svg>
+    Week
+  </button>
+  <button class="bnav-btn" data-view="day">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <rect x="2" y="3" width="18" height="17" rx="3"/><line x1="2" y1="8" x2="20" y2="8"/>
+      <line x1="11" y1="1" x2="11" y2="5"/>
+      <line x1="6" y1="13" x2="16" y2="13"/><line x1="6" y1="17" x2="16" y2="17"/>
+    </svg>
+    Day
+  </button>
+</nav>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" aria-label="Add event">+</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">New Event</span>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-input" id="evTitle" placeholder="Event title…" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-input" id="evDate" type="date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="evCategory">
+            <option value="personal">Personal</option>
+            <option value="work">Work</option>
+            <option value="health">Health</option>
+            <option value="social">Social</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Start</label>
+          <input class="form-input" id="evStart" type="time" value="09:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">End</label>
+          <input class="form-input" id="evEnd" type="time" value="10:00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="evDesc" placeholder="Optional notes…"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-picker" id="colorPicker"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="deleteBtn" style="display:none">Delete</button>
+      <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP BACKDROP -->
+<div class="popup-backdrop" id="popupBackdrop"></div>
+
+<!-- EVENT POPUP -->
+<div class="event-popup" id="eventPopup">
+  <button class="popup-close" id="popupClose">✕</button>
+  <div class="popup-color-bar" id="popupBar"></div>
+  <div class="popup-title" id="popupTitle"></div>
+  <div class="popup-time" id="popupTime"></div>
+  <div class="popup-category" id="popupCategory"></div>
+  <div class="popup-desc" id="popupDesc"></div>
+  <div class="popup-actions">
+    <button class="popup-btn popup-edit" id="popupEdit">✏ Edit</button>
+    <button class="popup-btn popup-del" id="popupDel">🗑 Delete</button>
+  </div>
+</div>
+
+<script>
+const COLORS=[{hex:'#e8a045'},{hex:'#e05c5c'},{hex:'#5cb87a'},{hex:'#5c8fe0'},{hex:'#9b5ce0'},{hex:'#5cbdb8'},{hex:'#e05cb0'},{hex:'#e0825c'}];
+const CATS={personal:{label:'Personal',color:'#5c8fe0'},work:{label:'Work',color:'#e8a045'},health:{label:'Health',color:'#5cb87a'},social:{label:'Social',color:'#9b5ce0'},other:{label:'Other',color:'#5cbdb8'}};
+
+let events=JSON.parse(localStorage.getItem('chronicle_events')||'[]');
+let view='month',cursor=new Date(),miniCursor=new Date();
+let editingId=null,selectedColor=COLORS[0].hex,popupEventId=null;
+const today=new Date(); today.setHours(0,0,0,0);
+
+const saveEvents=()=>localStorage.setItem('chronicle_events',JSON.stringify(events));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const dateKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const parseDate=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const formatTime=t=>{if(!t)return'';const[h,m]=t.split(':').map(Number);return`${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;};
+const monthName=d=>d.toLocaleString('default',{month:'long'});
+const shortMonth=d=>d.toLocaleString('default',{month:'short'});
+const isMobile=()=>window.innerWidth<=1199;
+
+// ── BREAKPOINT HELPERS ───────────────────────────────────────
+// xl ≥1200 | lg 900-1199 | md 600-899 | sm 400-599 | xs <400
+function getBreakpoint(){
+  const w=window.innerWidth;
+  if(w>=1200)return'xl';
+  if(w>=900)return'lg';
+  if(w>=600)return'md';
+  if(w>=400)return'sm';
+  return'xs';
+}
+
+// How many day-columns to show in week view per breakpoint
+// xl→7  lg→5  md→3  sm→3  xs→3
+function weekColCount(){
+  return{xl:7,lg:5,md:3,sm:3,xs:3}[getBreakpoint()]||7;
+}
+
+// Returns array of Date objects for the columns to render in week view
+function getWeekDayDates(cols){
+  cols=cols??weekColCount();
+  if(cols===7){
+    // Sun-Sat
+    return Array.from({length:7},(_,i)=>{const d=new Date(weekStart(cursor));d.setDate(d.getDate()+i);return d;});
+  }else if(cols===5){
+    // Mon-Fri of cursor's week
+    const mon=new Date(weekStart(cursor));mon.setDate(mon.getDate()+1);
+    return Array.from({length:5},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});
+  }else{
+    // 3 consecutive days starting from cursor (or 1 for day-view fallback)
+    return Array.from({length:cols},(_,i)=>{const d=new Date(cursor);d.setDate(cursor.getDate()+i);return d;});
+  }
+}
+
+// ── RENDER ──────────────────────────────────────────────────
+function render(){
+  updateHeader();
+  renderSidebar();
+  const main=document.getElementById('mainArea');
+  if(view==='month') renderMonth(main);
+  else if(view==='week') renderWeek(main);
+  else renderDay(main);
+  document.querySelectorAll('.view-btn,.bnav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+}
+
+function updateHeader(){
+  const el=document.getElementById('currentLabel');
+  if(view==='month') el.textContent=`${monthName(cursor)} ${cursor.getFullYear()}`;
+  else if(view==='week'){
+    const cols=weekColCount();
+    if(cols<=1){el.textContent=cursor.toLocaleString('default',{weekday:'short',month:'short',day:'numeric'});return;}
+    const days=getWeekDayDates(cols),s=days[0],e=days[days.length-1];
+    el.textContent=s.getMonth()===e.getMonth()
+      ?`${shortMonth(s)} ${s.getDate()}–${e.getDate()}, ${s.getFullYear()}`
+      :`${shortMonth(s)} ${s.getDate()} – ${shortMonth(e)} ${e.getDate()}`;
+  } else {
+    el.textContent=cursor.toLocaleString('default',{weekday:'short',month:'short',day:'numeric'});
+  }
+}
+
+// ── MONTH ────────────────────────────────────────────────────
+function renderMonth(container){
+  const year=cursor.getFullYear(),month=cursor.getMonth();
+  const firstDay=new Date(year,month,1),lastDay=new Date(year,month+1,0),startDow=firstDay.getDay();
+  const days=[];
+  for(let i=startDow-1;i>=0;i--) days.push({date:new Date(year,month,-i),thisMonth:false});
+  for(let d=1;d<=lastDay.getDate();d++) days.push({date:new Date(year,month,d),thisMonth:true});
+  const rem=42-days.length;
+  for(let d=1;d<=rem;d++) days.push({date:new Date(year,month+1,d),thisMonth:false});
+
+  const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html=`<div class="month-view">
+    <div class="month-dow-row">
+      ${DAYS.map((d,i)=>`<div class="month-dow${i===0||i===6?' weekend':''}">${isMobile()?d[0]:d}</div>`).join('')}
+    </div>
+    <div class="month-grid">`;
+
+  days.forEach(({date,thisMonth})=>{
+    const key=dateKey(date),isToday=key===dateKey(today);
+    const dayEvs=events.filter(e=>e.date===key).sort((a,b)=>a.start.localeCompare(b.start));
+    const bp=getBreakpoint();
+    const useChips=(bp==='xl'||bp==='lg'||bp==='md'); // chips for tablet+; dots for phone
+
+    if(!useChips){
+      // Phone: compact date number + colour dots
+      const dots=dayEvs.length?`<div class="dot-row">${dayEvs.slice(0,5).map(ev=>`<div class="ev-dot" style="background:${ev.color}"></div>`).join('')}</div>`:'';
+      html+=`<div class="month-cell${!thisMonth?' other-month':''}${isToday?' today':''}" data-date="${key}">
+        <div class="cell-num">${date.getDate()}</div>
+        ${dots}
+      </div>`;
+    } else {
+      // Tablet / Desktop: scrollable event chips
+      const allChips=dayEvs.map(ev=>`<div class="event-chip" style="background:${ev.color}22;color:${ev.color};border-left:2px solid ${ev.color}" data-evid="${ev.id}">${ev.title}</div>`).join('');
+      html+=`<div class="month-cell${!thisMonth?' other-month':''}${isToday?' today':''}" data-date="${key}">
+        <div class="cell-header-row">
+          <div class="cell-num">${date.getDate()}</div>
+          <div class="cell-add-hint">+</div>
+        </div>
+        <div class="cell-events">${allChips}</div>
+      </div>`;
+    }
+  });
+
+  html+=`</div></div>`;
+  container.innerHTML=html;
+
+  // ★ CLICK ON CELL → open modal on desktop, day view on mobile
+  container.querySelectorAll('.month-cell').forEach(cell=>{
+    cell.addEventListener('click', e=>{
+      if(e.target.closest('.event-chip')) return;
+      if(e.target.closest('.cell-events')) return; // clicking empty space inside events area still opens modal
+      if(isMobile()){
+        cursor=parseDate(cell.dataset.date);
+        miniCursor=new Date(cursor);
+        view='day';
+        render();
+      } else {
+        openModal(null, cell.dataset.date);
+      }
+    });
+  });
+
+  container.querySelectorAll('.event-chip').forEach(chip=>{
+    chip.addEventListener('click', e=>{ e.stopPropagation(); showPopup(chip.dataset.evid,chip); });
+  });
+}
+
+// ── WEEK ─────────────────────────────────────────────────────
+const weekStart=d=>{const s=new Date(d);s.setDate(d.getDate()-d.getDay());s.setHours(0,0,0,0);return s;};
+
+function renderWeek(container){
+  const cols=weekColCount();
+  // On very small screens fall back to day view
+  if(cols<=1){renderDay(container);return;}
+
+  const dayDates=getWeekDayDates(cols);
+  // Gutter width: wider when fewer columns (more room per column)
+  const gutterW=cols<=3?(getBreakpoint()==='xs'?36:40):cols===5?46:50;
+  // Slot height: taller on fewer-column views so events are readable
+  const slotH=cols<=3?60:56;
+
+  // Day label format adapts to how many columns there are
+  const bp=getBreakpoint();
+  const dayLabel=d=>cols===7?['S','M','T','W','T','F','S'][d.getDay()]:(bp==='xs'?['S','M','T','W','T','F','S'][d.getDay()]:d.toLocaleString('default',{weekday:'short'}));
+
+  let html=`<div class="week-view">
+    <div class="week-header" style="grid-template-columns:${gutterW}px repeat(${cols},1fr)">
+      <div class="week-time-gutter"></div>
+      ${dayDates.map(d=>{
+        const isT=dateKey(d)===dateKey(today);
+        return`<div class="week-day-header${isT?' today':''}" data-date="${dateKey(d)}">
+          <div class="week-day-name" style="${cols<=3?'font-size:.72rem':''}">${dayLabel(d)}</div>
+          <div class="week-day-num" style="${cols<=3?'font-size:1.05rem;width:30px;height:30px':''}">${d.getDate()}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="week-body">
+      <div class="week-times" style="width:${gutterW}px">`;
+
+  for(let h=0;h<24;h++){
+    const l=h===0?'12AM':h<12?`${h}AM`:h===12?'12PM':`${h-12}PM`;
+    html+=`<div class="week-time-slot" style="height:${slotH}px"><span class="week-time-label">${l}</span></div>`;
+  }
+  html+=`</div><div class="week-days-area" style="grid-template-columns:repeat(${cols},1fr)">`;
+
+  dayDates.forEach(d=>{
+    const key=dateKey(d),dayEvs=events.filter(e=>e.date===key);
+    html+=`<div class="week-day-col" data-date="${key}">`;
+    for(let h=0;h<24;h++){
+      html+=`<div class="week-hour-line" style="top:${h*slotH}px"></div>`;
+      html+=`<div class="week-hour-line half" style="top:${h*slotH+slotH/2}px"></div>`;
+    }
+    if(key===dateKey(today)){
+      const now=new Date(),top=now.getHours()*slotH+now.getMinutes()*(slotH/60);
+      html+=`<div class="time-indicator" style="top:${top}px"><div class="time-indicator-dot"></div><div class="time-indicator-line"></div></div>`;
+    }
+    dayEvs.forEach(ev=>{
+      const[sh,sm]=ev.start.split(':').map(Number),[eh,em]=ev.end.split(':').map(Number);
+      const top=sh*slotH+sm*(slotH/60),ht=Math.max(18,(eh*60+em)-(sh*60+sm))*(slotH/60);
+      // On wider views show time label; on 3-col show it too since there's room
+      const showTime=cols<=5;
+      html+=`<div class="week-event" style="top:${top}px;height:${ht}px;background:${ev.color}22;color:${ev.color};border-left:2px solid ${ev.color};${cols<=3?'font-size:.68rem;padding:3px 5px':''}" data-evid="${ev.id}">
+        <div class="week-event-title">${ev.title}</div>
+        ${showTime?`<div class="week-event-time">${formatTime(ev.start)}</div>`:''}
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+
+  html+=`</div></div></div>`;
+  container.innerHTML=html;
+  // Scroll to 8 AM
+  container.querySelector('.week-body').scrollTop=8*slotH;
+
+  container.querySelectorAll('.week-day-col').forEach(col=>{
+    col.addEventListener('click', e=>{
+      if(e.target.closest('.week-event')) return;
+      const rect=col.getBoundingClientRect(),scrollTop=col.closest('.week-body').scrollTop;
+      const y=e.clientY-rect.top+scrollTop,h=Math.floor(y/slotH),m=y%slotH<slotH/2?'00':'30';
+      const s=`${String(h).padStart(2,'0')}:${m}`,en=`${String(Math.min(23,h+1)).padStart(2,'0')}:${m}`;
+      openModal(null,col.dataset.date,s,en);
+    });
+  });
+  container.querySelectorAll('.week-event').forEach(ev=>{ev.addEventListener('click',e=>{e.stopPropagation();showPopup(ev.dataset.evid,ev);});});
+  container.querySelectorAll('.week-day-header').forEach(h=>{h.addEventListener('click',()=>{cursor=parseDate(h.dataset.date);view='day';render();});});
+}
+
+// ── DAY ──────────────────────────────────────────────────────
+function renderDay(container){
+  const key=dateKey(cursor),isToday=key===dateKey(today);
+  const dayEvs=events.filter(e=>e.date===key).sort((a,b)=>a.start.localeCompare(b.start));
+
+  let html=`<div class="day-view">
+    <div class="day-header">
+      <button class="back-btn" id="backBtn">&#8592;</button>
+      <div class="day-header-left">
+        <div class="day-header-num">${cursor.getDate()}</div>
+        <div class="day-header-info">
+          <div class="day-header-name">${cursor.toLocaleString('default',{weekday:'long'})}</div>
+          <div class="day-header-month">${monthName(cursor)} ${cursor.getFullYear()}</div>
+        </div>
+      </div>
+      ${isToday?'<div class="today-badge">Today</div>':''}
+    </div>
+    <div class="day-body">
+      <div class="day-times">`;
+  for(let h=0;h<24;h++){const l=h===0?'12 AM':h<12?`${h} AM`:h===12?'12 PM':`${h-12} PM`;html+=`<div class="day-time-slot"><span class="day-time-label">${l}</span></div>`;}
+  html+=`</div><div class="day-events-col" id="dayCol">`;
+  for(let h=0;h<24;h++){html+=`<div class="day-hour-line" style="top:${h*60}px"></div><div class="day-hour-line half" style="top:${h*60+30}px"></div>`;}
+  if(isToday){const now=new Date(),top=now.getHours()*60+now.getMinutes();html+=`<div class="time-indicator" style="top:${top}px"><div class="time-indicator-dot"></div><div class="time-indicator-line"></div></div>`;}
+  if(!dayEvs.length) html+=`<div class="empty-day"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="8" width="32" height="30" rx="5"/><line x1="6" y1="17" x2="38" y2="17"/><line x1="15" y1="4" x2="15" y2="12"/><line x1="29" y1="4" x2="29" y2="12"/></svg><span>No events — tap to add one</span></div>`;
+  dayEvs.forEach(ev=>{
+    const[sh,sm]=ev.start.split(':').map(Number),[eh,em]=ev.end.split(':').map(Number);
+    const top=sh*60+sm,ht=Math.max(36,(eh*60+em)-(sh*60+sm));
+    html+=`<div class="day-event" style="top:${top}px;height:${ht}px;background:${ev.color}22;color:${ev.color};border-left:3px solid ${ev.color}" data-evid="${ev.id}"><div class="day-event-title">${ev.title}</div><div class="day-event-time">${formatTime(ev.start)} – ${formatTime(ev.end)}</div>${ev.desc?`<div class="day-event-desc">${ev.desc}</div>`:''}</div>`;
+  });
+  html+=`</div></div></div>`;
+  container.innerHTML=html;
+  container.querySelector('.day-body').scrollTop=480;
+
+  document.getElementById('backBtn')?.addEventListener('click',()=>{view='month';render();});
+  container.querySelector('#dayCol').addEventListener('click', e=>{
+    if(e.target.closest('.day-event')) return;
+    const rect=e.currentTarget.getBoundingClientRect(),scrollTop=e.currentTarget.closest('.day-body').scrollTop;
+    const y=e.clientY-rect.top+scrollTop,h=Math.floor(y/60),m=Math.floor(y%60/30)*30;
+    openModal(null,key,`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`,`${String(Math.min(23,h+1)).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+  });
+  container.querySelectorAll('.day-event').forEach(ev=>{ev.addEventListener('click',e=>{e.stopPropagation();showPopup(ev.dataset.evid,ev);});});
+}
+
+// ── SIDEBAR ──────────────────────────────────────────────────
+function renderSidebar(){renderMiniCal();renderCategories();renderUpcoming();}
+
+function renderMiniCal(){
+  const year=miniCursor.getFullYear(),month=miniCursor.getMonth();
+  document.getElementById('miniCalTitle').textContent=`${shortMonth(miniCursor)} ${year}`;
+  const firstDay=new Date(year,month,1),lastDay=new Date(year,month+1,0),startDow=firstDay.getDay();
+  const days=[];
+  for(let i=startDow-1;i>=0;i--) days.push({date:new Date(year,month,-i),thisMonth:false});
+  for(let d=1;d<=lastDay.getDate();d++) days.push({date:new Date(year,month,d),thisMonth:true});
+  while(days.length<35){const n=days.length-startDow-lastDay.getDate()+1;days.push({date:new Date(year,month+1,n),thisMonth:false});}
+  const selKey=view==='day'?dateKey(cursor):null;
+  let html=['S','M','T','W','T','F','S'].map(d=>`<div class="mini-day-label">${d}</div>`).join('');
+  days.forEach(({date,thisMonth})=>{
+    const key=dateKey(date);
+    const cls=[!thisMonth?'other-month':'',key===dateKey(today)?'today':'',key===selKey?'selected':'',events.some(e=>e.date===key)?'has-events':''].filter(Boolean).join(' ');
+    html+=`<div class="mini-day${cls?' '+cls:''}" data-date="${key}">${date.getDate()}</div>`;
+  });
+  document.getElementById('miniGrid').innerHTML=html;
+  document.querySelectorAll('.mini-day').forEach(d=>{
+    d.addEventListener('click',()=>{cursor=parseDate(d.dataset.date);miniCursor=new Date(cursor);view='day';render();closeSidebar();});
+  });
+}
+
+function renderCategories(){
+  const counts={};Object.keys(CATS).forEach(k=>counts[k]=0);events.forEach(ev=>{if(counts[ev.category]!==undefined)counts[ev.category]++;});
+  document.getElementById('categoryList').innerHTML=Object.entries(CATS).map(([k,v])=>`<div class="category-item"><div class="cat-dot" style="background:${v.color}"></div><span class="cat-name">${v.label}</span><span class="cat-count">${counts[k]}</span></div>`).join('');
+}
+
+function renderUpcoming(){
+  const todayKey=dateKey(today);
+  const upcoming=events.filter(e=>e.date>=todayKey).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start)).slice(0,5);
+  const el=document.getElementById('upcomingList');
+  if(!upcoming.length){el.innerHTML=`<div style="font-size:.73rem;color:var(--text3);padding:2px">No upcoming events</div>`;return;}
+  el.innerHTML=upcoming.map(ev=>{
+    const d=parseDate(ev.date);
+    const lbl=dateKey(d)===todayKey?'Today':dateKey(d)===dateKey(new Date(today.getTime()+86400000))?'Tomorrow':`${shortMonth(d)} ${d.getDate()}`;
+    return`<div class="upcoming-item" data-evid="${ev.id}"><div class="upcoming-dot" style="background:${ev.color}"></div><div class="upcoming-info"><div class="upcoming-title">${ev.title}</div><div class="upcoming-time">${lbl} · ${formatTime(ev.start)}</div></div></div>`;
+  }).join('');
+  el.querySelectorAll('.upcoming-item').forEach(item=>{item.addEventListener('click',()=>{const ev=events.find(e=>e.id===item.dataset.evid);if(ev){cursor=parseDate(ev.date);view='day';render();closeSidebar();}});});
+}
+
+// ── MODAL ────────────────────────────────────────────────────
+function buildColorPicker(){
+  const cp=document.getElementById('colorPicker');
+  cp.innerHTML=COLORS.map(c=>`<div class="color-swatch${c.hex===selectedColor?' selected':''}" style="background:${c.hex}" data-color="${c.hex}"></div>`).join('');
+  cp.querySelectorAll('.color-swatch').forEach(s=>{s.addEventListener('click',()=>{selectedColor=s.dataset.color;buildColorPicker();});});
+}
+
+function openModal(eventId,date,start,end){
+  closePopup();
+  editingId=eventId||null;
+  const ev=eventId?events.find(e=>e.id===eventId):null;
+  document.getElementById('modalTitle').textContent=ev?'Edit Event':'New Event';
+  document.getElementById('evTitle').value=ev?.title||'';
+  document.getElementById('evDate').value=ev?.date||date||dateKey(today);
+  document.getElementById('evCategory').value=ev?.category||'personal';
+  document.getElementById('evStart').value=ev?.start||start||'09:00';
+  document.getElementById('evEnd').value=ev?.end||end||'10:00';
+  document.getElementById('evDesc').value=ev?.desc||'';
+  selectedColor=ev?.color||COLORS[0].hex;
+  buildColorPicker();
+  document.getElementById('deleteBtn').style.display=ev?'block':'none';
+  document.getElementById('modalOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('evTitle').focus(),150);
+}
+
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');editingId=null;}
+
+function saveEvent(){
+  const title=document.getElementById('evTitle').value.trim();
+  if(!title){document.getElementById('evTitle').focus();return;}
+  const data={id:editingId||uid(),title,date:document.getElementById('evDate').value,category:document.getElementById('evCategory').value,start:document.getElementById('evStart').value,end:document.getElementById('evEnd').value,desc:document.getElementById('evDesc').value.trim(),color:selectedColor};
+  if(editingId){const i=events.findIndex(e=>e.id===editingId);if(i>-1)events[i]=data;}else events.push(data);
+  saveEvents();closeModal();render();
+}
+
+// ── POPUP ────────────────────────────────────────────────────
+function showPopup(id,anchor){
+  popupEventId=id;
+  const ev=events.find(e=>e.id===id);if(!ev)return;
+  const popup=document.getElementById('eventPopup');
+  document.getElementById('popupBar').style.background=ev.color;
+  document.getElementById('popupTitle').textContent=ev.title;
+  document.getElementById('popupTime').textContent=`${formatTime(ev.start)} – ${formatTime(ev.end)}`;
+  document.getElementById('popupCategory').textContent=CATS[ev.category]?.label||'';
+  document.getElementById('popupDesc').textContent=ev.desc||'';
+  document.getElementById('popupDesc').style.display=ev.desc?'block':'none';
+  if(!isMobile()){
+    const rect=anchor.getBoundingClientRect();
+    let left=rect.left+rect.width/2-126,top=rect.bottom+8;
+    left=Math.max(8,Math.min(left,window.innerWidth-260));
+    if(top+210>window.innerHeight)top=rect.top-218;
+    popup.style.left=left+'px';popup.style.top=top+'px';
+  }
+  popup.classList.add('open');
+  document.getElementById('popupBackdrop').classList.add('open');
+}
+function closePopup(){document.getElementById('eventPopup').classList.remove('open');document.getElementById('popupBackdrop').classList.remove('open');popupEventId=null;}
+
+// ── NAV ──────────────────────────────────────────────────────
+function navigate(dir){
+  if(view==='month'){cursor=new Date(cursor.getFullYear(),cursor.getMonth()+dir,1);miniCursor=new Date(cursor);}
+  else if(view==='week'){
+    const cols=weekColCount();
+    // 7-col & 5-col: always move a full week (7 days)
+    // 3-col (md/sm/xs): move 3 days
+    const step=cols>=5?7:Math.max(1,cols);
+    cursor.setDate(cursor.getDate()+dir*step);
+  }
+  else cursor.setDate(cursor.getDate()+dir);
+  render();
+}
+
+// ── SWIPE NAVIGATION ─────────────────────────────────────────
+let tX=0,tY=0;
+document.getElementById('mainArea').addEventListener('touchstart',e=>{tX=e.touches[0].clientX;tY=e.touches[0].clientY;},{passive:true});
+document.getElementById('mainArea').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tX,dy=e.changedTouches[0].clientY-tY;
+  if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.5) navigate(dx<0?1:-1);
+},{passive:true});
+
+// ── EVENT LISTENERS ──────────────────────────────────────────
+document.getElementById('prevBtn').addEventListener('click',()=>navigate(-1));
+document.getElementById('nextBtn').addEventListener('click',()=>navigate(1));
+document.getElementById('todayBtn').addEventListener('click',()=>{cursor=new Date();miniCursor=new Date();render();});
+document.getElementById('fabBtn').addEventListener('click',()=>openModal(null,view==='day'?dateKey(cursor):null));
+document.getElementById('newEventBtn').addEventListener('click',()=>openModal(null,view==='day'?dateKey(cursor):dateKey(cursor)));
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('saveBtn').addEventListener('click',saveEvent);
+document.getElementById('deleteBtn').addEventListener('click',()=>{if(editingId){events=events.filter(e=>e.id!==editingId);saveEvents();closeModal();render();}});
+document.getElementById('popupClose').addEventListener('click',closePopup);
+document.getElementById('popupBackdrop').addEventListener('click',closePopup);
+document.getElementById('popupEdit').addEventListener('click',()=>{const id=popupEventId;closePopup();openModal(id);});
+document.getElementById('popupDel').addEventListener('click',()=>{events=events.filter(e=>e.id!==popupEventId);saveEvents();closePopup();render();});
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closePopup();closeSidebar();}});
+document.querySelectorAll('.view-btn,.bnav-btn').forEach(b=>{b.addEventListener('click',()=>{view=b.dataset.view;render();});});
+document.getElementById('currentLabel').addEventListener('click',()=>{cursor=new Date();miniCursor=new Date();render();});
+document.getElementById('miniPrev').addEventListener('click',()=>{miniCursor.setMonth(miniCursor.getMonth()-1);renderMiniCal();});
+document.getElementById('miniNext').addEventListener('click',()=>{miniCursor.setMonth(miniCursor.getMonth()+1);renderMiniCal();});
+document.getElementById('evTitle').addEventListener('keydown',e=>{if(e.key==='Enter')saveEvent();});
+
+const sidebar=document.getElementById('sidebar'),sidebarOverlay=document.getElementById('sidebarOverlay');
+function openSidebar(){sidebar.classList.add('open');sidebarOverlay.classList.add('open');document.body.classList.add('sidebar-open');}
+function closeSidebar(){sidebar.classList.remove('open');sidebarOverlay.classList.remove('open');document.body.classList.remove('sidebar-open');}
+document.getElementById('menuBtn').addEventListener('click',()=>sidebar.classList.contains('open')?closeSidebar():openSidebar());
+sidebarOverlay.addEventListener('click',closeSidebar);
+
+// ── SEED ─────────────────────────────────────────────────────
+if(!events.length){
+  const y=today.getFullYear(),m=today.getMonth(),d=today.getDate();
+  events=[
+    {title:'Team Standup',      date:dateKey(new Date(y,m,d)),   category:'work',   start:'09:00',end:'09:30',color:'#e8a045',desc:'Daily sync with engineering'},
+    {title:'Lunch with Sarah',  date:dateKey(new Date(y,m,d)),   category:'social', start:'12:30',end:'13:30',color:'#9b5ce0',desc:'At Café Boulud'},
+    {title:'Design Review',     date:dateKey(new Date(y,m,d)),   category:'work',   start:'15:00',end:'16:00',color:'#5c8fe0',desc:'Review new mockups'},
+    {title:'Gym Session',       date:dateKey(new Date(y,m,d+1)), category:'health', start:'07:00',end:'08:00',color:'#5cb87a',desc:'Leg day 🦵'},
+    {title:'Product Review',    date:dateKey(new Date(y,m,d+1)), category:'work',   start:'14:00',end:'15:00',color:'#5c8fe0',desc:'Q3 roadmap discussion'},
+    {title:'Birthday Party',    date:dateKey(new Date(y,m,d+3)), category:'social', start:'18:00',end:'22:00',color:'#e05cb0',desc:"Jake's birthday 🎉"},
+    {title:'Doctor Appt',       date:dateKey(new Date(y,m,d+5)), category:'health', start:'10:00',end:'10:45',color:'#5cb87a',desc:'Annual checkup'},
+    {title:'Project Deadline',  date:dateKey(new Date(y,m,d+7)), category:'work',   start:'17:00',end:'18:00',color:'#e05c5c',desc:'Submit final deliverables'},
+    {title:'Movie Night',       date:dateKey(new Date(y,m,d-1)), category:'social', start:'20:00',end:'22:30',color:'#5cbdb8',desc:'Dune Part 3'},
+  ].map(e=>({...e,id:uid()}));
+  saveEvents();
+}
+
+render();
+
+// ── RESPONSIVE RESIZE ────────────────────────────────────────
+// Re-render when crossing a breakpoint boundary so the grid
+// layout (column count, chip vs dot mode) updates immediately.
+let _lastBP=getBreakpoint(),_resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(_resizeTimer);
+  _resizeTimer=setTimeout(()=>{
+    const bp=getBreakpoint();
+    if(bp!==_lastBP){_lastBP=bp;render();}
+  },120);
+});
+</script>
+</body>
+</html>
