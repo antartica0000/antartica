@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>∞ RANDOM ART</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&family=Unbounded:wght@900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000}
+  body{display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace}
+
+  #canvas{
+    display:block;
+    max-width:100vw;max-height:100vh;
+    width:100vw;height:100vh;
+    object-fit:contain;
+    transition:opacity 0.4s ease;
+    touch-action:manipulation;
+  }
+  #canvas.fade{opacity:0}
+
+  /* BOTTOM BAR */
+  #bottomBar{
+    position:fixed;
+    bottom:0;left:0;right:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:20px 16px max(20px, env(safe-area-inset-bottom));
+    background:linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%);
+    z-index:100;
+  }
+
+  /* GENERATE BUTTON */
+  #genBtn{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    color:#fff;
+    font-family:'Unbounded',sans-serif;
+    font-size:10px;letter-spacing:0.22em;
+    padding:0 28px;
+    cursor:pointer;border-radius:100px;
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    transition:background 0.25s, border-color 0.25s, transform 0.15s;
+    user-select:none;
+    white-space:nowrap;
+    flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
+    min-height:48px;
+  }
+  #genBtn:hover{background:rgba(255,255,255,0.16);border-color:rgba(255,255,255,0.4);}
+  #genBtn:active{transform:scale(0.95);}
+  #genBtn.busy{opacity:0.4;pointer-events:none;}
+
+  /* AUTO BUTTON */
+  #autoBtn{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.14);
+    color:rgba(255,255,255,0.4);
+    font-family:'Space Mono',monospace;
+    font-size:9px;letter-spacing:0.12em;
+    padding:0 14px;
+    cursor:pointer;border-radius:100px;
+    transition:all 0.25s;
+    user-select:none;
+    white-space:nowrap;
+    flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
+    min-height:48px;
+    display:flex;align-items:center;gap:7px;
+  }
+  #autoBtn:hover{border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);}
+  #autoBtn:active{transform:scale(0.95);}
+  #autoBtn.active{
+    border-color:rgba(255,140,0,0.55);
+    color:rgba(255,175,55,0.9);
+    background:rgba(255,110,0,0.07);
+  }
+  #autoBtn .dot{
+    width:5px;height:5px;border-radius:50%;
+    background:currentColor;flex-shrink:0;
+  }
+  #autoBtn.active .dot{animation:pulse 1.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.35;transform:scale(0.65)}}
+
+  /* SAVE BUTTON */
+  #saveBtn{
+    background:transparent;border:1px solid rgba(255,255,255,0.12);
+    color:rgba(255,255,255,0.28);
+    font-family:'Space Mono',monospace;
+    font-size:9px;letter-spacing:0.15em;
+    padding:0 14px;cursor:pointer;border-radius:3px;
+    transition:all 0.2s;
+    flex-shrink:0;
+    -webkit-tap-highlight-color:transparent;
+    min-height:48px;
+    display:flex;align-items:center;
+  }
+  #saveBtn:hover{color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3);}
+  #saveBtn:active{transform:scale(0.95);}
+
+  /* COUNTDOWN RING — shown above bottom bar when auto is on */
+  #countdownWrap{
+    position:fixed;
+    bottom:calc(max(20px, env(safe-area-inset-bottom)) + 72px);
+    left:50%;transform:translateX(-50%);
+    z-index:101;
+    opacity:0;transition:opacity 0.5s;
+    pointer-events:none;
+  }
+  #countdownWrap.show{opacity:1}
+  #countdownArc{
+    stroke:rgba(255,145,20,0.55);
+    stroke-linecap:round;
+    transform-origin:50% 50%;
+    transform:rotate(-90deg);
+    transition:stroke-dashoffset 0.95s linear;
+  }
+  #countdownNum{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Unbounded',sans-serif;
+    font-size:9px;
+    color:rgba(255,165,50,0.65);
+    letter-spacing:0.04em;
+  }
+
+  /* ALGO TAG */
+  #algoTag{
+    position:fixed;
+    top:max(16px, env(safe-area-inset-top));
+    right:16px;
+    font-size:8px;letter-spacing:0.16em;
+    color:rgba(255,255,255,0.35);
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    padding:6px 12px;border-radius:3px;
+    border:1px solid rgba(255,255,255,0.07);
+    opacity:0;transition:opacity 0.6s;
+    z-index:100;
+    text-transform:uppercase;
+    max-width:calc(100vw - 110px);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  #algoTag.show{opacity:1}
+
+  /* COUNTER */
+  #counter{
+    position:fixed;
+    top:max(16px, env(safe-area-inset-top));
+    left:16px;
+    font-size:9px;letter-spacing:0.12em;
+    color:rgba(255,255,255,0.2);
+    z-index:100;
+  }
+  #counter span{color:rgba(255,255,255,0.5)}
+
+  /* LOADER */
+  #loader{
+    position:fixed;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    z-index:200;pointer-events:none;opacity:0;
+    transition:opacity 0.2s;
+  }
+  #loader.show{opacity:1}
+  .loader-ring{
+    width:40px;height:40px;
+    border:1.5px solid rgba(255,255,255,0.08);
+    border-top-color:rgba(255,255,255,0.6);
+    border-radius:50%;
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media(max-width:380px){
+    #genBtn{font-size:9px;padding:0 18px;letter-spacing:0.16em;}
+    #autoBtn{font-size:8px;padding:0 10px;gap:5px;}
+    #saveBtn{padding:0 10px;}
+    #bottomBar{gap:7px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<div id="loader"><div class="loader-ring"></div></div>
+<div id="algoTag"></div>
+<div id="counter">NO. <span id="countNum">0</span></div>
+
+<div id="countdownWrap">
+  <svg width="36" height="36" viewBox="0 0 36 36">
+    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"/>
+    <circle id="countdownArc" cx="18" cy="18" r="14" fill="none" stroke-width="1.5"
+      stroke-dasharray="87.96" stroke-dashoffset="0"/>
+  </svg>
+  <div id="countdownNum">10</div>
+</div>
+
+<div id="bottomBar">
+  <button id="autoBtn"><span class="dot"></span>AUTO</button>
+  <button id="genBtn">GENERATE</button>
+  <button id="saveBtn">↓ SAVE</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// PURE RANDOMNESS ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let count = 0;
+let busy = false;
+
+// ── Seeded RNG (xoshiro128**) ──────────────────────────────────────
+function mkRng(seed) {
+  let s0 = (seed ^ 0xdeadbeef) >>> 0;
+  let s1 = (seed ^ 0x12345678) >>> 0;
+  let s2 = (seed * 69069 + 1) >>> 0;
+  let s3 = (seed * 1664525 + 1013904223) >>> 0;
+  const r = () => {
+    const t = s1 << 9;
+    s2 ^= s0; s3 ^= s1; s1 ^= s2; s0 ^= s3;
+    s2 ^= t; s3 = (s3 << 11) | (s3 >>> 21);
+    return ((s0 >>> 0) / 4294967296);
+  };
+  r.range = (a,b) => a + r()*(b-a);
+  r.int = (a,b) => Math.floor(r.range(a,b));
+  r.pick = arr => arr[r.int(0,arr.length)];
+  r.bool = (p=0.5) => r() < p;
+  r.gauss = () => { let u,v; do{u=r()*2-1;v=r()*2-1;}while(u*u+v*v>=1); return u*Math.sqrt(-2*Math.log(u*u+v*v)/(u*u+v*v)); };
+  return r;
+}
+
+// ── Perlin noise ──────────────────────────────────────────────────
+function mkNoise(rng) {
+  const p = new Uint8Array(512);
+  const t = Array.from({length:256},(_,i)=>i);
+  for(let i=255;i>0;i--){const j=rng.int(0,i+1);[t[i],t[j]]=[t[j],t[i]];}
+  for(let i=0;i<512;i++) p[i]=t[i&255];
+  const fade=t=>t*t*t*(t*(t*6-15)+10);
+  const lerp=(a,b,t)=>a+t*(b-a);
+  const grad=(h,x,y)=>{const g=h&3;return(g<2?x:-x)+(g&1?y:-y);};
+  return (x,y) => {
+    const xi=Math.floor(x)&255,yi=Math.floor(y)&255;
+    const xf=x-Math.floor(x),yf=y-Math.floor(y);
+    const u=fade(xf),v=fade(yf);
+    const aa=p[p[xi]+yi],ab=p[p[xi]+yi+1];
+    const ba=p[p[xi+1]+yi],bb=p[p[xi+1]+yi+1];
+    return lerp(lerp(grad(aa,xf,yf),grad(ba,xf-1,yf),u),
+                lerp(grad(ab,xf,yf-1),grad(bb,xf-1,yf-1),u),v);
+  };
+}
+function fbm(n,x,y,oct=6,lac=2,g=0.5){
+  let v=0,a=0.5,f=1,m=0;
+  for(let i=0;i<oct;i++){v+=a*n(x*f,y*f);m+=a;a*=g;f*=lac;}
+  return v/m;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PROCEDURAL PALETTE GENERATOR — Every palette unique
+// ══════════════════════════════════════════════════════════════════
+function genPalette(rng) {
+  const mode = rng.int(0, 8);
+  const hsl2rgb = (h,s,l) => {
+    h/=360;s/=100;l/=100;
+    const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;
+    const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+    return [hue2rgb(p,q,h+1/3)*255|0, hue2rgb(p,q,h)*255|0, hue2rgb(p,q,h-1/3)*255|0];
+  };
+  const baseH = rng.range(0,360);
+  let stops = [];
+  if (mode === 0) { // Monochromatic dark-to-light
+    const s = rng.range(40,100);
+    for(let i=0;i<6;i++) stops.push(hsl2rgb(baseH,s,i*18+2));
+  } else if (mode === 1) { // Complementary
+    const h2=(baseH+180)%360;
+    for(let i=0;i<3;i++) stops.push(hsl2rgb(baseH,rng.range(60,100),i*20+5));
+    for(let i=0;i<3;i++) stops.push(hsl2rgb(h2,rng.range(60,100),i*20+15));
+  } else if (mode === 2) { // Triadic neon on black
+    stops.push([0,0,0],[3,3,8]);
+    const angles=[0,120,240];
+    angles.forEach(a=>stops.push(hsl2rgb((baseH+a)%360,100,rng.range(50,70))));
+    stops.push([255,255,255]);
+  } else if (mode === 3) { // Analogous warm
+    for(let i=0;i<6;i++) stops.push(hsl2rgb((baseH+i*15)%360,rng.range(70,100),i*14+5));
+  } else if (mode === 4) { // Dark to vibrant single hue
+    for(let i=0;i<5;i++){const l=i*20+3;stops.push(hsl2rgb(baseH+rng.range(-15,15),rng.range(50,100),l));}
+  } else if (mode === 5) { // Black/white + two accent colors
+    const h2=(baseH+rng.range(60,180))%360;
+    stops=[[[0,0,0],[10,10,10],hsl2rgb(baseH,100,60),hsl2rgb(h2,100,65),[240,240,240],[255,255,255]]];
+    stops=stops[0];
+  } else if (mode === 6) { // Pastel dream
+    for(let i=0;i<6;i++) stops.push(hsl2rgb((baseH+i*40)%360,rng.range(40,70),rng.range(65,90)));
+  } else { // Fire/cool gradient
+    const cool=rng.bool();
+    if(cool) for(let i=0;i<6;i++) stops.push(hsl2rgb((190+i*15)%360,rng.range(60,100),i*15+5));
+    else for(let i=0;i<6;i++) stops.push(hsl2rgb((i*18)%60,rng.range(80,100),i*15+5));
+  }
+  // Randomly reverse
+  if(rng.bool()) stops.reverse();
+  return stops;
+}
+
+function samplePalette(palette, t) {
+  t = Math.max(0,Math.min(1,t));
+  const n = palette.length - 1;
+  const idx = Math.floor(t * n);
+  const f = t * n - idx;
+  const c1 = palette[Math.min(idx,n)];
+  const c2 = palette[Math.min(idx+1,n)];
+  return [c1[0]+(c2[0]-c1[0])*f|0, c1[1]+(c2[1]-c1[1])*f|0, c1[2]+(c2[2]-c1[2])*f|0];
+}
+
+// ══════════════════════════════════════════════════════════════════
+// POST-PROCESSING
+// ══════════════════════════════════════════════════════════════════
+function postProcess(imgData, W, H, rng) {
+  const d = imgData.data;
+
+  // Grain
+  if(rng.bool(0.8)) {
+    const str = rng.range(6, 30);
+    for(let i=0;i<d.length;i+=4){const n=(rng()-0.5)*str;d[i]=clamp(d[i]+n);d[i+1]=clamp(d[i+1]+n);d[i+2]=clamp(d[i+2]+n);}
+  }
+
+  // Vignette
+  if(rng.bool(0.7)) {
+    const str = rng.range(0.3, 0.85);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const nx=(x/W-0.5)*2,ny=(y/H-0.5)*2;
+      const v=1-Math.min(1,(nx*nx+ny*ny)*str);
+      const i=(y*W+x)*4;d[i]*=v;d[i+1]*=v;d[i+2]*=v;
+    }
+  }
+
+  // Chromatic aberration
+  if(rng.bool(0.35)) {
+    const shift = rng.int(2,8);
+    const tmp = new Uint8ClampedArray(d);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const i=(y*W+x)*4;
+      const sx=Math.min(W-1,x+shift),si=(y*W+sx)*4;
+      d[i]=tmp[si]; // shift red channel
+      const lx=Math.max(0,x-shift),li=(y*W+lx)*4;
+      d[i+2]=tmp[li+2]; // shift blue channel
+    }
+  }
+
+  // Posterize
+  if(rng.bool(0.25)) {
+    const levels = rng.int(4,10);
+    const step = 255/levels;
+    for(let i=0;i<d.length;i+=4){
+      d[i]=Math.round(d[i]/step)*step;
+      d[i+1]=Math.round(d[i+1]/step)*step;
+      d[i+2]=Math.round(d[i+2]/step)*step;
+    }
+  }
+
+  return imgData;
+}
+const clamp = v => Math.max(0,Math.min(255,v|0));
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 1: Warped FBM noise
+// ══════════════════════════════════════════════════════════════════
+function algoPerlin(rng, W, H, pal) {
+  const noise = mkNoise(rng);
+  const sc = rng.range(1.5, 7);
+  const oct = rng.int(3, 10);
+  const warpLevels = rng.int(0, 4);
+  const warpStr = rng.range(0.3, 3.0);
+  const imgData = ctx.createImageData(W,H); const d=imgData.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    let nx=x/W*sc, ny=y/H*sc;
+    for(let w=0;w<warpLevels;w++){
+      const wx=fbm(noise,nx+rng.range(1,5),ny+rng.range(1,5),3);
+      const wy=fbm(noise,nx+rng.range(1,5),ny+rng.range(1,5),3);
+      nx+=wx*warpStr;ny+=wy*warpStr;
+    }
+    let v=fbm(noise,nx,ny,oct)*0.5+0.5;
+    const [r,g,b]=samplePalette(pal,v);
+    const i=(y*W+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 2: Julia Set (random c parameter)
+// ══════════════════════════════════════════════════════════════════
+function algoJulia(rng, W, H, pal) {
+  // Random c from "interesting" regions
+  const presets = [[-0.7,0.27],[-0.4,0.6],[0.285,0.01],[0.285,0.013],[-0.835,-0.2321],[-0.8,0.156],[-0.7269,0.1889],[0.37,0.1],[-0.54,0.54],[0.1,0.65],[rng.range(-1,0.5),rng.range(-0.7,0.7)]];
+  const [cr,ci] = presets[rng.int(0,presets.length)];
+  const zoom = rng.range(0.8,2.5);
+  const maxIter = rng.int(80,300);
+  const colorMode = rng.int(0,3);
+  const imgData = ctx.createImageData(W,H); const d=imgData.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    let zr=(x/W-0.5)*3.2/zoom, zi=(y/H-0.5)*3.2/zoom;
+    let it=0,zr2=zr*zr,zi2=zi*zi;
+    while(zr2+zi2<4&&it<maxIter){zi=2*zr*zi+ci;zr=zr2-zi2+cr;zr2=zr*zr;zi2=zi*zi;it++;}
+    const escaped=it<maxIter;
+    let t;
+    if(!escaped) t=0;
+    else if(colorMode===0) t=it/maxIter;
+    else if(colorMode===1) t=(it+1-Math.log(Math.log(Math.sqrt(zr2+zi2)))/Math.log(2))/maxIter;
+    else t=Math.sin(it*0.1)*0.5+0.5;
+    const [r,g,b]=samplePalette(pal,t);
+    const i=(y*W+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 3: Strange Attractor
+// ══════════════════════════════════════════════════════════════════
+function algoAttractor(rng, W, H, pal) {
+  const type = rng.int(0,4);
+  const imgData = ctx.createImageData(W,H); const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=255;}
+  const density = new Float32Array(W*H);
+  const iters = Math.min(W*H*12, 8000000);
+  let x=rng.range(-1,1), y=rng.range(-1,1);
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  // First pass to find bounds
+  const a=rng.range(-3,3),b=rng.range(-3,3),c=rng.range(-3,3),e=rng.range(-3,3);
+  const pts=[];
+  for(let i=0;i<50000;i++){
+    let nx,ny;
+    if(type===0){nx=Math.sin(a*y)+c*Math.cos(a*x);ny=Math.sin(b*x)+e*Math.cos(b*y);}
+    else if(type===1){nx=Math.sin(a*y)-Math.cos(b*x);ny=Math.sin(c*x)-Math.cos(e*y);}
+    else if(type===2){nx=y-Math.sign(x)*Math.sqrt(Math.abs(b*x-c));ny=a-x;}
+    else{nx=a*Math.sin(x)+b*Math.cos(x)+c*Math.sin(y);ny=e*Math.sin(x)+a*Math.cos(y);}
+    x=nx;y=ny;
+    if(i>100){minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);}
+    if(i>100&&i<2000) pts.push([x,y]);
+  }
+  const rX=maxX-minX||1, rY=maxY-minY||1;
+  const pad=0.08;
+  x=rng.range(minX,maxX);y=rng.range(minY,maxY);
+  for(let i=0;i<iters;i++){
+    let nx,ny;
+    if(type===0){nx=Math.sin(a*y)+c*Math.cos(a*x);ny=Math.sin(b*x)+e*Math.cos(b*y);}
+    else if(type===1){nx=Math.sin(a*y)-Math.cos(b*x);ny=Math.sin(c*x)-Math.cos(e*y);}
+    else if(type===2){nx=y-Math.sign(x)*Math.sqrt(Math.abs(b*x-c));ny=a-x;}
+    else{nx=a*Math.sin(x)+b*Math.cos(x)+c*Math.sin(y);ny=e*Math.sin(x)+a*Math.cos(y);}
+    x=nx;y=ny;
+    if(i>200){
+      const px=((x-minX)/rX*(1-2*pad)+pad)*W|0;
+      const py=((y-minY)/rY*(1-2*pad)+pad)*H|0;
+      if(px>=0&&px<W&&py>=0&&py<H) density[py*W+px]++;
+    }
+  }
+  let maxD=0;
+  for(let i=0;i<density.length;i++) maxD=Math.max(maxD,density[i]);
+  const logMax=Math.log(maxD+1);
+  for(let i=0;i<W*H;i++){
+    if(density[i]===0) continue;
+    const t=Math.log(density[i]+1)/logMax;
+    const [r,g,b]=samplePalette(pal,t);
+    d[i*4]=r;d[i*4+1]=g;d[i*4+2]=b;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 4: IFS Fractal (Iterated Function Systems)
+// ══════════════════════════════════════════════════════════════════
+function algoIFS(rng, W, H, pal) {
+  // Random affine transforms
+  const n = rng.int(3,7);
+  const transforms = [];
+  let totalProb = 0;
+  for(let i=0;i<n;i++){
+    const s = rng.range(0.2,0.85);
+    const theta = rng.range(0,Math.PI*2);
+    const phi = rng.range(0,Math.PI*2);
+    const a=s*Math.cos(theta), b=-s*Math.sin(phi), c=rng.range(-0.5,0.5);
+    const d2=s*Math.sin(theta), e2=s*Math.cos(phi), f=rng.range(-0.5,0.5);
+    const p=rng.range(0.05,0.4);
+    transforms.push({a,b,c,d:d2,e:e2,f,p});
+    totalProb+=p;
+  }
+  transforms.forEach(t=>t.p/=totalProb);
+  const imgData = ctx.createImageData(W,H); const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){d[i]=0;d[i+1]=0;d[i+2]=0;d[i+3]=255;}
+  const density = new Float32Array(W*H);
+  let x=0,y=0;
+  const iters = 2000000;
+  for(let i=0;i<iters;i++){
+    const r2=rng();
+    let cum=0,t=transforms[0];
+    for(const tr of transforms){cum+=tr.p;if(r2<cum){t=tr;break;}}
+    const nx=t.a*x+t.b*y+t.c;
+    const ny=t.d*x+t.e*y+t.f;
+    x=nx;y=ny;
+    if(i>20){
+      const px=((x+1.5)/3*W)|0;
+      const py=((y+1.5)/3*H)|0;
+      if(px>=0&&px<W&&py>=0&&py<H) density[py*W+px]++;
+    }
+  }
+  let maxD=0;for(let i=0;i<density.length;i++)maxD=Math.max(maxD,density[i]);
+  const lm=Math.log(maxD+1);
+  for(let i=0;i<W*H;i++){
+    if(!density[i])continue;
+    const t=Math.log(density[i]+1)/lm;
+    const [r,g,b]=samplePalette(pal,t);
+    d[i*4]=r;d[i*4+1]=g;d[i*4+2]=b;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 5: Reaction Diffusion (Gray-Scott)
+// ══════════════════════════════════════════════════════════════════
+function algoReaction(rng, W, H, pal) {
+  const w=Math.min(200,W>>1), h=Math.min(200,H>>1);
+  const sz=w*h;
+  const A=new Float32Array(sz).fill(1);
+  const B=new Float32Array(sz).fill(0);
+  // Seed patterns
+  const seeds=rng.int(2,12);
+  for(let s=0;s<seeds;s++){
+    const sx=rng.int(10,w-10),sy=rng.int(10,h-10);
+    const r2=rng.int(3,8);
+    for(let dy=-r2;dy<=r2;dy++)for(let dx=-r2;dx<=r2;dx++){
+      const idx=(sy+dy)*w+(sx+dx);
+      if(idx>=0&&idx<sz){B[idx]=rng.range(0.5,1);}
+    }
+  }
+  // Preset parameter combinations
+  const presets=[
+    {f:0.055,k:0.062},{f:0.039,k:0.058},{f:0.025,k:0.06},{f:0.098,k:0.0555},
+    {f:0.022,k:0.059},{f:0.037,k:0.06},{f:0.026,k:0.051},{f:0.082,k:0.059}
+  ];
+  const {f,k}=rng.pick(presets);
+  const Da=1.0,Db=0.5;
+  const nA=new Float32Array(sz),nB=new Float32Array(sz);
+  const steps=rng.int(80,200);
+  for(let t=0;t<steps;t++){
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+      const i=y*w+x,a=A[i],b=B[i];
+      const lapA=A[i-1]+A[i+1]+A[i-w]+A[i+w]-4*a;
+      const lapB=B[i-1]+B[i+1]+B[i-w]+B[i+w]-4*b;
+      const abb=a*b*b;
+      nA[i]=Math.max(0,Math.min(1,a+(Da*lapA-abb+f*(1-a))));
+      nB[i]=Math.max(0,Math.min(1,b+(Db*lapB+abb-(k+f)*b)));
+    }
+    A.set(nA);B.set(nB);
+  }
+  const imgData=ctx.createImageData(W,H);const dd=imgData.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const sx=Math.floor(x/W*w),sy=Math.floor(y/H*h);
+    const v=1-B[sy*w+sx];
+    const [r,g,b]=samplePalette(pal,v);
+    const i=(y*W+x)*4;dd[i]=r;dd[i+1]=g;dd[i+2]=b;dd[i+3]=255;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 6: Voronoi (multiple distance metrics)
+// ══════════════════════════════════════════════════════════════════
+function algoVoronoi(rng, W, H, pal) {
+  const n=rng.int(15,250);
+  const pts=Array.from({length:n},()=>[rng()*W,rng()*H]);
+  const metric=rng.int(0,5);
+  const colorMode=rng.int(0,3);
+  const imgData=ctx.createImageData(W,H);const d=imgData.data;
+  const dist=(x,y,px,py)=>{
+    const dx=x-px,dy=y-py;
+    if(metric===0)return dx*dx+dy*dy;
+    if(metric===1)return Math.abs(dx)+Math.abs(dy);
+    if(metric===2)return Math.max(Math.abs(dx),Math.abs(dy));
+    if(metric===3)return Math.pow(Math.abs(dx)**2.5+Math.abs(dy)**2.5,1/2.5);
+    return dx*dx+dy*dy+Math.sin(dx*0.1)*500;
+  };
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    let d1=Infinity,d2=Infinity,idx=0;
+    for(let k=0;k<pts.length;k++){const dd=dist(x,y,pts[k][0],pts[k][1]);if(dd<d1){d2=d1;d1=dd;idx=k;}else if(dd<d2)d2=dd;}
+    let t;
+    if(colorMode===0)t=idx/n;
+    else if(colorMode===1)t=(Math.sqrt(d2)-Math.sqrt(d1))/20;
+    else t=Math.sqrt(d1)/(Math.min(W,H)*0.5);
+    const [r,g,b]=samplePalette(pal,t);
+    const i=(y*W+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 7: Truchet Tiles
+// ══════════════════════════════════════════════════════════════════
+function algoTruchet(rng, W, H, pal) {
+  const tileSize=rng.int(8,40);
+  const cols=Math.ceil(W/tileSize),rows=Math.ceil(H/tileSize);
+  const variant=rng.int(0,4);
+  canvas.width=W;canvas.height=H;
+  const bg=samplePalette(pal,0);const fg=samplePalette(pal,1);
+  ctx.fillStyle=`rgb(${bg[0]},${bg[1]},${bg[2]})`;
+  ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=`rgb(${fg[0]},${fg[1]},${fg[2]})`;
+  ctx.lineWidth=tileSize*rng.range(0.05,0.3);
+  ctx.lineCap='round';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const x=c*tileSize,y=r*tileSize;
+    const flip=rng.bool();
+    const t=Math.min(1,(c*rows+r)/(cols*rows));
+    const clr=samplePalette(pal,t);
+    ctx.strokeStyle=`rgb(${clr[0]},${clr[1]},${clr[2]})`;
+    ctx.beginPath();
+    if(variant===0){
+      if(flip){ctx.arc(x,y,tileSize/2,0,Math.PI/2);ctx.moveTo(x+tileSize,y+tileSize/2);ctx.arc(x+tileSize,y+tileSize,tileSize/2,Math.PI,3*Math.PI/2);}
+      else{ctx.arc(x+tileSize,y,tileSize/2,Math.PI/2,Math.PI);ctx.moveTo(x,y+tileSize/2);ctx.arc(x,y+tileSize,tileSize/2,3*Math.PI/2,0);}
+    } else if(variant===1){
+      if(flip){ctx.moveTo(x,y+tileSize/2);ctx.bezierCurveTo(x+tileSize/2,y+tileSize/2,x+tileSize/2,y,x+tileSize/2,y);ctx.moveTo(x+tileSize/2,y+tileSize);ctx.bezierCurveTo(x+tileSize/2,y+tileSize/2,x+tileSize,y+tileSize/2,x+tileSize,y+tileSize/2);}
+      else{ctx.moveTo(x+tileSize/2,y);ctx.bezierCurveTo(x+tileSize/2,y+tileSize/2,x,y+tileSize/2,x,y+tileSize/2);ctx.moveTo(x+tileSize,y+tileSize/2);ctx.bezierCurveTo(x+tileSize/2,y+tileSize/2,x+tileSize/2,y+tileSize,x+tileSize/2,y+tileSize);}
+    } else {
+      const angle=rng.range(0,Math.PI*2);
+      ctx.arc(x+tileSize/2,y+tileSize/2,tileSize*rng.range(0.2,0.5),angle,angle+rng.range(Math.PI/2,Math.PI*1.8));
+    }
+    ctx.stroke();
+  }
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 8: Flow Field (noise-directed particles)
+// ══════════════════════════════════════════════════════════════════
+function algoFlow(rng, W, H, pal) {
+  const noise=mkNoise(rng);
+  const imgData=ctx.createImageData(W,H);const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    const bg=samplePalette(pal,0);d[i]=bg[0];d[i+1]=bg[1];d[i+2]=bg[2];d[i+3]=255;
+  }
+  const sc=rng.range(0.5,4);
+  const numLines=rng.int(300,2500);
+  const steps=rng.int(100,600);
+  const angleFunc=rng.int(0,4);
+  for(let n=0;n<numLines;n++){
+    let x=rng()*W,y=rng()*H;
+    const t0=rng();
+    for(let s=0;s<steps;s++){
+      const nx=x/W*sc,ny=y/H*sc;
+      let angle;
+      if(angleFunc===0) angle=fbm(noise,nx,ny,4)*Math.PI*4;
+      else if(angleFunc===1) angle=noise(nx,ny)*Math.PI*2+noise(nx*2,ny*2)*Math.PI;
+      else if(angleFunc===2) angle=Math.atan2(y-H/2,x-W/2)+noise(nx,ny)*2;
+      else angle=(noise(nx,ny)*Math.PI*6)+s*0.01;
+      const speed=rng.range(1,3);
+      x+=Math.cos(angle)*speed;y+=Math.sin(angle)*speed;
+      if(x<0||x>=W||y<0||y>=H)break;
+      const xi=x|0,yi=y|0;
+      const idx=(yi*W+xi)*4;
+      const [r,g,b]=samplePalette(pal,t0);
+      const alpha=rng.range(0.02,0.15);
+      d[idx]=clamp(d[idx]+r*alpha);d[idx+1]=clamp(d[idx+1]+g*alpha);d[idx+2]=clamp(d[idx+2]+b*alpha);
+    }
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 9: Parametric/Lissajous curves
+// ══════════════════════════════════════════════════════════════════
+function algoParametric(rng, W, H, pal) {
+  canvas.width=W;canvas.height=H;
+  const bg=samplePalette(pal,0);
+  ctx.fillStyle=`rgb(${bg[0]},${bg[1]},${bg[2]})`;ctx.fillRect(0,0,W,H);
+  const curves=rng.int(3,12);
+  for(let c=0;c<curves;c++){
+    const type=rng.int(0,5);
+    const a=rng.range(1,7)|0,b=rng.range(1,7)|0;
+    const delta=rng.range(0,Math.PI*2);
+    const scale=rng.range(0.15,0.48)*Math.min(W,H);
+    const cx=rng.range(0.2,0.8)*W,cy=rng.range(0.2,0.8)*H;
+    const n=Math.floor(rng.range(2000,8000));
+    const [cr,cg,cb]=samplePalette(pal,(c+1)/curves);
+    const alpha=rng.range(0.02,0.4);
+    ctx.strokeStyle=`rgba(${cr},${cg},${cb},${alpha})`;
+    ctx.lineWidth=rng.range(0.3,2.5);
+    ctx.beginPath();
+    for(let i=0;i<=n;i++){
+      const t=i/n*Math.PI*2*(a<b?b:a)*2;
+      let x,y;
+      if(type===0){x=Math.sin(a*t+delta)*scale;y=Math.sin(b*t)*scale;}
+      else if(type===1){const r2=scale*(1+rng.range(0.1,0.5)*Math.sin(a*t));x=r2*Math.cos(t);y=r2*Math.sin(t);}
+      else if(type===2){x=scale*Math.cos(t)*(1-rng.range(0.3,0.8)*Math.cos(a*t));y=scale*Math.sin(t)*(1-rng.range(0.3,0.8)*Math.cos(b*t));}
+      else if(type===3){const k=a/b;x=scale*Math.cos((k-1)*t);y=scale*Math.sin(t);}
+      else{x=scale*(Math.cos(a*t)*Math.sin(delta)+Math.sin(b*t)*Math.cos(delta));y=scale*Math.sin(a*t+b*t);}
+      i===0?ctx.moveTo(cx+x,cy+y):ctx.lineTo(cx+x,cy+y);
+    }
+    ctx.stroke();
+  }
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 10: Recursive Subdivision (Mondrian-ish but organic)
+// ══════════════════════════════════════════════════════════════════
+function algoSubdivision(rng, W, H, pal) {
+  canvas.width=W;canvas.height=H;
+  const minSize=rng.range(10,60)|0;
+  const depth=rng.int(4,9);
+  const gap=rng.range(0,6);
+  const rounded=rng.bool(0.4);
+  function split(x,y,w,h,d){
+    if(d===0||w<minSize||h<minSize){
+      const t=rng();const [r,g,b]=samplePalette(pal,t);
+      const alpha=rng.range(0.5,1);
+      ctx.fillStyle=`rgba(${r},${g},${b},${alpha})`;
+      const g2=gap/2;
+      if(rounded){ctx.beginPath();const br=Math.min(w,h)*rng.range(0,0.4);ctx.roundRect(x+g2,y+g2,w-gap,h-gap,br);ctx.fill();}
+      else ctx.fillRect(x+g2,y+g2,w-gap,h-gap);
+      return;
+    }
+    const horiz=w>h?rng.bool(0.35):rng.bool(0.65);
+    if(horiz){const sp=rng.range(0.2,0.8);const wl=w*sp|0;split(x,y,wl,h,d-1);split(x+wl,y,w-wl,h,d-1);}
+    else{const sp=rng.range(0.2,0.8);const ht=h*sp|0;split(x,y,w,ht,d-1);split(x,y+ht,w,h-ht,d-1);}
+  }
+  const bg=samplePalette(pal,0.1);
+  ctx.fillStyle=`rgb(${bg[0]},${bg[1]},${bg[2]})`;ctx.fillRect(0,0,W,H);
+  split(0,0,W,H,depth);
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 11: Circle Packing
+// ══════════════════════════════════════════════════════════════════
+function algoCircles(rng, W, H, pal) {
+  canvas.width=W;canvas.height=H;
+  const bg=samplePalette(pal,0);
+  ctx.fillStyle=`rgb(${bg[0]},${bg[1]},${bg[2]})`;ctx.fillRect(0,0,W,H);
+  const maxR=rng.range(20,80),minR=rng.range(2,10);
+  const attempts=rng.int(2000,6000);
+  const circles=[];
+  const drawMode=rng.int(0,4);
+  for(let a=0;a<attempts;a++){
+    let r=rng.range(minR,maxR);
+    let x,y;
+    // Optionally bias toward center
+    if(rng.bool(0.4)){x=rng.gauss()*(W*0.25)+W/2;y=rng.gauss()*(H*0.25)+H/2;}
+    else{x=rng()*W;y=rng()*H;}
+    let ok=x-r>0&&x+r<W&&y-r>0&&y+r<H;
+    if(ok){for(const c of circles){const dx=x-c.x,dy=y-c.y;if(dx*dx+dy*dy<(r+c.r+2)*(r+c.r+2)){ok=false;break;}}}
+    if(ok){
+      circles.push({x,y,r});
+      const t=(circles.length/500);
+      const [cr,cg,cb]=samplePalette(pal,rng());
+      const alpha=rng.range(0.3,1);
+      ctx.globalAlpha=alpha;
+      if(drawMode===0){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=`rgb(${cr},${cg},${cb})`;ctx.fill();}
+      else if(drawMode===1){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.strokeStyle=`rgb(${cr},${cg},${cb})`;ctx.lineWidth=rng.range(0.5,4);ctx.stroke();}
+      else if(drawMode===2){
+        const grd=ctx.createRadialGradient(x-r*0.3,y-r*0.3,r*0.1,x,y,r);
+        grd.addColorStop(0,`rgb(${Math.min(255,cr+60)},${Math.min(255,cg+60)},${Math.min(255,cb+60)})`);
+        grd.addColorStop(1,`rgb(${cr},${cg},${cb})`);
+        ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+      }
+      else{
+        for(let ring=r;ring>minR;ring-=rng.range(1,4)){
+          const rt=(r-ring)/r;const [r2,g2,b2]=samplePalette(pal,rt);
+          ctx.beginPath();ctx.arc(x,y,ring,0,Math.PI*2);
+          ctx.strokeStyle=`rgb(${r2},${g2},${b2})`;ctx.lineWidth=0.5;ctx.stroke();
+        }
+      }
+      ctx.globalAlpha=1;
+    }
+  }
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 12: Math Surface Renderer (2D projection of 3D)
+// ══════════════════════════════════════════════════════════════════
+function algoSurface(rng, W, H, pal) {
+  const imgData=ctx.createImageData(W,H);const d=imgData.data;
+  const funcIdx=rng.int(0,8);
+  const sc=rng.range(2,10);
+  const freq=rng.range(1,5);
+  const f=(x,y)=>{
+    if(funcIdx===0)return Math.sin(x*freq)*Math.cos(y*freq);
+    if(funcIdx===1)return Math.sin(Math.sqrt(x*x+y*y)*freq);
+    if(funcIdx===2)return Math.sin(x*freq)*Math.sin(y*freq)/(x*freq*y*freq||1);
+    if(funcIdx===3){const r2=x*x+y*y;return Math.exp(-r2)*Math.sin(r2*freq*5);}
+    if(funcIdx===4)return Math.sin(x*x*freq+y*y*freq);
+    if(funcIdx===5)return Math.sin(x*freq+Math.sin(y*freq+Math.sin(x*freq)));
+    if(funcIdx===6)return Math.cos(x*freq)*Math.sin(y*freq)+Math.sin(x*freq+y*freq);
+    return Math.sin(x*freq)*Math.cos(y*freq)+Math.sin(2*x*freq+y*freq);
+  };
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const nx=(x/W-0.5)*sc,ny=(y/H-0.5)*sc;
+    const v=f(nx,ny)*0.5+0.5;
+    const [r,g,b]=samplePalette(pal,v);
+    const i=(y*W+x)*4;d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;
+  }
+  return imgData;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 13: Cellular Automata (multi-state)
+// ══════════════════════════════════════════════════════════════════
+function algoCellular(rng, W, H, pal) {
+  const cw=Math.floor(W/rng.range(2,8)),ch=Math.floor(H/rng.range(2,8));
+  const states=rng.int(2,6);
+  let grid=Array.from({length:ch},()=>Array.from({length:cw},()=>rng.int(0,states)));
+  const rule=rng.int(0,3);
+  const steps=rng.int(5,30);
+  for(let t=0;t<steps;t++){
+    grid=grid.map((row,y)=>row.map((_,x)=>{
+      let sum=0,count=0;
+      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;sum+=grid[(y+dy+ch)%ch][(x+dx+cw)%cw];count++;}
+      const avg=sum/count;
+      if(rule===0)return avg>states/2?Math.min(states-1,grid[y][x]+1):Math.max(0,grid[y][x]-1);
+      if(rule===1)return (grid[y][x]+Math.round(avg))%states;
+      if(rule===2){const n=Math.round(sum);return n%states===0?states-1:Math.max(0,grid[y][x]-1);}
+      return avg>2?(grid[y][x]+1)%states:grid[y][x];
+    }));
+  }
+  canvas.width=W;canvas.height=H;
+  const cellW=W/cw,cellH=H/ch;
+  for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){
+    const [r,g,b]=samplePalette(pal,grid[y][x]/(states-1));
+    ctx.fillStyle=`rgb(${r},${g},${b})`;
+    ctx.fillRect(x*cellW,y*cellH,cellW+1,cellH+1);
+  }
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM 14: L-System / Organic Branching
+// ══════════════════════════════════════════════════════════════════
+function algoLSystem(rng, W, H, pal) {
+  canvas.width=W;canvas.height=H;
+  const bg=samplePalette(pal,0);
+  ctx.fillStyle=`rgb(${bg[0]},${bg[1]},${bg[2]})`;ctx.fillRect(0,0,W,H);
+  // Random L-system rules
+  const systems=[
+    {axiom:'F',rules:{'F':'FF+[+F-F-F]-[-F+F+F]'},angle:25,iter:4},
+    {axiom:'X',rules:{'X':'F+[[X]-X]-F[-FX]+X','F':'FF'},angle:25,iter:5},
+    {axiom:'F',rules:{'F':'F[+F]F[-F][F]'},angle:20,iter:5},
+    {axiom:'F',rules:{'F':'FF-[-F+F+F]+[+F-F-F]'},angle:22.5,iter:4},
+    {axiom:'X',rules:{'X':'F[+X][-X]FX','F':'FF'},angle:rng.range(15,35),iter:6},
+  ];
+  const sys=rng.pick(systems);
+  let str=sys.axiom;
+  for(let i=0;i<sys.iter;i++){str=str.split('').map(c=>sys.rules[c]||c).join('');}
+  const angle=(sys.angle+rng.range(-5,5))*Math.PI/180;
+  let x=W*rng.range(0.2,0.8),y=H*0.95,a=-Math.PI/2;
+  const len=Math.min(W,H)*rng.range(0.004,0.012);
+  const stack=[];let depth=0;
+  ctx.lineWidth=rng.range(0.3,2);
+  for(const c of str){
+    if(c==='F'){
+      const nx=x+Math.cos(a)*len,ny=y+Math.sin(a)*len;
+      const t=depth/8;const [r,g,b]=samplePalette(pal,t);
+      ctx.strokeStyle=`rgba(${r},${g},${b},${rng.range(0.4,0.9)})`;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(nx,ny);ctx.stroke();
+      x=nx;y=ny;
+    }else if(c==='+')a+=angle+rng.range(-0.05,0.05);
+    else if(c==='-')a-=angle+rng.range(-0.05,0.05);
+    else if(c==='['){stack.push([x,y,a,depth]);depth++;}
+    else if(c===']'&&stack.length){[x,y,a,depth]=stack.pop();}
+  }
+  return ctx.getImageData(0,0,W,H);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ALGORITHM SELECTOR + COMBINER
+// ══════════════════════════════════════════════════════════════════
+const ALGOS = [
+  {fn: algoPerlin,      name: 'WARPED NOISE'},
+  {fn: algoJulia,       name: 'JULIA SET'},
+  {fn: algoAttractor,   name: 'STRANGE ATTRACTOR'},
+  {fn: algoIFS,         name: 'IFS FRACTAL'},
+  {fn: algoReaction,    name: 'REACTION DIFFUSION'},
+  {fn: algoVoronoi,     name: 'VORONOI'},
+  {fn: algoTruchet,     name: 'TRUCHET TILES'},
+  {fn: algoFlow,        name: 'FLOW FIELD'},
+  {fn: algoParametric,  name: 'PARAMETRIC CURVES'},
+  {fn: algoSubdivision, name: 'RECURSIVE SPLIT'},
+  {fn: algoCircles,     name: 'CIRCLE PACKING'},
+  {fn: algoSurface,     name: 'MATH SURFACE'},
+  {fn: algoCellular,    name: 'CELLULAR AUTOMATA'},
+  {fn: algoLSystem,     name: 'L-SYSTEM'},
+];
+
+// Blend two images randomly
+function blendImages(imgA, imgB, W, H, rng) {
+  const mode = rng.int(0, 6);
+  const out = ctx.createImageData(W, H);
+  const a = imgA.data, b = imgB.data, o = out.data;
+  for (let i = 0; i < a.length; i += 4) {
+    for (let c = 0; c < 3; c++) {
+      const av = a[i+c]/255, bv = b[i+c]/255;
+      let v;
+      if (mode===0) v = av * 0.5 + bv * 0.5;
+      else if (mode===1) v = 1-(1-av)*(1-bv); // screen
+      else if (mode===2) v = av*bv; // multiply
+      else if (mode===3) v = av<0.5?2*av*bv:1-2*(1-av)*(1-bv); // overlay
+      else if (mode===4) v = Math.max(av,bv); // lighten
+      else v = Math.abs(av-bv); // difference
+      o[i+c] = clamp(v * 255);
+    }
+    o[i+3] = 255;
+  }
+  return out;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MAIN GENERATE
+// ══════════════════════════════════════════════════════════════════
+async function generate() {
+  if (busy) return;
+  busy = true;
+  document.getElementById('genBtn').classList.add('busy');
+  document.getElementById('loader').classList.add('show');
+  document.getElementById('algoTag').classList.remove('show');
+  canvas.classList.add('fade');
+
+  await new Promise(r => setTimeout(r, 60));
+
+  // True randomness — new seed every time
+  const seed = (performance.now() * Math.random() * 9999999) | 0;
+  const rng = mkRng(seed);
+
+  // Random canvas size (squarish to widescreen range)
+  const sizes = [[800,800],[900,900],[1024,768],[900,600],[800,1000],[1024,1024],[700,700]];
+  const [W, H] = rng.pick(sizes);
+  canvas.width = W; canvas.height = H;
+
+  // Generate unique palette
+  const pal = genPalette(rng);
+
+  // Pick algorithm(s)
+  const doBlend = rng.bool(0.25); // 25% chance of blending two algorithms
+  let algoIdx = rng.int(0, ALGOS.length);
+  let algoName = ALGOS[algoIdx].name;
+
+  let imgData;
+  try {
+    imgData = ALGOS[algoIdx].fn(rng, W, H, pal);
+
+    if (doBlend) {
+      const algoIdx2 = (algoIdx + rng.int(1, ALGOS.length)) % ALGOS.length;
+      const pal2 = genPalette(rng);
+      const imgData2 = ALGOS[algoIdx2].fn(rng, W, H, pal2);
+      imgData = blendImages(imgData, imgData2, W, H, rng);
+      algoName += ' × ' + ALGOS[algoIdx2].name;
+    }
+
+    // Post-processing
+    imgData = postProcess(imgData, W, H, rng);
+
+    canvas.width = W; canvas.height = H;
+    ctx.putImageData(imgData, 0, 0);
+  } catch(e) {
+    console.error(e);
+  }
+
+  count++;
+  document.getElementById('countNum').textContent = String(count).padStart(3, '0');
+  document.getElementById('algoTag').textContent = algoName;
+  canvas.classList.remove('fade');
+  setTimeout(() => document.getElementById('algoTag').classList.add('show'), 200);
+  setTimeout(() => document.getElementById('algoTag').classList.remove('show'), 4000);
+
+  document.getElementById('loader').classList.remove('show');
+  document.getElementById('genBtn').classList.remove('busy');
+  busy = false;
+}
+
+document.getElementById('genBtn').addEventListener('click', generate);
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = `art_${Date.now()}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+});
+
+// ── Auto-play ──────────────────────────────────────────────────────
+const AUTO_INTERVAL = 10; // seconds
+let autoOn = false;
+let autoTimer = null;
+let countdownVal = AUTO_INTERVAL;
+let countdownRaf = null;
+let countdownStart = null;
+
+const autoBtn       = document.getElementById('autoBtn');
+const countdownWrap = document.getElementById('countdownWrap');
+const countdownArc  = document.getElementById('countdownArc');
+const countdownNum  = document.getElementById('countdownNum');
+const CIRCUMFERENCE = 87.96; // 2*pi*14
+
+function setArcOffset(t) {
+  // t: 0 = full circle, 1 = empty
+  countdownArc.style.strokeDashoffset = (CIRCUMFERENCE * t).toFixed(2);
+}
+
+function startCountdown() {
+  cancelAnimationFrame(countdownRaf);
+  countdownStart = performance.now();
+  setArcOffset(0);
+  countdownNum.textContent = AUTO_INTERVAL;
+
+  function tick(now) {
+    if (!autoOn) return;
+    const elapsed = (now - countdownStart) / 1000;
+    const remaining = Math.max(0, AUTO_INTERVAL - elapsed);
+    const t = elapsed / AUTO_INTERVAL;
+    setArcOffset(Math.min(1, t));
+    countdownNum.textContent = Math.ceil(remaining);
+    if (elapsed >= AUTO_INTERVAL) {
+      generate().then(() => { if (autoOn) startCountdown(); });
+    } else {
+      countdownRaf = requestAnimationFrame(tick);
+    }
+  }
+  countdownRaf = requestAnimationFrame(tick);
+}
+
+function stopCountdown() {
+  cancelAnimationFrame(countdownRaf);
+  countdownRaf = null;
+}
+
+function toggleAuto() {
+  autoOn = !autoOn;
+  autoBtn.classList.toggle('active', autoOn);
+  countdownWrap.classList.toggle('show', autoOn);
+  if (autoOn) {
+    startCountdown();
+  } else {
+    stopCountdown();
+    setArcOffset(0);
+  }
+}
+
+autoBtn.addEventListener('click', toggleAuto);
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'Enter') generate();
+  if (e.code === 'KeyA') toggleAuto();
+});
+
+// Auto-generate on load
+generate();
+</script>
+</body>
+</html>
