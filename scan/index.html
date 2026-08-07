@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -90,6 +89,27 @@
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;}
   .card h2{margin:0 0 14px;font-size:11px;letter-spacing:0.14em;color:var(--ink-dim);text-transform:uppercase;font-weight:700;}
   .card h2 .n{color:var(--signal);}
+  .badge-auto{
+    display:inline-block;font-size:9px;letter-spacing:0.1em;font-weight:800;color:var(--bg);
+    background:var(--signal);padding:2px 7px;border-radius:4px;margin-left:6px;vertical-align:2px;
+  }
+  .badge-auto.manual{background:var(--amber);}
+
+  .control-row{margin:14px 0;}
+  .control-lab{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;letter-spacing:0.08em;color:var(--ink-dim);margin-bottom:6px;text-transform:uppercase;}
+  .control-lab b{font-size:12px;letter-spacing:0.02em;}
+  input[type="range"]{
+    width:100%;height:5px;border-radius:4px;background:var(--panel-2);
+    -webkit-appearance:none;appearance:none;border:1px solid var(--line);outline:none;cursor:pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;
+    background:var(--signal);border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:14px;height:14px;border-radius:50%;background:var(--signal);border:2px solid var(--panel);cursor:pointer;
+  }
+  input[type="range"]:disabled{opacity:0.4;cursor:not-allowed;}
 
   /* input mode switch */
   .mode-switch{display:flex;gap:2px;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:3px;width:fit-content;margin-bottom:14px;}
@@ -228,7 +248,7 @@
     </div>
 
     <div class="card" id="calcCard" style="display:none;">
-      <h2>02 <span class="n">// auto-calculated link parameters</span></h2>
+      <h2>02 <span class="n">// link parameters</span> <span id="tuneBadge" class="badge-auto">AUTO</span></h2>
       <div class="stats">
         <div class="stat"><div class="lab">Payload size</div><div class="val" id="statSize">—</div></div>
         <div class="stat"><div class="lab">Frame size</div><div class="val cyan" id="statChunk">—</div></div>
@@ -236,12 +256,23 @@
         <div class="stat"><div class="lab">Frame interval</div><div class="val amber" id="statInterval">—</div></div>
         <div class="stat"><div class="lab">Cycle time</div><div class="val" id="statCycle">—</div></div>
       </div>
+
+      <div class="control-row">
+        <div class="control-lab"><span>FRAME SIZE</span><b id="chunkSizeLabel" class="cyan">—</b></div>
+        <input type="range" id="chunkSizeSlider" min="80" max="1400" step="10">
+      </div>
+      <div class="control-row">
+        <div class="control-lab"><span>FRAME INTERVAL</span><b id="intervalLabel" class="amber">—</b></div>
+        <input type="range" id="intervalSlider" min="300" max="3000" step="50">
+      </div>
+
       <div class="btnrow">
         <button class="primary" id="btnStart">▶ START BROADCAST</button>
         <button class="ghost" id="btnPause" style="display:none;">‖ PAUSE</button>
         <button class="ghost danger" id="btnStop" style="display:none;">■ STOP</button>
+        <button class="ghost" id="btnAuto">⟲ RESET TO AUTO</button>
       </div>
-      <div class="hint">Frame size and interval scale automatically with payload size — small payloads broadcast in a couple of quick frames, large payloads use bigger, slower frames to stay reliably scannable. The first frame always carries the transfer's header (id, frame count, checksum) so the receiver can auto-configure itself.</div>
+      <div class="hint">Frame size and interval start at auto-calculated values, but you can drag either slider to trade speed for reliability — smaller/slower frames scan more accurately on weaker cameras, bigger/faster frames move more data per second. Whatever you choose is written into the header QR (the first frame), so the receiving device reads your exact settings and configures itself automatically — nothing needs to be set manually on the receiving end.</div>
     </div>
 
     <div class="stage" id="stage">
@@ -465,6 +496,12 @@
   const btnStart = document.getElementById('btnStart');
   const btnPause = document.getElementById('btnPause');
   const btnStop = document.getElementById('btnStop');
+  const btnAuto = document.getElementById('btnAuto');
+  const tuneBadge = document.getElementById('tuneBadge');
+  const chunkSizeSlider = document.getElementById('chunkSizeSlider');
+  const intervalSlider = document.getElementById('intervalSlider');
+  const chunkSizeLabel = document.getElementById('chunkSizeLabel');
+  const intervalLabel = document.getElementById('intervalLabel');
   const stage = document.getElementById('stage');
   const curFrame = document.getElementById('curFrame');
   const totFrame = document.getElementById('totFrame');
@@ -475,24 +512,51 @@
 
   let builtBase64 = '', builtChunkChars = 0, builtIntervalMs = 0, builtTransferId = '';
 
-  async function showCalc(){
+  function refreshCalcDisplay(manual){
     if(!payload) return;
-    const b64 = bufToBase64(payload.bytes);
-    builtBase64 = b64;
-    const chunkChars = computeChunkChars(b64.length);
-    const intervalMs = computeInterval(chunkChars);
-    const nFrames = Math.max(1, Math.ceil(b64.length / chunkChars));
+    const chunkChars = builtChunkChars;
+    const intervalMs = builtIntervalMs;
+    const nFrames = Math.max(1, Math.ceil(builtBase64.length / chunkChars));
 
     statSize.textContent = fmtBytes(payload.bytes.byteLength);
     statChunk.textContent = chunkChars + ' ch';
     statFrames.textContent = (nFrames + 1) + ' (incl. header)';
     statInterval.textContent = fmtMs(intervalMs);
     statCycle.textContent = fmtMs((nFrames+1) * intervalMs);
-    calcCard.style.display='block';
 
-    builtChunkChars = chunkChars;
-    builtIntervalMs = intervalMs;
+    chunkSizeLabel.textContent = chunkChars + ' ch';
+    intervalLabel.textContent = intervalMs + ' ms';
+    chunkSizeSlider.value = chunkChars;
+    intervalSlider.value = intervalMs;
+
+    tuneBadge.textContent = manual ? 'MANUAL' : 'AUTO';
+    tuneBadge.classList.toggle('manual', !!manual);
   }
+
+  function showCalc(){
+    if(!payload) return;
+    const b64 = bufToBase64(payload.bytes);
+    builtBase64 = b64;
+    builtChunkChars = computeChunkChars(b64.length);
+    builtIntervalMs = computeInterval(builtChunkChars);
+    calcCard.style.display='block';
+    refreshCalcDisplay(false);
+  }
+
+  chunkSizeSlider.oninput = () => {
+    builtChunkChars = parseInt(chunkSizeSlider.value, 10);
+    refreshCalcDisplay(true);
+  };
+  intervalSlider.oninput = () => {
+    builtIntervalMs = parseInt(intervalSlider.value, 10);
+    refreshCalcDisplay(true);
+  };
+  btnAuto.onclick = () => {
+    if(!builtBase64) return;
+    builtChunkChars = computeChunkChars(builtBase64.length);
+    builtIntervalMs = computeInterval(builtChunkChars);
+    refreshCalcDisplay(false);
+  };
 
   async function buildFrames(){
     const id = randId();
@@ -519,6 +583,7 @@
     stage.classList.add('on');
     btnStart.style.display='none'; btnPause.style.display=''; btnStop.style.display='';
     btnPause.textContent = '‖ PAUSE';
+    chunkSizeSlider.disabled = true; intervalSlider.disabled = true; btnAuto.disabled = true;
     runFrame();
     frameTimer = setInterval(runFrame, builtIntervalMs);
   };
