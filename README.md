@@ -2,6 +2,10 @@
 -------------------------------------------------------------
 ***APPS***
 1) Presentation software -> https://antartica0000.github.io/antartica/ppt
+2) Antartica notes app -> https://antartica0000.github.io/antartica/notes
+3) Antartica docs app -> https://antartica0000.github.io/antartica/doc
+4) Antartica calender app -> https://antartica0000.github.io/antartica/calender
+5) Antartica 2fa authenticator web app -> https://antartica0000.github.io/antartica/auth
 -------------------------------------------------------------
 Rules:
 1) Be respectful to others
