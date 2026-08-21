@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MESHLINK // proximity chat</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<style>
+  :root{
+    --bg:#0a0d0a;
+    --bg2:#0e1310;
+    --panel:#0f1512;
+    --line:#1c3a2a;
+    --line-dim:#122018;
+    --signal:#39ff88;
+    --signal-dim:#1f7a4a;
+    --amber:#ffb347;
+    --red:#ff5c5c;
+    --text:#d8f0e0;
+    --text-dim:#6f8a7a;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% -10%, #0f1a12 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.01em;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  #app{height:100vh; display:flex; flex-direction:column;}
+
+  /* ---------- top bar ---------- */
+  #topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px;
+    border-bottom:1px solid var(--line-dim);
+    background:linear-gradient(180deg, #0d130f, #0a0d0a);
+    flex-shrink:0;
+  }
+  #brand{display:flex; align-items:center; gap:10px;}
+  #brand .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--signal);
+    box-shadow:0 0 8px var(--signal), 0 0 2px var(--signal);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  #brand b{color:var(--signal); font-weight:700; letter-spacing:.12em; font-size:13px;}
+  #brand span{color:var(--text-dim); font-size:11px;}
+  #idbox{color:var(--text-dim); font-size:11px; text-align:right;}
+  #idbox b{color:var(--text);}
+
+  /* ---------- layout ---------- */
+  #main{flex:1; display:flex; min-height:0;}
+  #side{
+    width:230px; flex-shrink:0;
+    border-right:1px solid var(--line-dim);
+    display:flex; flex-direction:column;
+    background:var(--panel);
+  }
+  #radarWrap{padding:14px; border-bottom:1px solid var(--line-dim);}
+  #radarLabel{font-size:10px; color:var(--text-dim); letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;}
+  canvas#radar{width:100%; aspect-ratio:1/1; display:block;}
+  #peerListWrap{flex:1; overflow-y:auto; padding:10px 14px;}
+  #peerListLabel{font-size:10px; color:var(--text-dim); letter-spacing:.15em; margin-bottom:8px; text-transform:uppercase;}
+  .peerRow{
+    display:flex; align-items:center; gap:8px;
+    padding:6px 0; font-size:12px; color:var(--text);
+    border-bottom:1px solid var(--line-dim);
+  }
+  .peerRow .st{width:6px;height:6px;border-radius:50%; flex-shrink:0;}
+  .peerRow .st.up{background:var(--signal); box-shadow:0 0 6px var(--signal);}
+  .peerRow .st.down{background:var(--red); animation:pulse 1s infinite;}
+  .peerRow .nm{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .peerRow .via{color:var(--text-dim); font-size:10px;}
+  #emptyPeers{color:var(--text-dim); font-size:11px; line-height:1.6;}
+
+  #actions{padding:12px 14px; border-top:1px solid var(--line-dim); display:flex; flex-direction:column; gap:8px;}
+  button{
+    font-family:var(--mono); font-size:12px; letter-spacing:.05em;
+    background:var(--bg2); color:var(--signal); border:1px solid var(--signal-dim);
+    padding:9px 10px; cursor:pointer; text-transform:uppercase; border-radius:2px;
+    transition:background .15s, box-shadow .15s;
+  }
+  button:hover{background:#122018; box-shadow:0 0 10px -2px var(--signal-dim);}
+  button:active{transform:translateY(1px);}
+  button.ghost{color:var(--text-dim); border-color:var(--line);}
+  button.danger{color:var(--red); border-color:#4a1f1f;}
+  button:disabled{opacity:.35; cursor:not-allowed;}
+
+  /* ---------- chat column ---------- */
+  #chatCol{flex:1; display:flex; flex-direction:column; min-width:0;}
+  #log{flex:1; overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:2px;}
+  .sysline{color:var(--text-dim); font-size:11px; margin:6px 0; padding-left:2px;}
+  .sysline::before{content:"// "; color:var(--line);}
+  .msg{display:flex; gap:10px; padding:3px 0; font-size:13px; line-height:1.5;}
+  .msg .t{color:var(--text-dim); font-size:10px; flex-shrink:0; width:52px; padding-top:2px;}
+  .msg .n{color:var(--signal); flex-shrink:0; font-weight:600;}
+  .msg.me .n{color:var(--amber);}
+  .msg .b{color:var(--text); word-break:break-word;}
+  #composer{
+    display:flex; gap:8px; padding:12px 16px; border-top:1px solid var(--line-dim);
+    background:var(--panel); flex-shrink:0;
+  }
+  #msgInput{
+    flex:1; background:var(--bg2); border:1px solid var(--line); color:var(--text);
+    font-family:var(--mono); font-size:13px; padding:10px 12px; border-radius:2px; outline:none;
+  }
+  #msgInput:focus{border-color:var(--signal-dim);}
+  #sendBtn{width:90px;}
+
+  /* ---------- setup / pairing overlay ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(6,9,7,.92); backdrop-filter:blur(2px);
+    display:flex; align-items:center; justify-content:center; z-index:50;
+    padding:20px;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:4px;
+    width:100%; max-width:380px; padding:22px; text-align:center;
+  }
+  .card h2{
+    margin:0 0 4px; font-size:13px; letter-spacing:.15em; color:var(--signal); text-transform:uppercase;
+  }
+  .card p.sub{color:var(--text-dim); font-size:11px; margin:0 0 18px; line-height:1.6;}
+  .card input[type=text]{
+    width:100%; background:var(--bg2); border:1px solid var(--line); color:var(--text);
+    font-family:var(--mono); font-size:14px; padding:11px 12px; border-radius:2px; outline:none; text-align:center;
+    margin-bottom:14px;
+  }
+  .card input[type=text]:focus{border-color:var(--signal-dim);}
+  #qrStage{background:#fff; padding:10px; border-radius:4px; display:inline-block; margin:10px 0;}
+  #qrProgress{font-size:11px; color:var(--text-dim); margin-top:6px; letter-spacing:.05em;}
+  #scanStage video{width:100%; border-radius:4px; border:1px solid var(--line); margin:10px 0; background:#000;}
+  #scanHint{font-size:11px; color:var(--text-dim);}
+  .rowbtns{display:flex; gap:8px; margin-top:14px;}
+  .rowbtns button{flex:1;}
+  .hidden{display:none !important;}
+  .close-x{position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text-dim); font-size:16px; cursor:pointer; padding:2px 6px;}
+  .card{position:relative;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div id="brand"><span class="dot"></span><b>MESHLINK</b><span>proximity mesh chat &middot; no server &middot; no internet</span></div>
+    <div id="idbox">you are <b id="myNameLabel">—</b> <span id="myIdLabel"></span></div>
+  </div>
+
+  <div id="main">
+    <div id="side">
+      <div id="radarWrap">
+        <div id="radarLabel">mesh &middot; <span id="peerCount">0</span> linked</div>
+        <canvas id="radar" width="220" height="220"></canvas>
+      </div>
+      <div id="peerListWrap">
+        <div id="peerListLabel">nodes</div>
+        <div id="peerList"><div id="emptyPeers">no one linked yet. invite someone or scan an invite to form the mesh.</div></div>
+      </div>
+      <div id="actions">
+        <button id="inviteBtn">+ invite (show qr)</button>
+        <button id="joinBtn" class="ghost">↳ join (scan qr)</button>
+      </div>
+    </div>
+
+    <div id="chatCol">
+      <div id="log"></div>
+      <div id="composer">
+        <input id="msgInput" type="text" placeholder="message the mesh..." autocomplete="off">
+        <button id="sendBtn">send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- name setup -->
+<div class="overlay" id="setupOverlay">
+  <div class="card">
+    <h2>join the mesh</h2>
+    <p class="sub">pick a handle. everyone nearby connects device-to-device over WebRTC — no account, no server, no internet needed once you're on the same network.</p>
+    <input type="text" id="nameInput" maxlength="16" placeholder="handle e.g. joel">
+    <button id="enterBtn" style="width:100%;">enter</button>
+  </div>
+</div>
+
+<!-- invite (show QR, then scan their answer) -->
+<div class="overlay hidden" id="inviteOverlay">
+  <div class="card">
+    <button class="close-x" data-close="inviteOverlay">×</button>
+    <h2 id="inviteTitle">your invite</h2>
+    <p class="sub" id="inviteSub">have the other person open MESHLINK and tap “join”, then point their camera at this code. it cycles through a few frames — hold steady.</p>
+    <div id="qrStage"><div id="qrDiv"></div></div>
+    <div id="qrProgress"></div>
+    <div id="scanStage" class="hidden">
+      <video id="inviteScanVideo" playsinline muted></video>
+      <div id="scanHint">now scan the code on their screen to finish linking</div>
+    </div>
+    <div class="rowbtns">
+      <button id="inviteToScanBtn">got scanned → scan their reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- join (scan an offer, then show answer) -->
+<div class="overlay hidden" id="joinOverlay">
+  <div class="card">
+    <button class="close-x" data-close="joinOverlay">×</button>
+    <h2 id="joinTitle">scan invite</h2>
+    <p class="sub" id="joinSub">point your camera at the inviter's screen.</p>
+    <div id="joinScanStage">
+      <video id="joinScanVideo" playsinline muted></video>
+      <div id="scanHint2">scanning…</div>
+    </div>
+    <div id="joinAnswerStage" class="hidden">
+      <div id="qrStage"><div id="qrDiv2"></div></div>
+      <p class="sub" style="margin:10px 0 0;">show this back to them now to finish linking.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================ state ============================ */
+const rtcConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+const QR_CHUNK = 620;      // base64 chars per QR frame
+const QR_FRAME_MS = 380;   // animation speed
+
+function randId(n){
+  const chars = "0123456789abcdef";
+  let s = "";
+  for(let i=0;i<(n||4);i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+const state = {
+  id: randId(4),
+  name: "",
+  peers: {},        // id -> { name, pc, dc, connected, via }
+  seenMsgIds: new Set(),
+  pendingInvite: null,   // { pc, dc }
+};
+
+const els = {
+  myNameLabel: document.getElementById('myNameLabel'),
+  myIdLabel: document.getElementById('myIdLabel'),
+  peerList: document.getElementById('peerList'),
+  peerCount: document.getElementById('peerCount'),
+  log: document.getElementById('log'),
+  msgInput: document.getElementById('msgInput'),
+  sendBtn: document.getElementById('sendBtn'),
+  inviteBtn: document.getElementById('inviteBtn'),
+  joinBtn: document.getElementById('joinBtn'),
+  setupOverlay: document.getElementById('setupOverlay'),
+  nameInput: document.getElementById('nameInput'),
+  enterBtn: document.getElementById('enterBtn'),
+  inviteOverlay: document.getElementById('inviteOverlay'),
+  qrDiv: document.getElementById('qrDiv'),
+  qrProgress: document.getElementById('qrProgress'),
+  scanStage: document.getElementById('scanStage'),
+  inviteScanVideo: document.getElementById('inviteScanVideo'),
+  inviteToScanBtn: document.getElementById('inviteToScanBtn'),
+  joinOverlay: document.getElementById('joinOverlay'),
+  joinScanStage: document.getElementById('joinScanStage'),
+  joinScanVideo: document.getElementById('joinScanVideo'),
+  joinAnswerStage: document.getElementById('joinAnswerStage'),
+  qrDiv2: document.getElementById('qrDiv2'),
+  radar: document.getElementById('radar'),
+};
+
+function sysline(text){
+  const d = document.createElement('div');
+  d.className = 'sysline';
+  d.textContent = text;
+  els.log.appendChild(d);
+  els.log.scrollTop = els.log.scrollHeight;
+}
+
+function appendChat(msg, mine){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg' + (mine ? ' me' : '');
+  const t = document.createElement('span'); t.className='t';
+  t.textContent = new Date(msg.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const n = document.createElement('span'); n.className='n'; n.textContent = (msg.name||'anon') + ':';
+  const b = document.createElement('span'); b.className='b'; b.textContent = msg.text;
+  wrap.appendChild(t); wrap.appendChild(n); wrap.appendChild(b);
+  els.log.appendChild(wrap);
+  els.log.scrollTop = els.log.scrollHeight;
+}
+
+/* ============================ UI: peer list + radar ============================ */
+function updateUI(){
+  const ids = Object.keys(state.peers);
+  els.peerCount.textContent = ids.filter(id=>state.peers[id].connected).length;
+  els.peerList.innerHTML = '';
+  if(ids.length === 0){
+    const e = document.createElement('div');
+    e.id='emptyPeers'; e.textContent='no one linked yet. invite someone or scan an invite to form the mesh.';
+    els.peerList.appendChild(e);
+  } else {
+    ids.forEach(id=>{
+      const p = state.peers[id];
+      const row = document.createElement('div'); row.className='peerRow';
+      const st = document.createElement('span'); st.className='st ' + (p.connected?'up':'down');
+      const nm = document.createElement('span'); nm.className='nm'; nm.textContent = p.name || id;
+      row.appendChild(st); row.appendChild(nm);
+      els.peerList.appendChild(row);
+    });
+  }
+  drawRadar();
+}
+
+function drawRadar(){
+  const c = els.radar;
+  const ctx = c.getContext('2d');
+  const w = c.width, h = c.height, cx=w/2, cy=h/2, r=w/2-14;
+  ctx.clearRect(0,0,w,h);
+  // rings
+  ctx.strokeStyle = 'rgba(57,255,136,0.15)';
+  ctx.lineWidth = 1;
+  for(let i=1;i<=3;i++){
+    ctx.beginPath(); ctx.arc(cx,cy,r*i/3,0,Math.PI*2); ctx.stroke();
+  }
+  // sweep
+  const t = (Date.now()/1000) % (Math.PI*2/0.9);
+  const angle = t*0.9;
+  const grad = ctx.createConicGradient ? ctx.createConicGradient(angle-1.2, cx, cy) : null;
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r, angle-0.5, angle);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(57,255,136,0.10)';
+  ctx.fill();
+  ctx.restore();
+
+  // center node (me)
+  ctx.fillStyle = '#ffb347';
+  ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2); ctx.fill();
+
+  const ids = Object.keys(state.peers);
+  const n = ids.length;
+  ids.forEach((id,i)=>{
+    const p = state.peers[id];
+    const a = (Math.PI*2*i/Math.max(n,1)) - Math.PI/2;
+    const dist = p.connected ? r*0.75 : r*0.45;
+    const x = cx + Math.cos(a)*dist;
+    const y = cy + Math.sin(a)*dist;
+    ctx.strokeStyle = p.connected ? 'rgba(57,255,136,0.5)' : 'rgba(255,92,92,0.35)';
+    ctx.setLineDash(p.connected ? [] : [3,3]);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = p.connected ? '#39ff88' : '#ff5c5c';
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+  });
+  requestAnimationFrame(drawRadar);
+}
+let radarStarted = false;
+function ensureRadarLoop(){ if(!radarStarted){ radarStarted = true; drawRadar(); } }
+
+/* ============================ QR chunk protocol ============================ */
+function toBase64Utf8(str){ return btoa(unescape(encodeURIComponent(str))); }
+function fromBase64Utf8(b64){ return decodeURIComponent(escape(atob(b64))); }
+
+function encodeFrames(obj){
+  const b64 = toBase64Utf8(JSON.stringify(obj));
+  const total = Math.max(1, Math.ceil(b64.length / QR_CHUNK));
+  const sid = randId(3);
+  const frames = [];
+  for(let i=0;i<total;i++){
+    frames.push('MLK|' + sid + '|' + i + '|' + total + '|' + b64.slice(i*QR_CHUNK,(i+1)*QR_CHUNK));
+  }
+  return frames;
+}
+
+let qrAnimTimer = null;
+function playQR(container, frames){
+  stopQR();
+  container.innerHTML = '';
+  const qr = new QRCode(container, { text: frames[0], width:220, height:220, correctLevel: QRCode.CorrectLevel.L });
+  let i = 0;
+  els.qrProgress.textContent = frames.length>1 ? ('frame 1/' + frames.length) : '';
+  if(frames.length>1){
+    qrAnimTimer = setInterval(()=>{
+      i = (i+1) % frames.length;
+      qr.clear(); qr.makeCode(frames[i]);
+      els.qrProgress.textContent = 'frame ' + (i+1) + '/' + frames.length;
+    }, QR_FRAME_MS);
+  }
+}
+function stopQR(){ if(qrAnimTimer){ clearInterval(qrAnimTimer); qrAnimTimer = null; } }
+
+// scanning
+const collectors = {}; // sid -> {total, chunks:Map}
+function ingestScannedString(str, onComplete){
+  if(!str || str.indexOf('MLK|') !== 0) return;
+  const parts = str.split('|');
+  if(parts.length < 5) return;
+  const sid = parts[1], idx = +parts[2], total = +parts[3];
+  const chunk = parts[4] || '';
+  if(!collectors[sid]) collectors[sid] = { total, chunks: new Map() };
+  collectors[sid].chunks.set(idx, chunk);
+  if(collectors[sid].chunks.size >= collectors[sid].total){
+    let b64 = '';
+    for(let i=0;i<collectors[sid].total;i++) b64 += (collectors[sid].chunks.get(i)||'');
+    delete collectors[sid];
+    try{
+      const obj = JSON.parse(fromBase64Utf8(b64));
+      onComplete(obj);
+    }catch(e){ console.error('QR payload parse failed', e); }
+  }
+}
+
+let activeStream = null;
+async function startCameraScan(videoEl, onDecoded){
+  const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+  activeStream = stream;
+  videoEl.srcObject = stream;
+  await videoEl.play();
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently:true });
+  let stopped = false;
+  function tick(){
+    if(stopped) return;
+    if(videoEl.readyState === videoEl.HAVE_ENOUGH_DATA){
+      canvas.width = videoEl.videoWidth; canvas.height = videoEl.videoHeight;
+      ctx.drawImage(videoEl,0,0,canvas.width,canvas.height);
+      const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+      const code = jsQR(imgData.data, imgData.width, imgData.height);
+      if(code && code.data){ ingestScannedString(code.data, onDecoded); }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+  return { stop: ()=>{ stopped = true; stream.getTracks().forEach(t=>t.stop()); } };
+}
+function stopCameraStream(){
+  if(activeStream){ activeStream.getTracks().forEach(t=>t.stop()); activeStream = null; }
+}
+
+/* ============================ WebRTC plumbing ============================ */
+function waitIceComplete(pc){
+  return new Promise(resolve=>{
+    if(pc.iceGatheringState === 'complete') return resolve();
+    const check = ()=>{ if(pc.iceGatheringState==='complete'){ pc.removeEventListener('icegatheringstatechange', check); resolve(); } };
+    pc.addEventListener('icegatheringstatechange', check);
+    setTimeout(resolve, 2500); // don't block forever if a candidate stalls
+  });
+}
+
+function registerPeer(id, name){
+  if(!state.peers[id]) state.peers[id] = { name, connected:false, pc:null, dc:null };
+  else if(name) state.peers[id].name = name;
+  updateUI();
+  return state.peers[id];
+}
+
+function setupDataChannel(dc, peerId){
+  dc.onopen = ()=>{
+    state.peers[peerId].connected = true;
+    updateUI();
+    sysline(state.peers[peerId].name + ' linked');
+    // share what I know of the mesh so it can auto-connect to everyone else
+    sendTo(peerId, { type:'peers', list: Object.keys(state.peers).filter(id=>id!==peerId).map(id=>({id, name: state.peers[id].name})) });
+    // tell all my other peers about this new node so they connect too
+    broadcastExcept(peerId, { type:'peer-joined', id: peerId, name: state.peers[peerId].name });
+  };
+  dc.onclose = ()=>{
+    if(state.peers[peerId]){ state.peers[peerId].connected = false; updateUI(); sysline(state.peers[peerId].name + ' disconnected'); }
+  };
+  dc.onerror = ()=>{};
+  dc.onmessage = (e)=>{
+    try{ handleMeshMessage(peerId, JSON.parse(e.data)); }catch(err){}
+  };
+}
+
+function sendTo(peerId, obj){
+  const p = state.peers[peerId];
+  if(p && p.dc && p.dc.readyState === 'open') p.dc.send(JSON.stringify(obj));
+}
+function broadcastExcept(exceptId, obj){
+  Object.keys(state.peers).forEach(id=>{ if(id !== exceptId) sendTo(id, obj); });
+}
+function broadcastAll(obj){ Object.keys(state.peers).forEach(id=>sendTo(id, obj)); }
+
+/* ---- mesh message handling: chat, peer discovery, relayed signaling ---- */
+function handleMeshMessage(fromPeerId, msg){
+  if(!msg || !msg.type) return;
+
+  if(msg.type === 'chat'){
+    if(state.seenMsgIds.has(msg.msgId)) return;
+    state.seenMsgIds.add(msg.msgId);
+    appendChat(msg, false);
+    broadcastExcept(fromPeerId, msg); // gossip forward, resilient if mesh is partial
+    return;
+  }
+
+  if(msg.type === 'peers'){
+    (msg.list||[]).forEach(p=>{ if(p.id !== state.id) maybeConnectToPeer(p.id, p.name, fromPeerId); });
+    return;
+  }
+
+  if(msg.type === 'peer-joined'){
+    maybeConnectToPeer(msg.id, msg.name, fromPeerId);
+    return;
+  }
+
+  if(msg.type === 'relay-signal'){
+    if(state.seenMsgIds.has(msg.msgId)) return;
+    state.seenMsgIds.add(msg.msgId);
+    if(msg.target === state.id){
+      handleRelaySignal(msg);
+    } else {
+      const p = state.peers[msg.target];
+      if(p && p.dc && p.dc.readyState === 'open'){ sendTo(msg.target, msg); }
+      else { broadcastExcept(fromPeerId, msg); } // flood fallback
+    }
+    return;
+  }
+}
+
+function maybeConnectToPeer(id, name, viaPeerId){
+  if(id === state.id || state.peers[id]) { if(state.peers[id] && name) state.peers[id].name = name; return; }
+  registerPeer(id, name);
+  // deterministic glare avoidance: lower id initiates the offer
+  if(state.id < id){ initiateRelayOffer(id, viaPeerId); }
+}
+
+async function initiateRelayOffer(targetId, viaPeerId){
+  const pc = new RTCPeerConnection(rtcConfig);
+  const dc = pc.createDataChannel('mesh');
+  setupDataChannel(dc, targetId);
+  state.peers[targetId].pc = pc;
+  state.peers[targetId].dc = dc;
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await waitIceComplete(pc);
+  sendTo(viaPeerId, { type:'relay-signal', target: targetId, from: state.id, kind:'offer', name: state.name, sdp: pc.localDescription, msgId: randId(6) });
+}
+
+async function handleRelaySignal(msg){
+  if(msg.kind === 'offer'){
+    const pc = new RTCPeerConnection(rtcConfig);
+    pc.ondatachannel = (e)=> setupDataChannel(e.channel, msg.from);
+    registerPeer(msg.from, msg.name);
+    state.peers[msg.from].pc = pc;
+    await pc.setRemoteDescription(msg.sdp);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await waitIceComplete(pc);
+    broadcastAll({ type:'relay-signal', target: msg.from, from: state.id, kind:'answer', name: state.name, sdp: pc.localDescription, msgId: randId(6) });
+  } else if(msg.kind === 'answer'){
+    const p = state.peers[msg.from];
+    if(p && p.pc){ await p.pc.setRemoteDescription(msg.sdp); }
+  }
+}
+
+/* ============================ pairing: invite (offer side) ============================ */
+async function openInvite(){
+  document.getElementById('inviteOverlay').classList.remove('hidden');
+  document.getElementById('inviteTitle').textContent = 'your invite';
+  document.getElementById('inviteSub').textContent = "have the other person open MESHLINK, tap “join”, then point their camera here. holds steady while it cycles frames.";
+  document.getElementById('qrStage').classList.remove('hidden');
+  els.scanStage.classList.add('hidden');
+  els.inviteToScanBtn.classList.remove('hidden');
+
+  const pc = new RTCPeerConnection(rtcConfig);
+  const dc = pc.createDataChannel('mesh');
+  const tempId = randId(4);
+  state.pendingInvite = { pc, dc, tempId };
+  setupDataChannel(dc, tempId);
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  await waitIceComplete(pc);
+  const payload = { t:'offer', id: state.id, name: state.name, sdp: pc.localDescription };
+  playQR(els.qrDiv, encodeFrames(payload));
+}
+
+els.inviteToScanBtn.addEventListener('click', async ()=>{
+  stopQR();
+  document.getElementById('qrStage').classList.add('hidden');
+  els.scanStage.classList.remove('hidden');
+  els.inviteToScanBtn.classList.add('hidden');
+  document.getElementById('inviteSub').textContent = 'now scan the code on their screen to finish linking.';
+  await startCameraScan(els.inviteScanVideo, (obj)=>{
+    if(obj.t !== 'answer') return;
+    const pending = state.pendingInvite;
+    if(!pending) return;
+    // move from temp id to their real id
+    const realId = obj.id;
+    state.peers[realId] = state.peers[realId] || { name: obj.name, connected:false, pc: pending.pc, dc: pending.dc };
+    delete state.peers[pending.tempId];
+    setupDataChannel(pending.dc, realId); // rebind handlers to real id
+    pending.pc.setRemoteDescription(obj.sdp).then(()=>{
+      state.pendingInvite = null;
+      stopCameraStream();
+      closeOverlay('inviteOverlay');
+      sysline('linking to ' + (obj.name||realId) + '…');
+    });
+  });
+});
+
+/* ============================ pairing: join (answer side) ============================ */
+async function openJoin(){
+  document.getElementById('joinOverlay').classList.remove('hidden');
+  document.getElementById('joinAnswerStage').classList.add('hidden');
+  document.getElementById('joinScanStage').classList.remove('hidden');
+  await startCameraScan(els.joinScanVideo, async (obj)=>{
+    if(obj.t !== 'offer') return;
+    stopCameraStream();
+    document.getElementById('joinScanStage').classList.add('hidden');
+
+    const pc = new RTCPeerConnection(rtcConfig);
+    const fromId = obj.id;
+    registerPeer(fromId, obj.name);
+    state.peers[fromId].pc = pc;
+    pc.ondatachannel = (e)=> setupDataChannel(e.channel, fromId);
+
+    await pc.setRemoteDescription(obj.sdp);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await waitIceComplete(pc);
+
+    const payload = { t:'answer', id: state.id, name: state.name, sdp: pc.localDescription };
+    document.getElementById('joinAnswerStage').classList.remove('hidden');
+    playQR(els.qrDiv2, encodeFrames(payload));
+    sysline('showing reply to ' + (obj.name||fromId) + '…');
+  });
+}
+
+function closeOverlay(id){
+  document.getElementById(id).classList.add('hidden');
+  stopQR();
+  stopCameraStream();
+}
+
+document.querySelectorAll('.close-x').forEach(btn=>{
+  btn.addEventListener('click', ()=> closeOverlay(btn.getAttribute('data-close')));
+});
+
+/* ============================ setup + wiring ============================ */
+els.enterBtn.addEventListener('click', enterApp);
+els.nameInput.addEventListener('keydown', e=>{ if(e.key==='Enter') enterApp(); });
+function enterApp(){
+  const v = els.nameInput.value.trim();
+  state.name = v || ('node-' + state.id);
+  els.myNameLabel.textContent = state.name;
+  els.myIdLabel.textContent = '#' + state.id;
+  els.setupOverlay.classList.add('hidden');
+  ensureRadarLoop();
+  sysline('you are online as ' + state.name + '. invite someone nearby or scan their invite to link up.');
+}
+
+els.inviteBtn.addEventListener('click', openInvite);
+els.joinBtn.addEventListener('click', openJoin);
+
+els.sendBtn.addEventListener('click', sendChat);
+els.msgInput.addEventListener('keydown', e=>{ if(e.key==='Enter') sendChat(); });
+function sendChat(){
+  const text = els.msgInput.value.trim();
+  if(!text) return;
+  const msg = { type:'chat', from: state.id, name: state.name, text, ts: Date.now(), msgId: randId(8) };
+  state.seenMsgIds.add(msg.msgId);
+  appendChat(msg, true);
+  broadcastAll(msg);
+  els.msgInput.value = '';
+}
+
+updateUI();
+})();
+</script>
+</body>
+</html>
